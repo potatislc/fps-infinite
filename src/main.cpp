@@ -1,34 +1,133 @@
-#include "raylib.h"
+#include <SDL.h>
+#include <array>
+#include <vector>
+#include <cmath>
+#include <cstdint>
+#include "window.h"
+#include "game.h"
+#include "renderer.h"
 
-constexpr auto SCREEN_WIDTH  = 800;
-constexpr auto SCREEN_HEIGHT = 450;
-
-int main()
+enum MaterialType
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Window title");
-    SetTargetFPS(60);
+    MT_AIR,
+    MT_DIRT,
+    MT_STONE,
+    MT_IRON,
+    MT_COPPER,
+    MT_GOLD,
+    MT_DIAMOND,
+    MT_LENGTH
+};
 
-    Texture2D texture = LoadTexture(ASSETS_PATH"test.png");
+enum MaterialCategory
+{
+    MC_GAS,
+    MC_LIQUID,
+    MC_SOLID,
+    MC_INSTANT_DEATH
+};
 
-    while (!WindowShouldClose())
+class Material
+{
+public:
+    MaterialType type;
+    MaterialCategory category;
+    const float hardness;
+    float price;
+};
+
+Material air = {MT_AIR, MC_GAS, 0.0f, 0.0f};
+Material dirt = {MT_DIRT, MC_SOLID, 1.0f, 0.1f};
+
+class Layer
+{
+    float hp;
+
+public:
+    Material* material;
+    int amount{};
+
+    Layer(Material* materialVal, int amountVal)
     {
-        BeginDrawing();
+        material = materialVal;
+        amount = amountVal;
+        hp = (float)std::abs(amount) * material->hardness;
+    }
+};
 
-        ClearBackground(RAYWHITE);
+class Rock
+{
+    const uint8_t visibleLayerCount = 10;
+    uint8_t startingLayerIndex = visibleLayerCount / 2;
+public:
+    std::vector<Layer> layers;
 
-        const int texture_x = SCREEN_WIDTH / 2 - texture.width / 2;
-        const int texture_y = SCREEN_HEIGHT / 2 - texture.height / 2;
-        DrawTexture(texture, texture_x, texture_y, WHITE);
+    Rock()
+    {
+        // All layers before starting layer should be air
+        for (int i = 0; i < startingLayerIndex; i++)
+        {
+            layers.emplace_back(&air, 1);
+        }
 
-        const char* text = "OMG! IT WORKS!";
-        const Vector2 text_size = MeasureTextEx(GetFontDefault(), text, 20, 1);
-        DrawText(text, SCREEN_WIDTH / 2 - text_size.x / 2, texture_y + texture.height + text_size.y + 10, 20, BLACK);
-
-        EndDrawing();
+        // All layers afterward are dirt for now
+        for (int i = startingLayerIndex+1; i < visibleLayerCount; i++)
+        {
+            layers.emplace_back(&dirt, 1);
+        }
     }
 
-    UnloadTexture(texture);
+    Layer nextLayer()
+    {
+        Layer prevTopLayer = layers[startingLayerIndex];
 
-    CloseWindow();
+        // Shift layers
+        if (!layers.empty()) layers.erase(layers.begin() + startingLayerIndex);
+        layers.emplace_back(&dirt, 1);
+
+        return prevTopLayer;
+    }
+};
+
+class Miner
+{
+public:
+    std::size_t depth = 0;
+    std::array<std::size_t, MT_LENGTH> oresMined{};
+
+    void mine(Rock rock)
+    {
+        // Mine current layer
+        depth++;
+        Layer currentLayer = rock.nextLayer();
+        oresMined[currentLayer.material->type] += currentLayer.amount;
+
+        // How miner will react to standing on the new top layer
+        switch (rock.layers[0].material->type)
+        {
+            default:
+                // Default is an ore you can stand on and mine regularly
+                break;
+        }
+    }
+};
+
+Window window;
+Game game;
+Renderer renderer;
+
+Rock rock;
+Miner miner;
+
+int main(int argc, char* args[])
+{
+    if (!window.init()) return -1;
+    if (!renderer.init(window.sdlWindow)) return -1;
+    game.run(renderer);
+
+    SDL_DestroyRenderer(renderer.sdlRenderer);
+    SDL_DestroyWindow(window.sdlWindow);
+    SDL_Quit();
+
     return 0;
 }

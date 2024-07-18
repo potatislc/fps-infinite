@@ -4,9 +4,11 @@
 #include <cmath>
 #include <cstdint>
 #include "window.h"
-#include "game.h"
+#include "application.h"
 #include "renderer.h"
+#include "tunnel.h"
 
+/*
 enum MaterialType
 {
     MT_AIR,
@@ -111,19 +113,18 @@ public:
         }
     }
 };
+*/
 
 Window window;
+Application application;
 Game game;
 Renderer renderer;
-
-Rock rock;
-Miner miner;
 
 int main(int argc, char* args[])
 {
     if (!window.init()) return -1;
     if (!renderer.init(window.sdlWindow)) return -1;
-    game.run(renderer);
+    application.run(game, renderer);
 
     SDL_DestroyRenderer(renderer.sdlRenderer);
     SDL_DestroyWindow(window.sdlWindow);

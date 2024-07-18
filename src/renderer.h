@@ -1,11 +1,10 @@
 #pragma once
 #include <SDL.h>
 
+extern SDL_Renderer* currentRenderer;
+
 class Renderer
 {
-    void drawWorld() const;
-    void drawUi() const;
-
 public:
     SDL_Renderer* sdlRenderer;
     bool init(SDL_Window* sdlWindow);

@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL2/SDL.h"
 #include "application.h"
 
 const uint16_t Application::fps = 60;

@@ -3,10 +3,10 @@
 #include <vector>
 #include <cmath>
 #include <cstdint>
-#include "window.h"
-#include "application.h"
-#include "renderer.h"
-#include "tunnel.h"
+#include "engine/window.h"
+#include "engine/application.h"
+#include "engine/renderer.h"
+#include "game/tunnel.h"
 
 /*
 enum MaterialType

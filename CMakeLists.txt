@@ -18,18 +18,20 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL2)
 
 add_executable(${PROJECT_NAME} src/main.cpp
-        src/application.cpp
-        src/application.h
-        src/renderer.cpp
-        src/renderer.h
-        src/window.cpp
-        src/window.h
-        src/miner.cpp
-        src/miner.h
-        src/tunnel.cpp
-        src/tunnel.h
-        src/game.cpp
-        src/game.h)
+        src/engine/application.cpp
+        src/engine/application.h
+        src/engine/renderer.cpp
+        src/engine/renderer.h
+        src/engine/window.cpp
+        src/engine/window.h
+        src/game/miner.cpp
+        src/game/miner.h
+        src/game/tunnel.cpp
+        src/game/tunnel.h
+        src/game/game.cpp
+        src/game/game.h
+        src/game/material.cpp
+        src/game/material.h)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static)

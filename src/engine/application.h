@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include "renderer.h"
-#include "game.h"
+#include "../game/game.h"
 
 class Application
 {

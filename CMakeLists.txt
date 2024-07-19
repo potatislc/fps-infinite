@@ -17,6 +17,9 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL2)
 
+include_directories("${CMAKE_CURRENT_LIST_DIR}/src/")
+# -DCMAKE_CXX_FLAGS="-I /src/"
+
 add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/Application.cpp
         src/engine/Application.h
@@ -37,5 +40,5 @@ add_executable(${PROJECT_NAME} src/main.cpp
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static)
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/") # Set the asset path macro to the absolute path on the dev machine
+target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/") # Set the asset path macro to the absolute path on the dev machine
 #target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="relative-path-to-res-in-the-game-package") # Set the asset path macro in release mode

@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <array>
 #include "Tunnel.h"
-#include "../engine/IGameObject.h"
+#include "engine/IGameObject.h"
 
 class Miner : IGameObject
 {

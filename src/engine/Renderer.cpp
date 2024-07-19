@@ -1,5 +1,5 @@
-#include "renderer.h"
-#include "window.h"
+#include "Renderer.h"
+#include "Window.h"
 
 SDL_Renderer* currentRenderer;
 

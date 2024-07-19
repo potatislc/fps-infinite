@@ -1,4 +1,4 @@
-#include "window.h"
+#include "Window.h"
 
 int Window::screenWidth = 512;
 int Window::screenHeight = 512;

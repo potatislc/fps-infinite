@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
-#include "renderer.h"
-#include "../game/game.h"
+#include "Renderer.h"
+#include "IGameObject.h"
 
 class Application
 {
@@ -16,5 +16,5 @@ public:
     bool quit = false;
     SDL_Event e{};
 
-    void run(Game game, Renderer renderer);
+    void run(IGameObject& game, Renderer renderer);
 };

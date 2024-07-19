@@ -1,11 +1,11 @@
 #include "SDL2/SDL.h"
-#include "application.h"
+#include "Application.h"
 
 const uint16_t Application::fps = 60;
 float Application::timeScale = 1.f;
 float Application::delta = 1.f / fps;
 
-void Application::run(Game game, Renderer renderer)
+void Application::run(IGameObject& game, Renderer renderer)
 {
     while (!quit)
     {

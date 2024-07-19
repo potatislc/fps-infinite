@@ -1,5 +1,5 @@
 #include <cmath>
-#include "tunnel.h"
+#include "Tunnel.h"
 
 TunnelLayer::TunnelLayer(Material *materialVal, int amountVal)
 {

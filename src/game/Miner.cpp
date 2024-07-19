@@ -1,4 +1,4 @@
-#include "miner.h"
+#include "Miner.h"
 
 
 void Miner::mine(Tunnel tunnel)
@@ -15,4 +15,19 @@ void Miner::mine(Tunnel tunnel)
             // Default is an ore you can stand on and mine regularly
             break;
     }
+}
+
+void Miner::start()
+{
+
+}
+
+void Miner::update()
+{
+
+}
+
+void Miner::draw()
+{
+
 }

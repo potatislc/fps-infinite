@@ -21,14 +21,5 @@ bool Renderer::init(SDL_Window* sdlWindow)
 
 void Renderer::render() const
 {
-    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-    SDL_RenderClear(sdlRenderer);
-
-    // Temporary ---
-    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 255, 255);
-    SDL_Rect fillRect = { Window::screenWidth / 4, Window::screenHeight / 4, Window::screenWidth / 2, Window::screenHeight / 2 };
-    SDL_RenderFillRect(sdlRenderer, &fillRect);
-    // ---
-
     SDL_RenderPresent(sdlRenderer);
 }

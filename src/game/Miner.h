@@ -4,6 +4,7 @@
 #include <array>
 #include "Tunnel.h"
 #include "engine/IGameObject.h"
+#include "SDL_render.h"
 
 class Miner : IGameObject
 {
@@ -16,5 +17,5 @@ public:
     Miner(Tunnel* tunnel_);
     void start() override;
     void update() override;
-    void draw() override;
+    void draw(SDL_Renderer* sdlRenderer);
 };

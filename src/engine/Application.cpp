@@ -21,6 +21,7 @@ void Application::run(IGameObject& game, Renderer renderer)
         }
 
         game.update();
+        game.draw();
         renderer.render();
 
         // Frame rate cap

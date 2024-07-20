@@ -6,8 +6,9 @@
 class Game : public IGameObject
 {
 public:
-    Miner miner;
     Tunnel tunnel;
+    Miner miner = { &tunnel };
+    Game();
     void start() override;
     void update() override;
     void draw() override;

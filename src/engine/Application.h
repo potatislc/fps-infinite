@@ -7,8 +7,6 @@ class Application
 {
     const int frameDelay = 1000 / fps;
 
-    void update();
-
 public:
     static const uint16_t fps;
     static float timeScale;

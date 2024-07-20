@@ -6,8 +6,9 @@
 
 Window window;
 Application application;
-Game game;
 Renderer renderer;
+
+Game game;
 
 int main(int argc, char* args[])
 {

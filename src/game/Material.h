@@ -29,9 +29,9 @@ public:
         T_LENGTH
     };
 
-    Category category;
+    const Category category;
     const float hardness;
     float price;
 };
 
-extern Material materials[Material::T_LENGTH];
+extern const Material materials[Material::T_LENGTH];

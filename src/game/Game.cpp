@@ -9,11 +9,13 @@ void Game::start()
 {
     tileCountX = ceil(Application::renderer.viewport.w / tileSize);
     tileCountY = ceil(Application::renderer.viewport.h / tileSize);
+
+    miner.start();
 }
 
 void Game::update()
 {
-
+    miner.update();
 }
 
 void Game::clearBackground(SDL_Renderer* renderTarget)

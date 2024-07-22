@@ -13,7 +13,7 @@ class Miner : IGameObject
     void mine();
 public:
     std::size_t depth = 0;
-    std::array<std::size_t, MT_LENGTH> oresMined{};
+    std::array<std::size_t, Material::T_LENGTH> oresMined{};
     Miner(Tunnel* tunnel_);
     void start() override;
     void update() override;

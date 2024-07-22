@@ -9,10 +9,10 @@ class TunnelLayer
     float hp;
 
 public:
-    MaterialType materialType;
+    Material::Type materialType;
     int amount{};
 
-    TunnelLayer(MaterialType materialType_, int amountVal);
+    TunnelLayer(Material::Type materialType_, int amountVal);
 };
 
 

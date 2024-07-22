@@ -1,8 +1,8 @@
 #include "Material.h"
 
-Material materials[MT_LENGTH] =
+Material materials[Material::T_LENGTH] =
 {
-#define MATERIAL(type, category, hardness, price) {category, hardness, price},
+#define MATERIAL(type, category, hardness, price) {Material::category, hardness, price},
     MATERIALS
 #undef MATERIAL
 };

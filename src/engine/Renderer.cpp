@@ -12,7 +12,7 @@ bool Renderer::init(SDL_Window* sdlWindow)
         return -1;
     }
 
-    viewport = (SDL_Rect){ 0, 0, Application::window.width, Application::window.height };
+    viewport = (SDL_Rect){ 0, 0, viewportDefaultSize.first, viewportDefaultSize.second };
     SDL_RenderSetViewport(sdlRenderer, &viewport);
 
     return true;

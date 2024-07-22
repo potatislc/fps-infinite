@@ -18,8 +18,8 @@ public:
 
 class Tunnel
 {
-    const uint8_t visibleLayerCount = 10;
-    uint8_t startingLayerIndex = visibleLayerCount / 2;
+    const uint8_t activeLayersCount = 16;
+    uint8_t startingLayerIndex = activeLayersCount / 2;
 public:
     std::vector<TunnelLayer> layers;
 

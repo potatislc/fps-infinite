@@ -1,5 +1,7 @@
 #include <cmath>
 #include "Tunnel.h"
+#include "Game.h"
+#include "engine/Application.h"
 
 TunnelLayer::TunnelLayer(Material *materialVal, int amountVal)
 {
@@ -11,13 +13,13 @@ TunnelLayer::TunnelLayer(Material *materialVal, int amountVal)
 Tunnel::Tunnel()
 {
     // All layers before starting layer should be air
-    for (int i = 0; i < startingLayerIndex; i++)
+    for (uint8_t i = 0; i <= startingLayerIndex; i++)
     {
         layers.emplace_back(&air, 1);
     }
 
     // All layers afterward are dirt for now
-    for (int i = startingLayerIndex+1; i < visibleLayerCount; i++)
+    for (uint8_t i = startingLayerIndex+1; i < activeLayersCount; i++)
     {
         layers.emplace_back(&dirt, 1);
     }
@@ -36,5 +38,13 @@ TunnelLayer Tunnel::nextLayer()
 
 void Tunnel::draw(SDL_Renderer *renderTarget)
 {
-
+    SDL_SetRenderDrawColor(renderTarget, 100, 100, 0, 255);
+    for (std::size_t i = 0; i < layers.size(); i++)
+    {
+        if (layers[i].material->type != MT_AIR)
+        {
+            SDL_Rect tile = { Application::renderer.viewport.w / 2 - Game::tileHalfSize, (int)i * Game::tileSize, Game::tileSize, Game::tileSize };
+            SDL_RenderFillRect(renderTarget, &tile);
+        }
+    }
 }

@@ -7,10 +7,13 @@
 class Game : public IGameObject
 {
     void clearBackground(SDL_Renderer* renderTarget);
-
+    void drawDebugGrid(SDL_Renderer* renderTarget);
 public:
+    static const uint8_t tileSize = 32;
+    static const uint8_t tileHalfSize = tileSize / 2;
     Tunnel tunnel;
     Miner miner = { &tunnel };
+
     Game();
     void start() override;
     void update() override;

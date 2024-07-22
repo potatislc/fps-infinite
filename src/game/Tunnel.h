@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL.h>
 #include <cstdint>
 #include <vector>
 #include "Material.h"
@@ -23,7 +24,7 @@ public:
     std::vector<TunnelLayer> layers;
 
     Tunnel();
-
     TunnelLayer nextLayer();
+    void draw(SDL_Renderer* renderTarget);
 };
 

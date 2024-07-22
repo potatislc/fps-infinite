@@ -33,3 +33,8 @@ TunnelLayer Tunnel::nextLayer()
 
     return prevTopLayer;
 }
+
+void Tunnel::draw(SDL_Renderer *renderTarget)
+{
+
+}

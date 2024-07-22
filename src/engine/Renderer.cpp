@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include "Window.h"
 
-SDL_Renderer* currentRenderer;
+SDL_Renderer* Renderer::sdlRenderer;
 
 bool Renderer::init(SDL_Window* sdlWindow)
 {
@@ -13,8 +13,6 @@ bool Renderer::init(SDL_Window* sdlWindow)
         SDL_Quit();
         return -1;
     }
-
-    currentRenderer = sdlRenderer;
 
     return true;
 }

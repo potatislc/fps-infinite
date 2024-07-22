@@ -1,7 +1,9 @@
 #include "Window.h"
 
-int Window::screenWidth = 512;
-int Window::screenHeight = 512;
+uint16_t Window::width = 512;
+uint16_t Window::height = 512;
+uint16_t Window::centerW = floor(Window::width / 2);
+uint16_t Window::centerH = floor(Window::height / 2);
 
 bool Window::init()
 {
@@ -10,7 +12,7 @@ bool Window::init()
         return false;
     }
 
-    sdlWindow = SDL_CreateWindow("Dig Straight Down!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
+    sdlWindow = SDL_CreateWindow("Dig Straight Down!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
     if (sdlWindow == nullptr)
     {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());

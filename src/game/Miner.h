@@ -17,5 +17,5 @@ public:
     Miner(Tunnel* tunnel_);
     void start() override;
     void update() override;
-    void draw(SDL_Renderer* sdlRenderer);
+    void draw(SDL_Renderer* renderTarget);
 };

@@ -1,10 +1,8 @@
+#include <SDL.h>
 #include "Game.h"
 #include "engine/Renderer.h"
 
-Game::Game()
-{
-
-}
+Game::Game() = default;
 
 void Game::start()
 {
@@ -22,10 +20,18 @@ void Game::clearBackground(SDL_Renderer* renderTarget)
     SDL_RenderClear(renderTarget);
 }
 
+void Game::drawDebugGrid(SDL_Renderer *renderTarget)
+{
+    SDL_SetRenderDrawColor(renderTarget, 255, 255, 255, 255);
+
+}
+
 void Game::draw()
 {
-    SDL_Renderer* renderTarget = currentRenderer;
+    SDL_Renderer* renderTarget = Renderer::sdlRenderer;
 
     clearBackground(renderTarget);
+    drawDebugGrid(renderTarget);
+    tunnel.draw(renderTarget);
     miner.draw(renderTarget);
 }

@@ -1,12 +1,14 @@
 #pragma once
-#include "SDL2/SDL.h"
+#include "SDL.h"
 
 class Window
 {
 public:
     SDL_Window* sdlWindow;
-    static int screenWidth;
-    static int screenHeight;
+    static uint16_t width;
+    static uint16_t height;
+    static uint16_t centerW;
+    static uint16_t centerH;
     bool init();
 };
 

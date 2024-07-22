@@ -35,7 +35,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/game/Game.h
         src/game/Material.cpp
         src/game/Material.h
-        src/engine/IGameObject.h)
+        src/engine/IGameObject.h
+        src/engine/InputMap.cpp
+        src/engine/InputMap.h)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static)

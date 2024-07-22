@@ -1,5 +1,6 @@
 #include "SDL2/SDL.h"
 #include "Application.h"
+#include "InputMap.h"
 
 Window Application::window;
 Renderer Application::renderer;
@@ -23,13 +24,33 @@ void Application::run(IGameObject& game)
         uint64_t frameStart = SDL_GetTicks();
 
         // Handle events on queue
-        while (SDL_PollEvent(&e) != 0)
+        while (SDL_PollEvent(&event) != 0)
         {
-            if (e.type == SDL_QUIT)
+            if (event.type == SDL_QUIT)
             {
                 quit = true;
+                break;
+            }
+
+            if (InputMap::keyMap.count(event.key.keysym.sym))
+            {
+                switch(event.type)
+                {
+                    case SDL_KEYDOWN:
+                        InputMap::keyMap[event.key.keysym.sym] = true;
+                        break;
+
+                    case SDL_KEYUP:
+                        InputMap::keyMap[event.key.keysym.sym] = false;
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
+
+        // TODO: Update bound inputs based on keyMap state
 
         game.update();
         game.draw();

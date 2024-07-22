@@ -15,7 +15,7 @@ public:
     static float timeScale;
     static float delta;
     bool quit = false;
-    SDL_Event e{};
+    SDL_Event event{};
 
     ~Application();
     bool init();

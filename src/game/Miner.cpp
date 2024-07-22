@@ -1,5 +1,4 @@
 #include "Miner.h"
-#include "engine/Window.h"
 #include "game.h"
 #include "engine/Application.h"
 
@@ -36,9 +35,7 @@ void Miner::update()
 
 void Miner::draw(SDL_Renderer* renderTarget)
 {
-    // Temporary ---
     SDL_SetRenderDrawColor(renderTarget, 100, 100, 255, 255);
-    SDL_Rect fillRect = {Application::window.width / 2 - Game::tileHalfSize, Application::window.height / 2, Game::tileSize, Game::tileSize };
+    SDL_Rect fillRect = {Application::renderer.viewport.w / 2 - Game::tileHalfSize, Application::renderer.viewport.h / 2, Game::tileSize, Game::tileSize };
     SDL_RenderFillRect(renderTarget, &fillRect);
-    // ---
 }

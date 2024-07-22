@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include "Window.h"
 #include "Application.h"
 
 bool Renderer::init(SDL_Window* sdlWindow)

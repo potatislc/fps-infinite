@@ -5,10 +5,12 @@ class Window
 {
 public:
     SDL_Window* sdlWindow;
-    static uint16_t width;
-    static uint16_t height;
-    static uint16_t centerW;
-    static uint16_t centerH;
+    uint16_t width;
+    uint16_t height;
+    uint16_t centerW;
+    uint16_t centerH;
+
+    Window();
     bool init();
 };
 

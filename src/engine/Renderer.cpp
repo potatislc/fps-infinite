@@ -1,8 +1,6 @@
 #include "Renderer.h"
 #include "Window.h"
-
-SDL_Renderer* Renderer::sdlRenderer;
-SDL_Rect Renderer::viewport = { 0, 0, 0, 0 };
+#include "Application.h"
 
 bool Renderer::init(SDL_Window* sdlWindow)
 {
@@ -15,7 +13,7 @@ bool Renderer::init(SDL_Window* sdlWindow)
         return -1;
     }
 
-    viewport = (SDL_Rect){ 0, 0, Window::width, Window::height };
+    viewport = (SDL_Rect){ 0, 0, Application::window.width, Application::window.height };
     SDL_RenderSetViewport(sdlRenderer, &viewport);
 
     return true;

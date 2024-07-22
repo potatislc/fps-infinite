@@ -1,9 +1,12 @@
 #include "Window.h"
 
-uint16_t Window::width = 512;
-uint16_t Window::height = 512;
-uint16_t Window::centerW = floor(Window::width / 2);
-uint16_t Window::centerH = floor(Window::height / 2);
+Window::Window()
+{
+    width = 512;
+    height = 512;
+    centerW = floor(Window::width / 2);
+    centerH = floor(Window::height / 2);
+}
 
 bool Window::init()
 {

@@ -1,6 +1,7 @@
 #include "Miner.h"
 #include "engine/Window.h"
 #include "game.h"
+#include "engine/Application.h"
 
 Miner::Miner(Tunnel* tunnel_)
 {
@@ -37,7 +38,7 @@ void Miner::draw(SDL_Renderer* renderTarget)
 {
     // Temporary ---
     SDL_SetRenderDrawColor(renderTarget, 100, 100, 255, 255);
-    SDL_Rect fillRect = {Window::width / 2 - Game::tileHalfSize, Window::height / 2, Game::tileSize, Game::tileSize };
+    SDL_Rect fillRect = {Application::window.width / 2 - Game::tileHalfSize, Application::window.height / 2, Game::tileSize, Game::tileSize };
     SDL_RenderFillRect(renderTarget, &fillRect);
     // ---
 }

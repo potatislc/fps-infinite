@@ -16,6 +16,8 @@ bool Application::init()
 
 void Application::run(IGameObject& game)
 {
+    game.start();
+
     while (!quit)
     {
         uint64_t frameStart = SDL_GetTicks();

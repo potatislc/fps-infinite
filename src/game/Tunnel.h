@@ -9,10 +9,10 @@ class TunnelLayer
     float hp;
 
 public:
-    Material* material;
+    MaterialType materialType;
     int amount{};
 
-    TunnelLayer(Material* materialVal, int amountVal);
+    TunnelLayer(MaterialType materialType_, int amountVal);
 };
 
 

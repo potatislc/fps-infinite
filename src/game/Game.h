@@ -11,6 +11,8 @@ class Game : public IGameObject
 public:
     static const uint8_t tileSize = 32;
     static const uint8_t tileHalfSize = tileSize / 2;
+    static uint16_t tilesW;
+    static uint16_t tilesH;
     Tunnel tunnel;
     Miner miner = { &tunnel };
 

@@ -17,6 +17,22 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL2)
 
+# Fetch SDL2_image
+FetchContent_Declare(
+        SDL2_image
+        GIT_REPOSITORY "https://github.com/libsdl-org/SDL_image.git"
+        GIT_TAG "release-2.6.3"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+)
+
+# START ADDITION
+set(SDL2IMAGE_INSTALL OFF)
+set(BUILD_SHARED_LIBS FALSE)
+# END ADDITION
+
+FetchContent_MakeAvailable(SDL2_image)
+
 include_directories("${CMAKE_CURRENT_LIST_DIR}/src/")
 # -DCMAKE_CXX_FLAGS="-I /src/"
 
@@ -37,10 +53,12 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/game/Material.h
         src/engine/IGameObject.h
         src/engine/InputMap.cpp
-        src/engine/InputMap.h)
+        src/engine/InputMap.h
+        src/engine/ResourceLoader.h
+        src/engine/ResourceLoader.cpp)
 
 # Link SDL2 library
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/") # Set the asset path macro to the absolute path on the dev machine
 #target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="relative-path-to-res-in-the-game-package") # Set the asset path macro in release mode

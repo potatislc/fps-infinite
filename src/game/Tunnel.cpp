@@ -37,7 +37,7 @@ TunnelLayer Tunnel::nextLayer()
     return prevTopLayer;
 }
 
-void Tunnel::draw(SDL_Renderer *renderTarget)
+void Tunnel::draw(SDL_Renderer* renderTarget)
 {
     SDL_SetRenderDrawColor(renderTarget, 100, 100, 0, 255);
     for (std::size_t i = 0; i < layers.size(); i++)

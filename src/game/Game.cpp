@@ -10,6 +10,7 @@ void Game::start()
     tileCountX = ceil(Application::renderer.viewport.w / tileSize);
     tileCountY = ceil(Application::renderer.viewport.h / tileSize);
 
+    tunnel.start();
     miner.start();
 }
 

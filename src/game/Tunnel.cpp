@@ -2,6 +2,7 @@
 #include "Tunnel.h"
 #include "Game.h"
 #include "engine/Application.h"
+#include "engine/ResourceLoader.h"
 
 TunnelLayer::TunnelLayer(Material::Type materialType_, int amountVal)
 {
@@ -10,8 +11,10 @@ TunnelLayer::TunnelLayer(Material::Type materialType_, int amountVal)
     hp = (float)std::abs(amount) * materials[materialType].hardness;
 }
 
-Tunnel::Tunnel()
+void Tunnel::start()
 {
+    materialAtlas = ResourceLoader::loadTexture(TEXTURES_PATH"/materials.png");
+
     // All layers before starting layer should be air
     for (uint8_t i = 0; i < floorLayerIndex; i++)
     {
@@ -23,6 +26,11 @@ Tunnel::Tunnel()
     {
         layers.emplace_back(Material::T_DIRT, 1);
     }
+}
+
+void Tunnel::update()
+{
+
 }
 
 TunnelLayer Tunnel::nextLayer()

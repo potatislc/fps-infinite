@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include "Material.h"
+#include "engine/IGameObject.h"
 
 class TunnelLayer
 {
@@ -15,7 +16,7 @@ public:
     TunnelLayer(Material::Type materialType_, int amountVal);
 };
 
-class Tunnel
+class Tunnel : IGameObject
 {
     const uint8_t activeLayersCount = 16;
     uint8_t floorLayerIndex = (activeLayersCount / 2) + 1;
@@ -23,8 +24,9 @@ class Tunnel
 public:
     std::vector<TunnelLayer> layers;
 
-    Tunnel();
     TunnelLayer nextLayer();
+    void start() override;
+    void update() override;
     void draw(SDL_Renderer* renderTarget);
 };
 

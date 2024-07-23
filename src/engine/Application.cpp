@@ -44,6 +44,14 @@ void Application::run(IGameObject& game)
                         InputMap::keyMap[event.key.keysym.sym] = false;
                         break;
 
+                    case SDL_MOUSEBUTTONDOWN:
+                        InputMap::mouseMap[event.button.button] = true;
+                        break;
+
+                    case SDL_MOUSEBUTTONUP:
+                        InputMap::mouseMap[event.button.button] = false;
+                        break;
+
                     default:
                         break;
                 }

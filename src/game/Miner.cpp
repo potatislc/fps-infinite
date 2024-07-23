@@ -1,6 +1,7 @@
 #include "Miner.h"
 #include "game.h"
 #include "engine/Application.h"
+#include "engine/InputMap.h"
 
 Miner::Miner(Tunnel* tunnel_)
 {
@@ -30,7 +31,10 @@ void Miner::start()
 
 void Miner::update()
 {
-
+    if (InputMap::getBoundKeyInput("Dig") == InputMap::S_PRESSED || InputMap::getBoundMouseInput("Dig") == InputMap::S_PRESSED)
+    {
+        printf("Digging\n");
+    }
 }
 
 void Miner::draw(SDL_Renderer* renderTarget)

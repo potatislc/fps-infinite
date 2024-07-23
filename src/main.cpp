@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include "engine/Application.h"
 #include "game/Game.h"
+#include "engine/InputMap.h"
 
 Application application;
 Game game;

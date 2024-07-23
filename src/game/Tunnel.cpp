@@ -13,13 +13,13 @@ TunnelLayer::TunnelLayer(Material::Type materialType_, int amountVal)
 Tunnel::Tunnel()
 {
     // All layers before starting layer should be air
-    for (uint8_t i = 0; i <= startingLayerIndex; i++)
+    for (uint8_t i = 0; i < floorLayerIndex; i++)
     {
         layers.emplace_back(Material::T_AIR, 1);
     }
 
     // All layers afterward are dirt for now
-    for (uint8_t i = startingLayerIndex+1; i < activeLayersCount; i++)
+    for (uint8_t i = floorLayerIndex; i < activeLayersCount; i++)
     {
         layers.emplace_back(Material::T_DIRT, 1);
     }
@@ -27,10 +27,11 @@ Tunnel::Tunnel()
 
 TunnelLayer Tunnel::nextLayer()
 {
-    TunnelLayer prevTopLayer = layers[startingLayerIndex];
+    TunnelLayer prevTopLayer = layers[floorLayerIndex];
+    printf("Dug layer type: %d\n", prevTopLayer.materialType);
 
     // Shift layers
-    if (!layers.empty()) layers.erase(layers.begin() + startingLayerIndex);
+    if (!layers.empty()) layers.erase(layers.begin() + floorLayerIndex);
     layers.emplace_back(Material::T_STONE, 1);
 
     return prevTopLayer;
@@ -44,6 +45,7 @@ void Tunnel::draw(SDL_Renderer *renderTarget)
         if (layers[i].materialType != Material::T_AIR)
         {
             SDL_Rect tile = { Application::renderer.viewport.w / 2 - Game::tileHalfSize, (int)i * Game::tileSize, Game::tileSize, Game::tileSize };
+            if (layers[i].materialType == Material::T_STONE) SDL_SetRenderDrawColor(renderTarget, 100, 100, 100, 255);
             SDL_RenderFillRect(renderTarget, &tile);
         }
     }

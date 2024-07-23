@@ -33,7 +33,7 @@ void Miner::update()
 {
     if (InputMap::getBoundKeyInput("Dig") == InputMap::S_PRESSED || InputMap::getBoundMouseInput("Dig") == InputMap::S_PRESSED)
     {
-        printf("Digging\n");
+        mine();
     }
 }
 

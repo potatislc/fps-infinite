@@ -27,6 +27,8 @@ std::map<std::string, InputMap::MouseBinding> InputMap::boundMouseButtons =
                 INPUT_BINDING("Dig", SDL_BUTTON_LEFT)
         };
 
+// Input methods
+
 #define SET_BINDING_STATUS(binding_status, S_ONCE, S_CONTINUOUS) binding_status = (binding_status != S_ONCE && binding_status != S_CONTINUOUS) ? S_ONCE : S_CONTINUOUS
 
 InputMap::Status InputMap::getBoundKeyInput(const std::string& name)

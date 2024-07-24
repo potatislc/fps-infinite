@@ -1,0 +1,27 @@
+{
+  "name" : "dig-straight-down",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "6693fc760107ef242118e95e20498b3560492e1f",
+  "dependencies" : [ {
+    "name" : "brotli",
+    "version>=" : "1.1.0#1"
+  }, {
+    "name" : "bzip2",
+    "version>=" : "1.0.8#5"
+  }, {
+    "name" : "freetype",
+    "version>=" : "2.13.2#1"
+  }, {
+    "name" : "libpng",
+    "version>=" : "1.6.43#2"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2024-05-23"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2024-04-23"
+  }, {
+    "name" : "zlib",
+    "version>=" : "1.3.1"
+  } ]
+}

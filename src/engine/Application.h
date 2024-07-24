@@ -7,7 +7,7 @@
 class Application
 {
     const int frameDelay = 1000 / fps;
-
+    uint64_t frameCount = 0;
 public:
     static Window window;
     static Renderer renderer;

@@ -64,13 +64,18 @@ void Application::run(IGameObject& game)
         game.draw();
         renderer.render();
 
+        frameCount++;
+
         // Frame rate cap
-        uint64_t frameTime = SDL_GetTicks64() - frameStart;
+        uint64_t ticksMs = SDL_GetTicks64();
+        uint64_t frameTime = ticksMs - frameStart;
         delta = ((float)frameTime / 1000) * timeScale;
         if (frameDelay > frameTime)
         {
             SDL_Delay(frameDelay - frameTime);
         }
+
+        // printf("FPS: %f\n", (float)frameCount / ((float)ticksMs / 1000.f));
     }
 }
 

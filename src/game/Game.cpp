@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <ctime>
 #include "Game.h"
 #include "engine/Application.h"
 
@@ -7,6 +8,8 @@ uint8_t Game::tileCountY;
 
 void Game::start()
 {
+    std::srand(std::time(nullptr));
+
     tileCountX = ceil(Application::renderer.viewport.w / tileSize);
     tileCountY = ceil(Application::renderer.viewport.h / tileSize);
 

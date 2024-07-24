@@ -1,4 +1,4 @@
-#include <cmath>
+#include <cstdlib>
 #include "Tunnel.h"
 #include "Game.h"
 #include "engine/Application.h"
@@ -40,7 +40,7 @@ TunnelLayer Tunnel::nextLayer()
 
     // Shift layers
     if (!layers.empty()) layers.erase(layers.begin() + floorLayerIndex);
-    layers.emplace_back(Material::T_STONE, 1);
+    layers.emplace_back((Material::Type)(std::rand() % Material::T_LENGTH), 1);
 
     return prevTopLayer;
 }

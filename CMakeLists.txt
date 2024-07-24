@@ -90,7 +90,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/ResourceLoader.h
         src/engine/ResourceLoader.cpp
         src/engine/MessageTexture.cpp
-        src/engine/MessageTexture.h)
+        src/engine/MessageTexture.h
+        src/engine/AppDebug.cpp
+        src/engine/AppDebug.h)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)

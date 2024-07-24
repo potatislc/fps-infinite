@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Window.h"
 #include "IGameObject.h"
+#include "AppDebug.h"
 
 class Application
 {
@@ -11,6 +12,7 @@ class Application
 public:
     static Window window;
     static Renderer renderer;
+    static AppDebug appDebug;
     static const uint16_t fps;
     static float timeScale;
     static float delta;

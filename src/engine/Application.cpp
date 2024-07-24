@@ -4,6 +4,7 @@
 
 Window Application::window;
 Renderer Application::renderer;
+AppDebug Application::appDebug;
 const uint16_t Application::fps = 60;
 float Application::timeScale = 1.f;
 float Application::delta = 1.f / fps;
@@ -12,6 +13,7 @@ bool Application::init()
 {
     if (!window.init()) return false;
     if (!renderer.init(window.sdlWindow)) return false;
+    appDebug.init();
     return true;
 }
 
@@ -58,24 +60,20 @@ void Application::run(IGameObject& game)
             }
         }
 
-        // TODO: Update bound inputs based on keyMap state
-
         game.update();
         game.draw();
+        appDebug.drawFps(frameCount);
         renderer.render();
 
         frameCount++;
 
         // Frame rate cap
-        uint64_t ticksMs = SDL_GetTicks64();
-        uint64_t frameTime = ticksMs - frameStart;
+        uint64_t frameTime = SDL_GetTicks64() - frameStart;
         delta = ((float)frameTime / 1000) * timeScale;
         if (frameDelay > frameTime)
         {
             SDL_Delay(frameDelay - frameTime);
         }
-
-        // printf("FPS: %f\n", (float)frameCount / ((float)ticksMs / 1000.f));
     }
 }
 

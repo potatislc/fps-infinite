@@ -23,3 +23,8 @@ void MessageTexture::updateText(const char *message, SDL_Color color)
     texture = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
     SDL_FreeSurface(surfaceMessage);
 }
+
+MessageTexture::~MessageTexture()
+{
+    free(texture);
+}

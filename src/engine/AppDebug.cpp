@@ -6,10 +6,6 @@
 void AppDebug::printFps(uint64_t frameCount)
 {
     float avgFPS = (float)frameCount / ((float)SDL_GetTicks64() / 1000.f);
-    if( avgFPS > 2000000 )
-    {
-        avgFPS = 0;
-    }
 
     printf("FPS: %f\n", avgFPS);
 }
@@ -17,12 +13,8 @@ void AppDebug::printFps(uint64_t frameCount)
 void AppDebug::drawFps(uint64_t frameCount)
 {
     float avgFPS = (float)frameCount / ((float)SDL_GetTicks64() / 1000.f);
-    if(avgFPS > 2000000)
-    {
-        avgFPS = 0;
-    }
 
-    timeText.str( "" );
+    timeText.str("");
     timeText << "FPS: " << avgFPS;
 
     fpsText.updateText(timeText.str().c_str());

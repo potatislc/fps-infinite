@@ -13,6 +13,7 @@ bool Application::init()
 {
     if (!window.init()) return false;
     if (!renderer.init(window.sdlWindow)) return false;
+    TTF_Init();
     appDebug.init();
     return true;
 }

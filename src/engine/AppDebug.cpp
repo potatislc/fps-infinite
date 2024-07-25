@@ -17,15 +17,16 @@ void AppDebug::printFps(uint64_t frameCount)
 void AppDebug::drawFps(uint64_t frameCount)
 {
     float avgFPS = (float)frameCount / ((float)SDL_GetTicks64() / 1000.f);
-    if( avgFPS > 2000000 )
+    if(avgFPS > 2000000)
     {
         avgFPS = 0;
     }
 
     timeText.str( "" );
-    timeText << "Average Frames Per Second " << avgFPS;
+    timeText << "FPS: " << avgFPS;
 
-    SDL_Rect rect = {0, 0, 128, 128};
+    fpsText.updateText(timeText.str().c_str());
+    SDL_Rect rect = {0, 0, 256, 64};
     SDL_Point origin = {0, 0};
     SDL_RenderCopyEx(fpsText.renderer, fpsText.texture, &rect, &rect, 0.0, &origin, SDL_FLIP_NONE);
 }

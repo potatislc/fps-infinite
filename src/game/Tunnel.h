@@ -21,6 +21,9 @@ class Tunnel : IGameObject
     const uint8_t activeLayersCount = 16;
     uint8_t floorLayerIndex = (activeLayersCount / 2) + 1;
     SDL_Texture* materialAtlas = nullptr;
+
+    void drawCenterColumn(SDL_Renderer* renderTarget, uint8_t depth);
+    void drawWalls(SDL_Renderer* renderTarget);
 public:
     std::vector<TunnelLayer> layers;
 

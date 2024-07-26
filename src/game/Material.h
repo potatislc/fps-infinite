@@ -8,7 +8,8 @@
     MATERIAL(T_IRON, C_SOLID, 5.0f, 2.0f) \
     MATERIAL(T_COPPER, C_SOLID, 4.0f, 1.5f) \
     MATERIAL(T_GOLD, C_SOLID, 3.0f, 10.0f) \
-    MATERIAL(T_DIAMOND, C_SOLID, 10.0f, 50.0f)
+    MATERIAL(T_DIAMOND, C_SOLID, 10.0f, 50.0f) \
+    MATERIAL(T_LAVA, C_LIQUID, 0.0f, 0.0f)
 
 class Material
 {

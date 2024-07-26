@@ -65,7 +65,7 @@ void Application::run(IGameObject& game)
 
         game.update();
         game.draw();
-        appDebug.drawFps(frameCount);
+        // appDebug.drawFps(frameCount);
         renderer.render();
 
         frameCount++;

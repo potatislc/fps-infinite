@@ -30,7 +30,7 @@ void Game::clearBackground(SDL_Renderer* renderTarget)
 
 void Game::drawDebugGrid(SDL_Renderer *renderTarget)
 {
-    SDL_SetRenderDrawColor(renderTarget, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderTarget, 50, 50, 50, 255);
     for (uint8_t x = 0; x < tileCountX; x++)
     {
         uint16_t posX = x * tileSize + tileHalfSize;

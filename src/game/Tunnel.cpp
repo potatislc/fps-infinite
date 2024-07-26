@@ -45,14 +45,28 @@ TunnelLayer Tunnel::nextLayer()
     return prevTopLayer;
 }
 
-void Tunnel::draw(SDL_Renderer* renderTarget)
+void Tunnel::drawCenterColumn(SDL_Renderer *renderTarget, uint8_t depth)
 {
-    SDL_SetRenderDrawColor(renderTarget, 100, 100, 0, 255);
-    for (std::size_t i = 0; i < layers.size(); i++)
+    for (uint8_t i = 0; i <= depth; i++)
     {
         SDL_Rect src = { layers[i].materialType * Game::tileSize, 0, Game::tileSize, Game::tileSize };
         SDL_Rect dest = { Application::renderer.viewport.w / 2 - Game::tileHalfSize, (int)i * Game::tileSize, Game::tileSize, Game::tileSize };
         SDL_Point origin = {0, 0};
         SDL_RenderCopyEx(Application::renderer.sdlRenderer, materialAtlas, &src, &dest, 0.0, &origin, SDL_FLIP_NONE);
     }
+}
+
+void Tunnel::drawWalls(SDL_Renderer *renderTarget)
+{
+    SDL_SetRenderDrawColor(renderTarget, 100, 100, 100, 255);
+    SDL_Rect wallLeft = { Application::renderer.viewport.w / 2 - Game::tileHalfSize - Game::tileSize, 0, Game::tileSize, Application::renderer.viewport.h };
+    SDL_Rect wallRight = { Application::renderer.viewport.w / 2 - Game::tileHalfSize + Game::tileSize, 0, Game::tileSize, Application::renderer.viewport.h };
+    SDL_RenderFillRect(renderTarget, &wallLeft);
+    SDL_RenderFillRect(renderTarget, &wallRight);
+}
+
+void Tunnel::draw(SDL_Renderer* renderTarget)
+{
+    drawCenterColumn(renderTarget, floorLayerIndex);
+    drawWalls(renderTarget);
 }

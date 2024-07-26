@@ -7,15 +7,16 @@
 
 class Application
 {
-    const int frameDelay = 1000 / fps;
+    float targetFrameTime = 1.f / (float)fps;
     uint64_t frameCount = 0;
 public:
     static Window window;
     static Renderer renderer;
     static AppDebug appDebug;
     static const uint16_t fps;
-    static float timeScale;
-    static float delta;
+    static float frameTime;
+    static float deltaTimeScale;
+    static float deltaTime;
     bool quit = false;
     SDL_Event event{};
 

@@ -6,8 +6,9 @@ Window Application::window;
 Renderer Application::renderer;
 AppDebug Application::appDebug;
 const uint16_t Application::fps = 60;
-float Application::timeScale = 1.f;
-float Application::delta = 1.f / fps;
+float Application::frameTime = 1.f / (float)fps;
+float Application::deltaTimeScale = 1.f;
+float Application::deltaTime = frameTime * deltaTimeScale;
 
 bool Application::init()
 {
@@ -24,7 +25,8 @@ void Application::run(IGameObject& game)
 
     while (!quit)
     {
-        uint64_t frameStart = SDL_GetTicks();
+        uint64_t frameStart = SDL_GetPerformanceCounter();
+        deltaTime = frameTime * deltaTimeScale;
 
         // Handle events on queue
         while (SDL_PollEvent(&event) != 0)
@@ -69,11 +71,11 @@ void Application::run(IGameObject& game)
         frameCount++;
 
         // Frame rate cap
-        uint64_t frameTime = SDL_GetTicks64() - frameStart;
-        delta = ((float)frameTime / 1000) * timeScale;
-        if (frameDelay > frameTime)
+        uint64_t frameEnd = SDL_GetPerformanceCounter();
+        frameTime = (float)(frameEnd - frameStart) / (float)SDL_GetPerformanceFrequency();
+        if (targetFrameTime > frameTime)
         {
-            SDL_Delay(frameDelay - frameTime);
+            SDL_Delay((uint32_t)((targetFrameTime - frameTime) * 1000.f));
         }
     }
 }

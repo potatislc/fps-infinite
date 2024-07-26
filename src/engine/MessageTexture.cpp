@@ -27,5 +27,5 @@ void MessageTexture::updateText(const char *message)
 
 MessageTexture::~MessageTexture()
 {
-    free(texture);
+    // if (texture != nullptr) SDL_DestroyTexture(texture);
 }

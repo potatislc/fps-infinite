@@ -80,7 +80,7 @@ void Application::run(IGameObject& game)
     }
 }
 
-Application::~Application()
+void Application::quitSDL()
 {
     SDL_DestroyRenderer(renderer.sdlRenderer);
     SDL_DestroyWindow(window.sdlWindow);

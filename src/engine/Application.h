@@ -20,7 +20,7 @@ public:
     bool quit = false;
     SDL_Event event{};
 
-    ~Application();
     bool init();
     void run(IGameObject& game);
+    static void quitSDL();
 };

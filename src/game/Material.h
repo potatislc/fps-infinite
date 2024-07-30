@@ -33,6 +33,8 @@ public:
     const Category category;
     const float hardness;
     float price;
+    const float startingProbability;
+    float probability;
 };
 
 extern const Material materials[Material::T_LENGTH];

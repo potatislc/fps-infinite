@@ -12,7 +12,7 @@ void Miner::mine()
 {
     // Mine current layer
     depth++;
-    TunnelLayer currentLayer = tunnel->nextLayer();
+    Tunnel::Layer currentLayer = tunnel->nextLayer();
     materialsMined[currentLayer.materialType] += currentLayer.amount;
 
     // How miner will react to standing on the new top layer

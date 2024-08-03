@@ -5,17 +5,6 @@
 #include "Material.h"
 #include "engine/IGameObject.h"
 
-class TunnelLayer
-{
-    float hp;
-
-public:
-    Material::Type materialType;
-    int amount{};
-
-    TunnelLayer(Material::Type materialType_, int amountVal);
-};
-
 class Tunnel : IGameObject
 {
     const uint8_t activeLayersCount = 16;
@@ -25,9 +14,20 @@ class Tunnel : IGameObject
     void drawCenterColumn(SDL_Renderer* renderTarget, uint8_t depth);
     void drawWalls(SDL_Renderer* renderTarget);
 public:
-    std::vector<TunnelLayer> layers;
+    class Layer
+    {
+        float hp;
 
-    TunnelLayer nextLayer();
+    public:
+        Material::Type materialType;
+        int amount{};
+
+        Layer(Material::Type materialType, int amountVal);
+    };
+
+    std::vector<Layer> layers;
+
+    Layer nextLayer();
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderTarget);

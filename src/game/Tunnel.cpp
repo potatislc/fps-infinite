@@ -3,10 +3,10 @@
 #include "Game.h"
 #include "engine/Application.h"
 #include "engine/ResourceLoader.h"
+#include "engine/utils/Utils.h"
 
-TunnelLayer::TunnelLayer(Material::Type materialType_, int amountVal)
+Tunnel::Layer::Layer(Material::Type materialType, int amountVal) : materialType(materialType)
 {
-    materialType = materialType_;
     amount = amountVal;
     hp = (float)std::abs(amount) * materials[materialType].hardness;
 }
@@ -33,14 +33,20 @@ void Tunnel::update()
 
 }
 
-TunnelLayer Tunnel::nextLayer()
+Tunnel::Layer Tunnel::nextLayer()
 {
-    TunnelLayer prevTopLayer = layers[floorLayerIndex];
+    Layer prevTopLayer = layers[floorLayerIndex];
     printf("Dug layer type: %d\n", prevTopLayer.materialType);
 
     // Shift layers
     if (!layers.empty()) layers.erase(layers.begin() + floorLayerIndex);
-    layers.emplace_back((Material::Type)(std::rand() % Material::T_LENGTH), 1);
+    auto nextMaterialType = (Material::Type)(rand() % Material::T_LENGTH);
+    Material nextMaterial = materials[nextMaterialType];
+    uint8_t nextVeinLength = Utils::randiRange(nextMaterial.veinLength.min, nextMaterial.veinLength.max);
+    for (uint8_t i = 0; i < nextVeinLength; i++)
+    {
+        layers.emplace_back(nextMaterialType, 1);
+    }
 
     return prevTopLayer;
 }
@@ -67,6 +73,6 @@ void Tunnel::drawWalls(SDL_Renderer *renderTarget)
 
 void Tunnel::draw(SDL_Renderer* renderTarget)
 {
-    drawCenterColumn(renderTarget, floorLayerIndex);
+    drawCenterColumn(renderTarget, 64/*floorLayerIndex*/);
     drawWalls(renderTarget);
 }

@@ -11,6 +11,7 @@ public:
     uint16_t centerH;
 
     Window();
+    ~Window();
     bool init();
 };
 

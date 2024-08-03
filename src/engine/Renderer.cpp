@@ -21,3 +21,8 @@ void Renderer::render() const
 {
     SDL_RenderPresent(sdlRenderer);
 }
+
+Renderer::~Renderer()
+{
+    SDL_DestroyRenderer(sdlRenderer);
+}

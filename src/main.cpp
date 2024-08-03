@@ -4,14 +4,10 @@
 
 int main(int argc, char* args[])
 {
-    {
-        Application application;
-        Game game;
+    Application application;
+    Game game;
 
-        if (!application.init()) return -1;
-        application.run(game);
-    }
-
-    Application::quitSDL();
+    if (!application.init()) return -1;
+    application.run(game);
     return 0;
 }

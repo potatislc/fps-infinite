@@ -24,3 +24,9 @@ bool Window::init()
 
     return true;
 }
+
+Window::~Window()
+{
+    SDL_DestroyWindow(sdlWindow);
+    SDL_Quit();
+}

@@ -22,5 +22,4 @@ public:
 
     bool init();
     void run(IGameObject& game);
-    static void quitSDL();
 };

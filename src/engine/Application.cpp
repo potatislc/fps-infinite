@@ -65,7 +65,7 @@ void Application::run(IGameObject& game)
 
         game.update();
         game.draw();
-        // appDebug.drawFps(frameCount);
+        appDebug.drawFps(frameCount);
         renderer.render();
 
         frameCount++;
@@ -78,11 +78,4 @@ void Application::run(IGameObject& game)
             SDL_Delay((uint32_t)((targetFrameTime - frameTime) * 1000.f));
         }
     }
-}
-
-void Application::quitSDL()
-{
-    SDL_DestroyRenderer(renderer.sdlRenderer);
-    SDL_DestroyWindow(window.sdlWindow);
-    SDL_Quit();
 }

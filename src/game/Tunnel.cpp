@@ -42,7 +42,7 @@ Tunnel::Layer Tunnel::nextLayer()
     if (!layers.empty()) layers.erase(layers.begin() + floorLayerIndex);
     auto nextMaterialType = (Material::Type)(rand() % Material::T_LENGTH);
     Material nextMaterial = materials[nextMaterialType];
-    uint8_t nextVeinLength = Utils::randiRange(nextMaterial.veinLength.min, nextMaterial.veinLength.max);
+    uint8_t nextVeinLength = Utils::uRandRange(nextMaterial.veinLength.min, nextMaterial.veinLength.max);
     for (uint8_t i = 0; i < nextVeinLength; i++)
     {
         layers.emplace_back(nextMaterialType, 1);

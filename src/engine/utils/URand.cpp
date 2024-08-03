@@ -1,12 +1,19 @@
 #include <cstdlib>
 #include "Utils.h"
 
-size_t Utils::randi(size_t val)
+size_t Utils::uRand(size_t val)
 {
-    return rand() % (val + 1);
+    return std::rand() % (val + 1);
 }
 
-int Utils::randiRange(int min, int max)
+#define RAND_RANGE(min, max) min + (std::rand() % (max - min + 1))
+
+size_t Utils::uRandRange(size_t min, size_t max)
 {
-    return min + (rand() % (max - min + 1));
+    return RAND_RANGE(min, max);
+}
+
+int Utils::randRange(int min, int max)
+{
+    return RAND_RANGE(min, max);
 }

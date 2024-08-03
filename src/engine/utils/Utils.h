@@ -2,13 +2,13 @@
 
 #include <cstdio>
 
-class Utils
+namespace Utils
 {
-public:
     //
     // Rand
     //
 
-    static size_t randi(size_t val);
-    static int randiRange(int min, int max);
+    size_t uRand(size_t val);
+    size_t uRandRange(size_t min, size_t max);
+    int randRange(int min, int max);
 };

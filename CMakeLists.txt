@@ -94,7 +94,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/AppDebug.cpp
         src/engine/AppDebug.h
         src/engine/Event.cpp
-        src/engine/Event.h)
+        src/engine/Event.h
+        src/engine/utils/Utils.h
+        src/engine/utils/URand.cpp)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)

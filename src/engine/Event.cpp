@@ -1,7 +1,9 @@
 #include <cstdio>
+#include <cstdlib>
 #include "Event.h"
 
-void UniqueEvent::setReceiverFunc(void (*func)())
+/*
+template<class T> void UniqueEvent::setReceiverFunc(void (*func)())
 {
     receiverFunc = func;
 }
@@ -26,3 +28,4 @@ void SharedEvent::send()
 {
 
 }
+*/

@@ -2,18 +2,22 @@
 
 #include <vector>
 
-template <typename... ReceiverArgs> class AEvent
+template <typename... ReceiverArgs>
+class AEvent
 {
 public:
     virtual void send(ReceiverArgs... receiverArgs) {};
 };
 
-template <typename... ReceiverArgs> class UniqueEvent : public AEvent<ReceiverArgs...>
+template <typename... ReceiverArgs>
+class UniqueEvent : public AEvent<ReceiverArgs...>
 {
     void (*receiverFunc)(ReceiverArgs...);
 public:
-    explicit UniqueEvent(void (*receiverFunc)(ReceiverArgs...), ReceiverArgs... receiverArgs)
-            : AEvent<ReceiverArgs...>(receiverArgs...), receiverFunc(receiverFunc) {}
+    void setReceiverFunc(void (*func)(ReceiverArgs...), ReceiverArgs... receiverArgs)
+    {
+        receiverFunc = func;
+    }
 
     void send(ReceiverArgs... receiverArgs) override
     {

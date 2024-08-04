@@ -2,12 +2,15 @@
 
 #include <vector>
 
-class IEvent
+template <typename... Args> class AEvent
 {
+    std::tuple<Args...> receiverArgs;
+public:
+    explicit AEvent(Args... receiverArgs) : receiverArgs(std::make_tuple(receiverArgs...)) {}
     virtual void send() {};
 };
 
-class UniqueEvent : IEvent
+template <typename... Args> class UniqueEvent : AEvent<>
 {
     void (*receiverFunc)();
 public:
@@ -15,7 +18,7 @@ public:
     void send() override;
 };
 
-class SharedEvent : IEvent
+template <typename... Args> class SharedEvent : AEvent<>
 {
     std::vector<void(*)()> receiverFuncs;
 public:

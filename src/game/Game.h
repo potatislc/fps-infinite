@@ -18,5 +18,5 @@ public:
 
     void start() override;
     void update() override;
-    void draw() override;
+    void draw(SDL_Renderer* renderTarget) override;
 };

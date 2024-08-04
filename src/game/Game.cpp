@@ -44,10 +44,8 @@ void Game::drawDebugGrid(SDL_Renderer *renderTarget)
     }
 }
 
-void Game::draw()
+void Game::draw(SDL_Renderer* renderTarget)
 {
-    SDL_Renderer* renderTarget = Application::renderer.sdlRenderer;
-
     clearBackground(renderTarget);
     miner.draw(renderTarget);
     tunnel.draw(renderTarget);

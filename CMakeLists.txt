@@ -93,7 +93,6 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/MessageTexture.h
         src/engine/AppDebug.cpp
         src/engine/AppDebug.h
-        src/engine/Event.cpp
         src/engine/Event.h
         src/engine/utils/Utils.h
         src/engine/utils/URand.cpp)

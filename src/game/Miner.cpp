@@ -22,6 +22,8 @@ void Miner::mine()
             // Default is an ore you can stand on and mine regularly
             break;
     }
+
+    mined.send();
 }
 
 void Miner::start()

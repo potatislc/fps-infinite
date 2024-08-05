@@ -8,7 +8,7 @@ size_t Utils::uRand(size_t val)
 
 #define RAND_RANGE(min, max) min + (std::rand() % (max - min + 1))
 
-size_t Utils::uRandRange(size_t min, size_t max)
+size_t Utils::uRandRange(uint min, uint max)
 {
     return RAND_RANGE(min, max);
 }

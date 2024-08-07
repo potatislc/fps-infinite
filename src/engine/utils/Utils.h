@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <SDL.h>
 
 namespace Utils
 {
@@ -39,17 +40,15 @@ namespace Utils
     //
     // Default Colors
     //
-    namespace DefaultColors
+    namespace Colors
     {
-        SDL_Color white = {255, 255, 255, 255};
-        SDL_Color black = {0, 0, 0, 255};
-        SDL_Color inivsible = {0, 0, 0, 0};
+        extern const SDL_Color white;
+        extern const SDL_Color black;
+        extern const SDL_Color invisible;
+
+        extern const SDL_Color red;
+        extern const SDL_Color green;
+        extern const SDL_Color blue;
+        extern const SDL_Color yellow;
     }
 }
-
-//
-// Using so I don't want to write the namespace every time
-//
-
-using Utils::uint;
-using namespace Utils::DefaultColors;

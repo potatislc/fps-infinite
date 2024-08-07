@@ -13,7 +13,7 @@ Tunnel::Layer::Layer(Material::Type materialType, int amountVal) : materialType(
 
 void Tunnel::start()
 {
-    materialAtlas = ResourceLoader::loadTexture(TEXTURES_PATH"/materials.png");
+    materialAtlas.set(ResourceLoader::loadTexture(TEXTURES_PATH"/materials.png"));
 
     // All layers before starting layer should be air
     for (uint8_t i = 0; i < floorLayerIndex; i++)
@@ -58,7 +58,7 @@ void Tunnel::drawCenterColumn(SDL_Renderer *renderTarget, uint8_t depth)
         SDL_Rect src = { layers[i].materialType * Game::tileSize, 0, Game::tileSize, Game::tileSize };
         SDL_Rect dest = { Application::renderer.viewport.w / 2 - Game::tileHalfSize, (int)i * Game::tileSize, Game::tileSize, Game::tileSize };
         SDL_Point origin = {0, 0};
-        SDL_RenderCopyEx(Application::renderer.sdlRenderer, materialAtlas, &src, &dest, 0.0, &origin, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(Application::renderer.sdlRenderer, materialAtlas.sdlTexture, &src, &dest, 0.0, &origin, SDL_FLIP_NONE);
     }
 }
 

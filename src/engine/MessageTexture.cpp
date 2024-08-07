@@ -7,15 +7,20 @@ const std::map<const char*, SDL_Texture*> fontTextures =
     {"Default", ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png")}
 };
 
-
 //
 // Tex
 //
 
 void MessageTexture::renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
-                                   Utils::Vector2 position, SDL_Color color = Utils::DefaultColors::white)
+                                   Utils::Vector2 position, SDL_Color color = Utils::Colors::white)
 {
 
+}
+
+Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Texture *fontTexture, const char *message,
+                                              SDL_Color color = Utils::Colors::white)
+{
+    return nullptr;
 }
 
 //
@@ -42,15 +47,6 @@ void MessageTextureTTF::updateText(const char *message)
         printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
     }
 
-    texture = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+    texture.set(SDL_CreateTextureFromSurface(renderer, surfaceMessage));
     SDL_FreeSurface(surfaceMessage);
-}
-
-MessageTextureTTF::~MessageTextureTTF()
-{
-    if (texture != nullptr)
-    {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
-    }
 }

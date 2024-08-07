@@ -20,11 +20,11 @@ void AppDebug::drawFps(uint64_t frameCount)
     fpsText.updateText(timeText.str().c_str());
     SDL_Rect rect = {0, 0, 256, 64};
     SDL_Point origin = {0, 0};
-    SDL_RenderCopyEx(fpsText.renderer, fpsText.texture, &rect, &rect, 0.0, &origin, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(fpsText.renderer, fpsText.texture.sdlTexture, &rect, &rect, 0.0, &origin, SDL_FLIP_NONE);
 }
 
 void AppDebug::init()
 {
     SDL_Color color = {0, 200, 0};
-    fpsText.setText(Application::renderer.sdlRenderer, FONTS_PATH"PixelifySans-Regular.ttf", "Test", color);
+    fpsText.setText(Application::renderer.sdlRenderer, FONTS_TTF_PATH"PixelifySans-Regular.ttf", "Test", color);
 }

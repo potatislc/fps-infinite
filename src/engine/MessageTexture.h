@@ -15,12 +15,20 @@
 class MessageTexture
 {
 public:
-    static UniqueTexture fontTextures[];
+    enum FontTexture
+    {
+        FT_DEFAULT,
+        FT_LENGTH
+    };
+
     MessageTexture();
     static void renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
                               Utils::Vector2 position, SDL_Color color); // Render a message on screen
     static SDL_Texture* messageToTexture(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
                                            SDL_Color color); // Render a message to a texture
+    static UniqueTexture getFontTexture(FontTexture fontTexture);
+private:
+    static UniqueTexture fontTextures[FT_LENGTH];
 };
 
 //

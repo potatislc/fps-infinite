@@ -6,14 +6,14 @@
 // Tex
 //
 
-UniqueTexture MessageTexture::fontTextures[] =
+UniqueTexture MessageTexture::fontTextures[FT_LENGTH] =
     {
         UniqueTexture() // Default font
     };
 
 MessageTexture::MessageTexture()
 {
-    fontTextures[0].set(ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png"));
+    fontTextures[FT_DEFAULT].set(ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png"));
 }
 
 void MessageTexture::renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
@@ -29,6 +29,11 @@ SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Te
                                               SDL_Color color = Utils::Colors::white)
 {
     return nullptr;
+}
+
+UniqueTexture MessageTexture::getFontTexture(MessageTexture::FontTexture fontTexture)
+{
+    return fontTextures[fontTexture];
 }
 
 //

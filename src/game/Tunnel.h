@@ -4,13 +4,13 @@
 #include <vector>
 #include "Material.h"
 #include "engine/IGameObject.h"
-#include "engine/Texture.h"
+#include "engine/UniqueTexture.h"
 
 class Tunnel : IGameObject
 {
     const uint8_t activeLayersCount = 16;
     uint8_t floorLayerIndex = (activeLayersCount / 2) + 1;
-    Texture materialAtlas;
+    UniqueTexture materialAtlas;
 
     void drawCenterColumn(SDL_Renderer* renderTarget, uint8_t depth);
     void drawWalls(SDL_Renderer* renderTarget);

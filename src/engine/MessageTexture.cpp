@@ -17,7 +17,7 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, SDL_Texture* font
 
 }
 
-Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Texture *fontTexture, const char *message,
+UniqueTexture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Texture *fontTexture, const char *message,
                                               SDL_Color color = Utils::Colors::white)
 {
     return nullptr;

@@ -3,7 +3,7 @@
 #include <SDL_ttf.h>
 #include <map>
 #include "engine/utils/Utils.h"
-#include "Texture.h"
+#include "UniqueTexture.h"
 
 #define FONTS_TTF_PATH RESOURCES_PATH"fonts_ttf/"
 #define FONTS_TEX_PATH RESOURCES_PATH"textures/fonts_tex/"
@@ -20,8 +20,8 @@ class MessageTexture
 public:
     static void renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
                               Utils::Vector2 position, SDL_Color color); // Render a message on screen
-    static Texture* messageToTexture(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
-                     SDL_Color color); // Render a message to a texture
+    static UniqueTexture* messageToTexture(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
+                                           SDL_Color color); // Render a message to a texture
 };
 
 //
@@ -32,7 +32,7 @@ class MessageTextureTTF
 {
     TTF_Font* font;
 public:
-    Texture texture;
+    UniqueTexture texture;
     SDL_Renderer* renderer;
     SDL_Color color;
 

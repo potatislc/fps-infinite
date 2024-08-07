@@ -13,6 +13,7 @@ public:
     static Window window;
     static Renderer renderer;
     static AppDebug appDebug;
+    static MessageTexture messageTexture;
     static const uint16_t fps;
     static float frameTime;
     static float deltaTimeScale;

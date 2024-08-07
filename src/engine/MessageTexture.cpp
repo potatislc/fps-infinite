@@ -2,22 +2,30 @@
 #include "MessageTexture.h"
 #include "ResourceLoader.h"
 
-const std::map<const char*, SDL_Texture*> fontTextures =
-{
-    {"Default", ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png")}
-};
-
 //
 // Tex
 //
 
+UniqueTexture MessageTexture::fontTextures[] =
+    {
+        UniqueTexture() // Default font
+    };
+
+MessageTexture::MessageTexture()
+{
+    fontTextures[0].set(ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png"));
+}
+
 void MessageTexture::renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
                                    Utils::Vector2 position, SDL_Color color = Utils::Colors::white)
 {
+    for (int i = 0; i < strlen(message); i++)
+    {
 
+    }
 }
 
-UniqueTexture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Texture *fontTexture, const char *message,
+SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Texture *fontTexture, const char *message,
                                               SDL_Color color = Utils::Colors::white)
 {
     return nullptr;

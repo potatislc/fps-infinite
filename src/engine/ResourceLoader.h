@@ -9,4 +9,5 @@ class ResourceLoader
 {
 public:
     static SDL_Texture* loadTexture(const std::string& path);
+    static void loadFonts();
 };

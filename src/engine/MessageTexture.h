@@ -15,20 +15,28 @@
 class MessageTexture
 {
 public:
-    enum FontTexture
+    struct FontAtlas
     {
-        FT_DEFAULT,
-        FT_LENGTH
+        UniqueTexture texture;
+        Utils::UVector2I charSize;
+    };
+
+    enum FontAtlasId
+    {
+        FAI_DEFAULT,
+        FAI_LENGTH
     };
 
     MessageTexture();
-    static void renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
+    static void renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontAtlas, const char* message,
                               Utils::Vector2 position, SDL_Color color); // Render a message on screen
-    static SDL_Texture* messageToTexture(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
+    static SDL_Texture* messageToTexture(SDL_Renderer* renderTarget, SDL_Texture* fontAtlas, const char* message,
                                            SDL_Color color); // Render a message to a texture
-    static UniqueTexture getFontTexture(FontTexture fontTexture);
+    static FontAtlas getFontAtlas(FontAtlasId fontAtlas);
 private:
-    static UniqueTexture fontTextures[FT_LENGTH];
+    static FontAtlas fontAtlases[FAI_LENGTH];
+
+    static inline uint8_t getAtlasPos(char c);
 };
 
 //

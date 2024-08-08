@@ -6,17 +6,17 @@
 // Tex
 //
 
-UniqueTexture MessageTexture::fontTextures[FT_LENGTH] =
+MessageTexture::FontAtlas MessageTexture::fontAtlases[FAI_LENGTH] =
     {
-        UniqueTexture() // Default font
+            {UniqueTexture(), {8, 8}} // Default font
     };
 
 MessageTexture::MessageTexture()
 {
-    fontTextures[FT_DEFAULT].set(ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png"));
+    fontAtlases[FAI_DEFAULT].texture.set(ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png"));
 }
 
-void MessageTexture::renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontTexture, const char* message,
+void MessageTexture::renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontAtlas, const char* message,
                                    Utils::Vector2 position, SDL_Color color = Utils::Colors::white)
 {
     for (int i = 0; i < strlen(message); i++)
@@ -25,15 +25,28 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, SDL_Texture* font
     }
 }
 
-SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Texture *fontTexture, const char *message,
+SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, SDL_Texture *fontAtlas, const char *message,
                                               SDL_Color color = Utils::Colors::white)
 {
     return nullptr;
 }
 
-UniqueTexture MessageTexture::getFontTexture(MessageTexture::FontTexture fontTexture)
+MessageTexture::FontAtlas MessageTexture::getFontAtlas(MessageTexture::FontAtlasId fontAtlas)
 {
-    return fontTextures[fontTexture];
+    return fontAtlases[fontAtlas];
+}
+
+inline uint8_t MessageTexture::getAtlasPos(char c)
+{
+    if (c >= '0' && c <= '9')
+    {
+        return c - '0';  // '0' maps to 0, '1' maps to 1, ..., '9' maps to 9
+    }
+    else if (c >= 'a' && c <= 'z')
+    {
+        return c - 'a' + 10;  // 'a' maps to 10, 'b' to 11, ..., 'z' maps to 35
+    }
+    return 63;  // Or some other error value
 }
 
 //

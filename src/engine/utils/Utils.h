@@ -52,3 +52,5 @@ namespace Utils
         extern const SDL_Color yellow;
     }
 }
+
+using Utils::uint;

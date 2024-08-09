@@ -12,14 +12,16 @@
 // Tex
 //
 
+#define ATLAS_ERROR_POS 63
+
 class MessageTexture
 {
 public:
     struct FontAtlas
     {
         UniqueTexture texture;
-        Utils::UVector2I charSize;
-    };
+        int charSize;
+    }; // Atlas can be at max 255 characters
 
     enum FontAtlasId
     {
@@ -27,16 +29,16 @@ public:
         FAI_LENGTH
     };
 
-    MessageTexture();
-    static void renderMessage(SDL_Renderer* renderTarget, SDL_Texture* fontAtlas, const char* message,
-                              Utils::Vector2 position, SDL_Color color); // Render a message on screen
-    static SDL_Texture* messageToTexture(SDL_Renderer* renderTarget, SDL_Texture* fontAtlas, const char* message,
+    static void loadFontAtlases();
+    static void renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontAtlasId, const char* message,
+                              Utils::Vector2I position, SDL_Color color); // Render a message on screen
+    static SDL_Texture* messageToTexture(SDL_Renderer* renderTarget, FontAtlasId fontAtlasId, const char* message,
                                            SDL_Color color); // Render a message to a texture
     static FontAtlas getFontAtlas(FontAtlasId fontAtlas);
 private:
     static FontAtlas fontAtlases[FAI_LENGTH];
 
-    static inline uint8_t getAtlasPos(char c);
+    static inline uint8_t getAtlasPos(char c); // Atlas can be at max 255 characters
 };
 
 //

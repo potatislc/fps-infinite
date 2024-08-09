@@ -12,8 +12,8 @@ class Application
 public:
     static Window window;
     static Renderer renderer;
-    static AppDebug appDebug;
     static MessageTexture messageTexture;
+    static AppDebug appDebug;
     static const uint16_t fps;
     static float frameTime;
     static float deltaTimeScale;
@@ -21,6 +21,7 @@ public:
     bool quit = false;
     SDL_Event event{};
 
+    Application() = default;
     bool init();
     void run(IGameObject& game);
 };

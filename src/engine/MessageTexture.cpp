@@ -30,7 +30,7 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontA
         SDL_Rect charRect =
                 {
                 (atlasPos % (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
-                (atlasPos / (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
+                (atlasPos / (fontAtlas->texture.getSize().y / fontAtlas->charSize)) * fontAtlas->charSize,
                 fontAtlas->charSize,
                 fontAtlas->charSize
                 };
@@ -51,20 +51,37 @@ MessageTexture::FontAtlas MessageTexture::getFontAtlas(MessageTexture::FontAtlas
     return fontAtlases[fontAtlas];
 }
 
+#define ATLAS_RANGE_NUM 10
+#define ATLAS_RANGE_ABC ATLAS_RANGE_NUM + 26
+#define ATLAS_RANGE_SPEC_1 ATLAS_RANGE_ABC + 16
+
 inline uint8_t MessageTexture::getAtlasPos(char c)
 {
-    c = tolower(c);
     if (c >= '0' && c <= '9')
     {
-        return c - '0';  // '0' maps to 0, '1' maps to 1, ..., '9' maps to 9
+        return c - '0';
     }
-    else if (c >= 'a' && c <= 'z')
+
+    c = tolower(c);
+    if (c >= 'a' && c <= 'z')
     {
-        return c - 'a' + 10;  // 'a' maps to 10, 'b' to 11, ..., 'z' maps to 35
+        return c - 'a' + ATLAS_RANGE_NUM;
+    }
+
+    if (c >= ' ' && c <= '/')
+    {
+        return c - ' ' + ATLAS_RANGE_ABC;
+    }
+
+    if (c >= ':' && c <= '?')
+    {
+        return c - ':' + ATLAS_RANGE_SPEC_1;
     }
 
     return ATLAS_ERROR_POS; // End of page
 }
+
+
 
 //
 // TTF

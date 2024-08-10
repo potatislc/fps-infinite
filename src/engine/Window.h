@@ -4,7 +4,7 @@
 class Window
 {
 public:
-    SDL_Window* sdlWindow;
+    SDL_Window* sdlWindow = nullptr;
     uint16_t width;
     uint16_t height;
     uint16_t centerW;

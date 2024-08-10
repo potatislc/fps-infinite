@@ -15,6 +15,7 @@ void Game::start()
 
     tunnel.start();
     miner.start();
+    uiGameplay.start();
 }
 
 void Game::update()
@@ -51,4 +52,6 @@ void Game::draw(SDL_Renderer* renderTarget)
     tunnel.draw(renderTarget);
 
     drawDebugGrid(renderTarget);
+
+    uiGameplay.draw(renderTarget);
 }

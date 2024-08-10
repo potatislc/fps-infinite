@@ -8,7 +8,8 @@ class UiGameplay : IGameObject
 {
     Tunnel* tunnel;
     Miner* miner;
-    UniqueTexture minerDepthMessage;
+    static SDL_Renderer* sdlRenderer;
+    static UniqueTexture minerDepthMessage;
     static void onMinerMined();
 public:
     UiGameplay(Tunnel* tunnel, Miner* miner);

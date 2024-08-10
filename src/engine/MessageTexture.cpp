@@ -43,7 +43,49 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontA
 SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, FontAtlasId fontAtlasId, const char *message,
                                               SDL_Color color = Utils::Colors::white)
 {
-    return nullptr;
+    FontAtlas* fontAtlas = &fontAtlases[fontAtlasId];
+    size_t messageLength = strlen(message);
+
+    // Calculate the texture size based on the message length and character size
+    int textureWidth = messageLength * fontAtlas->charSize;
+    int textureHeight = fontAtlas->charSize;
+
+    // Create an SDL texture to render to
+    SDL_Texture* messageTexture = SDL_CreateTexture(renderTarget, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, textureWidth, textureHeight);
+
+    if (messageTexture == nullptr)
+    {
+        // Handle error
+        SDL_Log("Failed to create texture: %s", SDL_GetError());
+        return nullptr;
+    }
+
+    SDL_SetRenderTarget(renderTarget, messageTexture);
+
+    SDL_SetRenderDrawColor(renderTarget, 0, 0, 0, 0); // RGBA: 0,0,0,0 for transparency
+    SDL_RenderClear(renderTarget);
+
+    SDL_SetTextureColorMod(fontAtlas->texture.get(), color.r, color.g, color.b);
+    SDL_SetTextureAlphaMod(fontAtlas->texture.get(), color.a);
+
+    for (size_t i = 0; i < messageLength; i++)
+    {
+        uint8_t atlasPos = getAtlasPos(message[i]);
+        SDL_Rect charRect =
+                {
+                        (atlasPos % (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
+                        (atlasPos / (fontAtlas->texture.getSize().y / fontAtlas->charSize)) * fontAtlas->charSize,
+                        fontAtlas->charSize,
+                        fontAtlas->charSize
+                };
+        SDL_Rect destRect = {0 + (int)i * fontAtlas->charSize, 0, fontAtlas->charSize, fontAtlas->charSize};
+        SDL_Point origin = {0, 0};
+        SDL_RenderCopyEx(renderTarget, fontAtlas->texture.get(), &charRect, &destRect, 0.0, &origin, SDL_FLIP_NONE);
+    }
+
+    SDL_SetRenderTarget(renderTarget, nullptr);
+
+    return messageTexture;
 }
 
 MessageTexture::FontAtlas MessageTexture::getFontAtlas(MessageTexture::FontAtlasId fontAtlas)

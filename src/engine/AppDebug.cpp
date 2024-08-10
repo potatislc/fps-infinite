@@ -15,7 +15,7 @@ void AppDebug::drawFps(uint64_t frameCount)
     float avgFPS = (float)frameCount / ((float)SDL_GetTicks64() / 1000.f);
 
     timeText.str("");
-    timeText << "FPS: " << (int)avgFPS;
+    timeText << "FPS: " << avgFPS;
 
     /*
     fpsText.updateText(timeText.str().c_str());

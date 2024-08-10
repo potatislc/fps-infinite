@@ -24,9 +24,9 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontA
                                    Utils::Vector2I position, SDL_Color color = Utils::Colors::white)
 {
     FontAtlas* fontAtlas = &fontAtlases[fontAtlasId];
-    for (int i = 0; i < strlen(message); i++)
+    for (size_t i = 0; i < strlen(message); i++)
     {
-        int atlasPos = getAtlasPos(message[i]);
+        uint8_t atlasPos = getAtlasPos(message[i]);
         SDL_Rect charRect =
                 {
                 (atlasPos % (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
@@ -34,7 +34,7 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontA
                 fontAtlas->charSize,
                 fontAtlas->charSize
                 };
-        SDL_Rect destRect = {position.x + i * fontAtlas->charSize, position.y, fontAtlas->charSize, fontAtlas->charSize};
+        SDL_Rect destRect = {position.x + (int)i * fontAtlas->charSize, position.y, fontAtlas->charSize, fontAtlas->charSize};
         SDL_Point origin = {0, 0};
         SDL_RenderCopyEx(renderTarget, fontAtlas->texture.get(), &charRect, &destRect, 0.0, &origin, SDL_FLIP_NONE);
     }
@@ -78,10 +78,12 @@ inline uint8_t MessageTexture::getAtlasPos(char c)
         return c - ':' + ATLAS_RANGE_SPEC_1;
     }
 
-    return ATLAS_ERROR_POS; // End of page
+    return ATLAS_ERROR_POS; // End of atlas
 }
 
-
+#undef ATLAS_RANGE_NUM
+#undef ATLAS_RANGE_ABC
+#undef ATLAS_RANGE_SPEC_1
 
 //
 // TTF

@@ -15,7 +15,7 @@ class UniqueEvent : public AEvent<ReceiverArgs...>
 {
     void (*receiverFunc)(ReceiverArgs...) {};
 public:
-    void setReceiverFunc(void (*func)(ReceiverArgs...), ReceiverArgs... receiverArgs)
+    void setReceiverFunc(void (*func)(ReceiverArgs...))
     {
         receiverFunc = func;
     }

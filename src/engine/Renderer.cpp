@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Application.h"
 
 bool Renderer::init(SDL_Window* sdlWindow)
 {
@@ -13,7 +14,10 @@ bool Renderer::init(SDL_Window* sdlWindow)
 
     viewport = (SDL_Rect){ 0, 0, viewportDefaultSize.first, viewportDefaultSize.second };
     SDL_RenderSetViewport(sdlRenderer, &viewport);
-
+    // SDL_RenderSetScale(sdlRenderer, Application::window.width / viewport.w, Application::window.height / viewport.h);
+    SDL_RenderSetLogicalSize(sdlRenderer,
+                             Application::window.width * viewport.w / Application::window.width,
+                             Application::window.height * viewport.h / Application::window.height);
     return true;
 }
 

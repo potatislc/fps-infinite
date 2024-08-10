@@ -3,6 +3,7 @@
 #include "Tunnel.h"
 #include "engine/IGameObject.h"
 #include "SDL_render.h"
+#include "game/ui/UiGameplay.h"
 
 class Game : public IGameObject
 {
@@ -15,6 +16,7 @@ public:
     static uint8_t tileCountY;
     Tunnel tunnel;
     Miner miner = { &tunnel };
+    UiGameplay uiGameplay = { &tunnel, &miner };
 
     void start() override;
     void update() override;

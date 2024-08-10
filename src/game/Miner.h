@@ -13,10 +13,10 @@ class Miner : IGameObject
 
     void mine();
 public:
-    size_t depth = 0;
+    uint depth = 0;
     std::array<size_t, Material::T_LENGTH> materialsMined {};
     UniqueEvent<> mined;
-    Miner(Tunnel* tunnel_);
+    Miner(Tunnel* tunnel);
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderTarget);

@@ -51,9 +51,9 @@ Tunnel::Layer Tunnel::nextLayer()
     return prevTopLayer;
 }
 
-void Tunnel::drawCenterColumn(SDL_Renderer *renderTarget, uint8_t depth)
+void Tunnel::drawCenterColumn(SDL_Renderer *renderTarget, uint depth)
 {
-    for (uint8_t i = 0; i <= depth; i++)
+    for (uint i = 0; i <= depth; i++)
     {
         SDL_Rect src = { layers[i].materialType * Game::tileSize, 0, Game::tileSize, Game::tileSize };
         SDL_Rect dest = { Application::renderer.viewport.w / 2 - Game::tileHalfSize, (int)i * Game::tileSize, Game::tileSize, Game::tileSize };

@@ -3,7 +3,7 @@
 Window::Window()
 {
     width = 512;
-    height = 512;
+    height = 510;
     centerW = floor(Window::width / 2);
     centerH = floor(Window::height / 2);
 }

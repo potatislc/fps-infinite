@@ -3,10 +3,7 @@
 #include "engine/Application.h"
 #include "engine/InputMap.h"
 
-Miner::Miner(Tunnel* tunnel_)
-{
-    tunnel = tunnel_;
-}
+Miner::Miner(Tunnel* tunnel) : tunnel(tunnel) { }
 
 void Miner::mine()
 {

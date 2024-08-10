@@ -15,7 +15,7 @@ class Miner : IGameObject
 public:
     uint depth = 0;
     std::array<size_t, Material::T_LENGTH> materialsMined {};
-    UniqueEvent<> mined;
+    UniqueEvent<uint> mined;
     Miner(Tunnel* tunnel);
     void start() override;
     void update() override;

@@ -4,10 +4,12 @@
 
 SDL_Renderer* UiGameplay::sdlRenderer = nullptr;
 UniqueTexture UiGameplay::minerDepthMessage;
+std::stringstream UiGameplay::minerDepthText;
 
 void UiGameplay::start()
 {
     sdlRenderer = Application::renderer.sdlRenderer;
+    onMinerMined(0);
 }
 
 void UiGameplay::update()
@@ -26,13 +28,13 @@ void UiGameplay::draw(SDL_Renderer *renderTarget)
     }
 }
 
-void UiGameplay::onMinerMined()
+void UiGameplay::onMinerMined(uint depth)
 {
-    printf("I got it!\n");
+    minerDepthText.str("");
+    minerDepthText << depth << "m";
     minerDepthMessage.set(MessageTexture::messageToTexture(sdlRenderer, MessageTexture::FAI_DEFAULT,
-                                                           "Boo!", (SDL_Color){255, 255, 255, 255}));
+                                                           minerDepthText.str().c_str(), (SDL_Color){255, 255, 255, 255}));
 }
-
 
 UiGameplay::UiGameplay(Tunnel *tunnel, Miner *miner) : tunnel(tunnel), miner(miner)
 {

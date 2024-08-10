@@ -20,7 +20,7 @@ void Miner::mine()
             break;
     }
 
-    mined.send();
+    mined.send(depth);
 }
 
 void Miner::start()

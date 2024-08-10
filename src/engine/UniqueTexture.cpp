@@ -11,8 +11,8 @@ void UniqueTexture::destroyTexture()
 void UniqueTexture::set(SDL_Texture *texture)
 {
     destroyTexture();
-    sdlTexture = texture;
     updateSize(texture);
+    sdlTexture = texture;
 }
 
 UniqueTexture::~UniqueTexture()
@@ -20,7 +20,7 @@ UniqueTexture::~UniqueTexture()
     destroyTexture();
 }
 
-SDL_Texture *UniqueTexture::get() const
+SDL_Texture* UniqueTexture::get()
 {
     return sdlTexture;
 }

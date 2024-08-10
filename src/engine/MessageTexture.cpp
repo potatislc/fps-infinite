@@ -14,26 +14,29 @@ MessageTexture::FontAtlas MessageTexture::fontAtlases[FAI_LENGTH] =
 void MessageTexture::loadFontAtlases()
 {
     fontAtlases[FAI_DEFAULT].texture.set(ResourceLoader::loadTexture(FONTS_TEX_PATH"font.png"));
-    printf("Test: %d\n", fontAtlases[FAI_DEFAULT].texture.getSize().x);
+    if (fontAtlases[FAI_DEFAULT].texture.get() == nullptr)
+    {
+        printf("Failed to load texture: %s\n", SDL_GetError());
+    }
 }
 
 void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontAtlasId, const char* message,
                                    Utils::Vector2I position, SDL_Color color = Utils::Colors::white)
 {
-    FontAtlas fontAtlas = fontAtlases[fontAtlasId];
+    FontAtlas* fontAtlas = &fontAtlases[fontAtlasId];
     for (int i = 0; i < strlen(message); i++)
     {
-        uint8_t atlasPos = getAtlasPos(message[i]) * fontAtlas.charSize;
+        int atlasPos = getAtlasPos(message[i]);
         SDL_Rect charRect =
                 {
-                atlasPos % fontAtlas.texture.getSize().x,
-                atlasPos / fontAtlas.texture.getSize().y,
-                fontAtlas.charSize,
-                fontAtlas.charSize
+                (atlasPos % (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
+                (atlasPos / (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
+                fontAtlas->charSize,
+                fontAtlas->charSize
                 };
-        SDL_Rect destRect = {position.x + i * fontAtlas.charSize, position.y, fontAtlas.charSize, fontAtlas.charSize};
+        SDL_Rect destRect = {position.x + i * fontAtlas->charSize, position.y, fontAtlas->charSize, fontAtlas->charSize};
         SDL_Point origin = {0, 0};
-        SDL_RenderCopyEx(renderTarget, fontAtlas.texture.get(), &charRect, &destRect, 0.0, &origin, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderTarget, fontAtlas->texture.get(), &charRect, &destRect, 0.0, &origin, SDL_FLIP_NONE);
     }
 }
 
@@ -50,6 +53,7 @@ MessageTexture::FontAtlas MessageTexture::getFontAtlas(MessageTexture::FontAtlas
 
 inline uint8_t MessageTexture::getAtlasPos(char c)
 {
+    c = tolower(c);
     if (c >= '0' && c <= '9')
     {
         return c - '0';  // '0' maps to 0, '1' maps to 1, ..., '9' maps to 9

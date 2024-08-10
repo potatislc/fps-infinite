@@ -15,14 +15,15 @@ void AppDebug::drawFps(uint64_t frameCount)
     float avgFPS = (float)frameCount / ((float)SDL_GetTicks64() / 1000.f);
 
     timeText.str("");
-    timeText << "FPS: " << avgFPS;
+    timeText << "FPS: " << (int)avgFPS;
 
-
+    /*
     fpsText.updateText(timeText.str().c_str());
     SDL_Rect rect = {0, 0, 256, 64};
     SDL_Point origin = {0, 0};
     SDL_RenderCopyEx(fpsText.renderer, fpsText.texture.get(), &rect, &rect, 0.0, &origin, SDL_FLIP_NONE);
-    MessageTexture::renderMessage(fpsText.renderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){0, 0, 0, 0});
+    */
+    MessageTexture::renderMessage(fpsText.renderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
 }
 
 void AppDebug::init()

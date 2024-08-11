@@ -8,31 +8,42 @@ namespace Utils
     typedef unsigned int uint;
 
     //
-    // Vector
+    // Math
     //
 
-    struct Vector2
+    //
+    // Vector
+    //
+    class Vector2
     {
+    public:
         float x;
         float y;
+
+        Vector2(float x, float y) : x(x), y(y) {};
     };
 
-    struct Vector2I
+    class Vector2I
     {
+    public:
         int x;
         int y;
+
+        Vector2I(int x, int y) : x(x), y(y) {};
     };
 
-    struct UVector2I
+    class Vector2UI
     {
+    public:
         uint x;
         uint y;
+
+        Vector2UI(uint x, uint y) : x(x), y(y) {};
     };
 
     //
     // Rand
     //
-
     size_t uRand(size_t val);
     size_t uRandRange(uint min, uint max);
     int randRange(int min, int max);

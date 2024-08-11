@@ -13,7 +13,7 @@ Tunnel::Layer::Layer(Material::Type materialType, int amountVal) : materialType(
 
 void Tunnel::start()
 {
-    materialAtlas.set(ResourceLoader::loadTexture(TEXTURES_PATH"/materials.png"));
+    materialAtlas.set(ResourceLoader::loadTexture(TEXTURES_PATH"materials.png"));
 
     // All layers before starting layer should be air
     for (uint8_t i = 0; i < floorLayerIndex; i++)

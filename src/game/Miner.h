@@ -10,7 +10,7 @@
 class Miner : IGameObject
 {
     Tunnel* tunnel;
-
+    UniqueTexture mockupLook;
     void mine();
 public:
     uint depth = 0;

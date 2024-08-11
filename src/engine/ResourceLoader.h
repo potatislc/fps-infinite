@@ -3,7 +3,7 @@
 #include <string>
 #include "SDL_render.h"
 
-#define TEXTURES_PATH RESOURCES_PATH"textures"
+#define TEXTURES_PATH RESOURCES_PATH"textures/"
 
 class ResourceLoader
 {

@@ -51,7 +51,7 @@ void Game::draw(SDL_Renderer* renderTarget)
     miner.draw(renderTarget);
     tunnel.draw(renderTarget);
 
-    drawDebugGrid(renderTarget);
+    // drawDebugGrid(renderTarget);
 
     uiGameplay.draw(renderTarget);
 }

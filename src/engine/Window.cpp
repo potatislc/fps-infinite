@@ -22,6 +22,7 @@ bool Window::init()
         return false;
     }
 
+    SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
     return true;
 }
 

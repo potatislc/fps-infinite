@@ -5,24 +5,24 @@
 
 // Keyboard
 
-std::map<const SDL_Keycode, bool> InputMap::keyMap =
+std::unordered_map<SDL_Keycode, bool> InputMap::keyMap =
         {
             INPUT_CODE(SDLK_SPACE)
         };
 
-std::map<std::string, InputMap::KeyBinding> InputMap::boundKeys =
+std::unordered_map<std::string, InputMap::KeyBinding> InputMap::boundKeys =
         {
             INPUT_BINDING("Dig", SDLK_SPACE)
         };
 
 // Mouse
 
-std::map<const Uint8, bool> InputMap::mouseMap =
+std::unordered_map<Uint8, bool> InputMap::mouseMap =
         {
                 INPUT_CODE(SDL_BUTTON_LEFT)
         };
 
-std::map<std::string, InputMap::MouseBinding> InputMap::boundMouseButtons =
+std::unordered_map<std::string, InputMap::MouseBinding> InputMap::boundMouseButtons =
         {
                 INPUT_BINDING("Dig", SDL_BUTTON_LEFT)
         };

@@ -6,21 +6,23 @@
 
 class StateMachine
 {
-    class AState
+public:
+    class State
     {
         void* owner;
         StateMachine* stateMachine{};
     };
 
-    class AGameObjectState : AState, IGameObject
+    class AGameState : State, IGameObject
     {
         void start() override = 0;
         void update() override = 0;
         void draw(SDL_Renderer* renderTarget) override {};
+        virtual void end() {};
     };
 
     void* owner;
-    std::unordered_map<char*, AState> states;
-    explicit StateMachine(void* owner) : owner(owner) {};
-    void AddState(char* name, AState state);
+    std::unordered_map<char*, State> states;
+    StateMachine(void* owner) : owner(owner) {};
+    void AddState(char* name, State state);
 };

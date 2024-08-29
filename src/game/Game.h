@@ -1,5 +1,5 @@
 #pragma once
-#include "Miner.h"
+#include "game/miner/Miner.h"
 #include "Tunnel.h"
 #include "engine/IGameObject.h"
 #include "SDL_render.h"

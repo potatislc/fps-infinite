@@ -76,8 +76,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/Renderer.h
         src/engine/Window.cpp
         src/engine/Window.h
-        src/game/Miner.cpp
-        src/game/Miner.h
+        src/game/miner/Miner.cpp
+        src/game/miner/Miner.h
         src/game/Tunnel.cpp
         src/game/Tunnel.h
         src/game/Game.cpp
@@ -102,7 +102,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/game/ui/UiGameplay.cpp
         src/game/ui/UiGameplay.h
         src/engine/state_machine/StateMachine.h
-        src/engine/state_machine/StateMachine.cpp)
+        src/engine/state_machine/StateMachine.cpp
+        src/game/miner/MinerStates.h)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)

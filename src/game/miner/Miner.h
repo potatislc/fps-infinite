@@ -2,15 +2,17 @@
 
 #include <cstdio>
 #include <array>
-#include "Tunnel.h"
+#include "game/Tunnel.h"
 #include "engine/IGameObject.h"
 #include "SDL_render.h"
 #include "engine/Event.h"
+#include "engine/state_machine/StateMachine.h"
 
 class Miner : IGameObject
 {
     Tunnel* tunnel;
     UniqueTexture mockupLook;
+    StateMachine stateMachine = {this};
     void mine();
 public:
     uint depth = 0;

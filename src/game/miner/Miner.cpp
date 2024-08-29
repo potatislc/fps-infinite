@@ -1,10 +1,13 @@
 #include "Miner.h"
-#include "game.h"
+#include "game/Game.h"
 #include "engine/Application.h"
 #include "engine/InputMap.h"
 #include "engine/ResourceLoader.h"
 
-Miner::Miner(Tunnel* tunnel) : tunnel(tunnel) { }
+Miner::Miner(Tunnel* tunnel) : tunnel(tunnel)
+{
+
+}
 
 void Miner::mine()
 {

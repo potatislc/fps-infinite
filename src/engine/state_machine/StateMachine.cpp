@@ -1,6 +1,6 @@
 #include "StateMachine.h"
 
-void StateMachine::AddState(char *name, StateMachine::AState state)
+void StateMachine::AddState(char *name, StateMachine::State state)
 {
-
+    states[name] = state;
 }

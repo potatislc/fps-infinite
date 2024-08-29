@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <sstream>
 #include "engine/IGameObject.h"
-#include "game/Miner.h"
+#include "game/miner/Miner.h"
 
 class UiGameplay : IGameObject
 {

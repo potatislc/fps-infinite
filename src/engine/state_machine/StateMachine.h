@@ -13,12 +13,12 @@ public:
         StateMachine* stateMachine{};
     };
 
-    class AGameState : State, IGameObject
+    class AGameState : State
     {
-        void start() override = 0;
-        void update() override = 0;
-        void draw(SDL_Renderer* renderTarget) override {};
-        virtual void end() {};
+        virtual void enter() = 0;
+        virtual void update() = 0;
+        virtual void draw(SDL_Renderer* renderTarget) = 0;
+        virtual void exit() = 0;
     };
 
     void* owner;

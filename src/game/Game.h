@@ -15,8 +15,8 @@ public:
     static uint8_t tileCountX;
     static uint8_t tileCountY;
     Tunnel tunnel;
-    Miner miner = { &tunnel };
-    UiGameplay uiGameplay = { &tunnel, &miner };
+    Miner miner = {&tunnel, miner.defaultStateMachine()};
+    UiGameplay uiGameplay = {&tunnel, &miner};
 
     void start() override;
     void update() override;

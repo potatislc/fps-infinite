@@ -1,10 +1,12 @@
 #include "Miner.h"
+
+#include <utility>
 #include "game/Game.h"
 #include "engine/Application.h"
 #include "engine/InputMap.h"
 #include "engine/ResourceLoader.h"
 
-Miner::Miner(Tunnel* tunnel) : tunnel(tunnel)
+Miner::Miner(Tunnel* tunnel, StateMachine stateMachine) : tunnel(tunnel), stateMachine(std::move(stateMachine))
 {
 
 }
@@ -27,6 +29,15 @@ void Miner::mine()
     mined.send(depth);
 }
 
+// States
+void Miner::StateDig::update() const
+{
+    if (InputMap::getBoundKeyInput("Dig") == InputMap::S_PRESSED || InputMap::getBoundMouseInput("Dig") == InputMap::S_PRESSED)
+    {
+        static_cast<Miner*>(owner)->mine();
+    }
+}
+
 void Miner::start()
 {
     mockupLook.set(ResourceLoader::loadTexture(TEXTURES_PATH"miner/mockup.png"));
@@ -34,10 +45,7 @@ void Miner::start()
 
 void Miner::update()
 {
-    if (InputMap::getBoundKeyInput("Dig") == InputMap::S_PRESSED || InputMap::getBoundMouseInput("Dig") == InputMap::S_PRESSED)
-    {
-        mine();
-    }
+    stateMachine.update();
 }
 
 void Miner::draw(SDL_Renderer* renderTarget)
@@ -48,4 +56,10 @@ void Miner::draw(SDL_Renderer* renderTarget)
     SDL_Rect source = {0, 0, mockupLook.getSize().x, mockupLook.getSize().y};
     SDL_Rect dest = {Application::renderer.viewport.w / 2 - Game::tileHalfSize, Application::renderer.viewport.h / 2 - Game::tileSize, 31, Game::tileSize * 2};
     SDL_RenderCopy(renderTarget, mockupLook.get(), &source, &dest);
+}
+
+StateMachine Miner::defaultStateMachine()
+{
+    std::vector<StateMachine::State> sm = {StateDig("Dig", this, &stateMachine)};
+    return {nullptr, sm};
 }

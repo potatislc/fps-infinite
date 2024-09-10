@@ -10,6 +10,7 @@ uint8_t Game::tileCountY;
 Game::Game()
 {
     InputMap::addKeyBinding("Dig", SDLK_SPACE);
+    InputMap::addKeyBinding("Quit", SDLK_ESCAPE);
 }
 
 void Game::start()
@@ -27,6 +28,7 @@ void Game::start()
 void Game::update()
 {
     miner.update();
+    if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
 }
 
 void Game::clearBackground(SDL_Renderer* renderTarget)

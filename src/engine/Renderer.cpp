@@ -30,3 +30,28 @@ Renderer::~Renderer()
 {
     SDL_DestroyRenderer(sdlRenderer);
 }
+
+
+void Renderer::Camera::viewTransform(SDL_Rect* rect)
+{
+    rect->x -= view.x;
+    rect->y -= view.y;
+}
+
+void Renderer::Camera::drawTexture(SDL_Texture *texture, const SDL_Rect *src, SDL_Rect *dst)
+{
+    viewTransform(dst);
+    SDL_RenderCopy(renderTarget, texture, src, dst);
+}
+
+void Renderer::Camera::drawTextureEx(SDL_Texture *texture, const SDL_Rect *src, SDL_Rect *dst, double angle, const SDL_Point *center, SDL_RendererFlip flip)
+{
+    viewTransform(dst);
+    SDL_RenderCopyEx(renderTarget, texture, src, dst, angle, center, flip);
+}
+
+void Renderer::Camera::start(SDL_Renderer *_renderTarget, SDL_Rect _view)
+{
+    renderTarget = _renderTarget;
+    view = _view;
+}

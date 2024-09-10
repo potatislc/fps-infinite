@@ -7,10 +7,14 @@
 uint8_t Game::tileCountX;
 uint8_t Game::tileCountY;
 
+Renderer::Camera Game::mainCam;
+
 Game::Game()
 {
     InputMap::addKeyBinding("Dig", SDLK_SPACE);
     InputMap::addKeyBinding("Quit", SDLK_ESCAPE);
+    InputMap::addKeyBinding("Cam Up", SDLK_UP);
+    InputMap::addKeyBinding("Cam Down", SDLK_DOWN);
 }
 
 void Game::start()
@@ -20,6 +24,7 @@ void Game::start()
     tileCountX = ceil(Application::renderer.viewport.w / tileSize);
     tileCountY = ceil(Application::renderer.viewport.h / tileSize);
 
+    mainCam.start(Application::renderer.sdlRenderer, Application::renderer.viewport);
     tunnel.start();
     miner.start();
     uiGameplay.start();
@@ -28,6 +33,8 @@ void Game::start()
 void Game::update()
 {
     miner.update();
+    if (InputMap::getBoundKeyInput("Cam Up") == InputMap::S_DOWN) mainCam.view.y--;
+    if (InputMap::getBoundKeyInput("Cam Down") == InputMap::S_DOWN) mainCam.view.y++;
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
 }
 

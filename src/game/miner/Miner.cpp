@@ -56,7 +56,7 @@ void Miner::draw(SDL_Renderer* renderTarget)
     // SDL_RenderFillRect(renderTarget, &fillRect);
     SDL_Rect source = {0, 0, mockupLook.getSize().x, mockupLook.getSize().y};
     SDL_Rect dest = {Application::renderer.viewport.w / 2 - Game::tileHalfSize, Application::renderer.viewport.h / 2 - Game::tileSize, 31, Game::tileSize * 2};
-    SDL_RenderCopy(renderTarget, mockupLook.get(), &source, &dest);
+    Game::mainCam.drawTexture(mockupLook.get(), &source, &dest);
 }
 
 StateMachine Miner::defaultStateMachine()

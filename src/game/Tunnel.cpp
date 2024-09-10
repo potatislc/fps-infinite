@@ -58,7 +58,7 @@ void Tunnel::drawCenterColumn(SDL_Renderer *renderTarget)
         SDL_Rect src = { layers[i].materialType * Game::tileSize, 0, Game::tileSize, Game::tileSize };
         SDL_Rect dest = { Application::renderer.viewport.w / 2 - Game::tileHalfSize, (int)i * Game::tileSize, Game::tileSize, Game::tileSize };
         SDL_Point origin = {0, 0};
-        SDL_RenderCopyEx(Application::renderer.sdlRenderer, materialAtlas.get(), &src, &dest, 0.0, &origin, SDL_FLIP_NONE);
+        Game::mainCam.drawTextureEx(materialAtlas.get(), &src, &dest, 0.0, &origin, SDL_FLIP_NONE);
     }
 }
 

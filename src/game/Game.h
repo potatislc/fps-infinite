@@ -4,6 +4,8 @@
 #include "engine/IGameObject.h"
 #include "SDL_render.h"
 #include "game/ui/UiGameplay.h"
+#include "engine/Renderer.h"
+#include "engine/Application.h"
 
 class Game : public IGameObject
 {
@@ -14,6 +16,7 @@ public:
     static const uint8_t tileHalfSize = tileSize / 2;
     static uint8_t tileCountX;
     static uint8_t tileCountY;
+    static Renderer::Camera mainCam;
     Tunnel tunnel;
     Miner miner = {&tunnel, miner.defaultStateMachine()};
     UiGameplay uiGameplay = {&tunnel, &miner};

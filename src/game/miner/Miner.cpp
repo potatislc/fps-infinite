@@ -30,7 +30,7 @@ void Miner::mine()
 }
 
 // States
-void Miner::StateDig::update() const
+void Miner::StateDig::update()
 {
     if (InputMap::getBoundKeyInput("Dig") == InputMap::S_PRESSED || InputMap::getBoundMouseInput("Dig") == InputMap::S_PRESSED)
     {
@@ -60,6 +60,6 @@ void Miner::draw(SDL_Renderer* renderTarget)
 
 StateMachine Miner::defaultStateMachine()
 {
-    std::vector<StateMachine::State> sm = {StateDig("Dig", this, &stateMachine)};
-    return {nullptr, sm};
+    std::vector<std::shared_ptr<StateMachine::State>> sm = {std::make_shared<StateDig>(StateDig("Dig", this, &stateMachine))};
+    return {this, sm};
 }

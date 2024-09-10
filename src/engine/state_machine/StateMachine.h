@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <SDL.h>
 #include <vector>
+#include <memory>
 #include "engine/IGameObject.h"
 #include "engine/utils/Utils.h"
 
@@ -19,18 +20,18 @@ public:
 
         State(const char* name, void* owner, StateMachine* stateMachine)
         : name(name), owner(owner), stateMachine(stateMachine) {};
-        virtual void enter() const {};
-        virtual void update() const {};
-        virtual void draw(SDL_Renderer* renderTarget) const {};
-        virtual void exit() const {};
+        virtual void enter() {};
+        virtual void update() {};
+        virtual void draw(SDL_Renderer* renderTarget) {};
+        virtual void exit() {};
     };
 
-    StateMachine(void* owner, std::vector<State> states);
+    StateMachine(void* owner, std::vector<std::shared_ptr<State>> states);
     void nextState(uint nextStateId);
     void update();
     void draw(SDL_Renderer* renderTarget);
 private:
     void* owner = nullptr;
     uint currentStateId = 0;
-    const std::vector<State> states;
+    std::vector<std::shared_ptr<State>> states;
 };

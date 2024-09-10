@@ -37,7 +37,7 @@ public:
 
     class StateDig : public StateMachine::State
     {
-        void update() const override;
+        void update() override;
     public:
         StateDig(const char* name, void* owner, StateMachine* stateMachine) : StateMachine::State(name, owner, stateMachine) {}
     };

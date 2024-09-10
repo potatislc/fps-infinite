@@ -26,8 +26,8 @@ public:
     // States
     enum StateId
     {
-        SI_DIG,
         SI_IDLE,
+        SI_DIG,
         SI_FALL,
         SI_DEAD,
         SI_LENGTH
@@ -35,16 +35,17 @@ public:
 
     StateMachine defaultStateMachine();
 
+    class StateIdle : public StateMachine::State
+    {
+    public:
+        StateIdle(const char* name, void* owner, StateMachine* stateMachine) : StateMachine::State(name, owner, stateMachine) {}
+    };
+
     class StateDig : public StateMachine::State
     {
         void update() override;
     public:
         StateDig(const char* name, void* owner, StateMachine* stateMachine) : StateMachine::State(name, owner, stateMachine) {}
-    };
-
-    class StateIdle
-    {
-
     };
 
     class StateFall

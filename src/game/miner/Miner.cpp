@@ -41,6 +41,7 @@ void Miner::StateDig::update()
 void Miner::start()
 {
     mockupLook.set(ResourceLoader::loadTexture(TEXTURES_PATH"miner/mockup.png"));
+    stateMachine.nextState(SI_DIG);
 }
 
 void Miner::update()
@@ -60,6 +61,9 @@ void Miner::draw(SDL_Renderer* renderTarget)
 
 StateMachine Miner::defaultStateMachine()
 {
-    std::vector<std::shared_ptr<StateMachine::State>> sm = {std::make_shared<StateDig>(StateDig("Dig", this, &stateMachine))};
+    std::vector<std::shared_ptr<StateMachine::State>> sm = {
+            std::make_shared<StateIdle>(StateIdle("Idle", this, &stateMachine)),
+            std::make_shared<StateDig>(StateDig("Dig", this, &stateMachine))
+                    };
     return {this, sm};
 }

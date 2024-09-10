@@ -5,6 +5,8 @@
 #include "IGameObject.h"
 #include "AppDebug.h"
 
+#define UNCAP_FPS false
+
 class Application
 {
     float targetFrameTime = 1.f / (float)fps;

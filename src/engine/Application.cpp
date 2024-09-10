@@ -66,7 +66,7 @@ void Application::run(IGameObject& game)
 
         game.update();
         game.draw(renderer.sdlRenderer);
-        // appDebug.drawFps(frameCount);
+        appDebug.drawFps(frameCount);
         renderer.render();
 
         frameCount++;
@@ -76,7 +76,9 @@ void Application::run(IGameObject& game)
         frameTime = (float)(frameEnd - frameStart) / (float)SDL_GetPerformanceFrequency();
         if (targetFrameTime > frameTime)
         {
+#if !UNCAP_FPS
             SDL_Delay((uint32_t)((targetFrameTime - frameTime) * 1000.f));
+#endif
         }
     }
 }

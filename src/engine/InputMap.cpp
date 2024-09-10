@@ -5,15 +5,9 @@
 
 // Keyboard
 
-std::unordered_map<SDL_Keycode, bool> InputMap::keyMap =
-        {
-            INPUT_CODE(SDLK_SPACE)
-        };
+std::unordered_map<SDL_Keycode, bool> InputMap::keyMap = {};
 
-std::unordered_map<std::string, InputMap::KeyBinding> InputMap::boundKeys =
-        {
-            INPUT_BINDING("Dig", SDLK_SPACE)
-        };
+std::unordered_map<std::string, InputMap::KeyBinding> InputMap::boundKeys = {};
 
 // Mouse
 
@@ -33,7 +27,7 @@ std::unordered_map<std::string, InputMap::MouseBinding> InputMap::boundMouseButt
 
 InputMap::Status InputMap::getBoundKeyInput(const std::string& name)
 {
-    if (!boundKeys.count(name))
+    if (!boundKeys.contains(name))
     {
         printf("Input key: %s Not found \n", name.c_str());
         return S_UP;
@@ -73,4 +67,15 @@ InputMap::Status InputMap::getBoundMouseInput(const std::string& name)
     }
 
     return boundMouseButtons[name].status;
+}
+
+void InputMap::addKeyCode(SDL_Keycode code)
+{
+    InputMap::keyMap[code] = false;
+}
+
+void InputMap::addKeyBinding(const std::string& name, SDL_Keycode code)
+{
+    if (!keyMap.contains(code)) addKeyCode(code);
+    boundKeys[name] = {code, S_UP};
 }

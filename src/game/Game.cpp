@@ -2,9 +2,15 @@
 #include <ctime>
 #include "Game.h"
 #include "engine/Application.h"
+#include "engine/InputMap.h"
 
 uint8_t Game::tileCountX;
 uint8_t Game::tileCountY;
+
+Game::Game()
+{
+    InputMap::addKeyBinding("Dig", SDLK_SPACE);
+}
 
 void Game::start()
 {

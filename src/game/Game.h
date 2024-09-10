@@ -18,6 +18,7 @@ public:
     Miner miner = {&tunnel, miner.defaultStateMachine()};
     UiGameplay uiGameplay = {&tunnel, &miner};
 
+    Game();
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderTarget) override;

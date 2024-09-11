@@ -76,3 +76,8 @@ void Tunnel::draw(SDL_Renderer* renderTarget)
     drawCenterColumn(renderTarget);
     drawWalls(renderTarget);
 }
+
+uint Tunnel::getFloorLayerIndex()
+{
+    return floorLayerIndex;
+}

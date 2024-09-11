@@ -3,39 +3,13 @@
 #include <utility>
 #include "game/Game.h"
 #include "engine/Application.h"
-#include "engine/InputMap.h"
 #include "engine/ResourceLoader.h"
 
-Miner::Miner(Tunnel* tunnel, StateMachine stateMachine) : tunnel(tunnel), stateMachine(std::move(stateMachine))
+UniqueTexture Miner::mockupLook;
+
+Miner::Miner(Tunnel* tunnel, StateMachine<Miner> stateMachine) : tunnel(tunnel), stateMachine(std::move(stateMachine))
 {
 
-}
-
-void Miner::mine()
-{
-    // Mine current layer
-    depth++;
-    Tunnel::Layer currentLayer = tunnel->nextLayer();
-    materialsMined[currentLayer.materialType] += currentLayer.amount;
-
-    // How miner will react to standing on the new top layer
-    switch (tunnel->layers[0].materialType)
-    {
-        default:
-            // Default is an ore you can stand on and mine regularly
-            break;
-    }
-
-    mined.send(depth);
-}
-
-// States
-void Miner::StateDig::update()
-{
-    if (InputMap::getBoundKeyInput("Dig") == InputMap::S_PRESSED || InputMap::getBoundMouseInput("Dig") == InputMap::S_PRESSED)
-    {
-        static_cast<Miner*>(owner)->mine();
-    }
 }
 
 void Miner::start()
@@ -51,19 +25,37 @@ void Miner::update()
 
 void Miner::draw(SDL_Renderer* renderTarget)
 {
-    SDL_SetRenderDrawColor(renderTarget, 100, 100, 255, 255);
-    SDL_Rect fillRect = {Application::renderer.viewport.w / 2 - Game::tileHalfSize, Application::renderer.viewport.h / 2, Game::tileSize, Game::tileSize };
-    // SDL_RenderFillRect(renderTarget, &fillRect);
-    SDL_Rect source = {0, 0, mockupLook.getSize().x, mockupLook.getSize().y};
-    SDL_Rect dest = {Application::renderer.viewport.w / 2 - Game::tileHalfSize, Application::renderer.viewport.h / 2 - Game::tileSize, 31, Game::tileSize * 2};
-    Game::mainCam.drawTexture(mockupLook.get(), &source, &dest);
+    stateMachine.draw(renderTarget);
+    MessageTexture::renderMessage(renderTarget, MessageTexture::FAI_DEFAULT, stateMachine.getCurrentState()->name, (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
 }
 
-StateMachine Miner::defaultStateMachine()
+StateMachine<Miner> Miner::defaultStateMachine()
 {
-    std::vector<std::shared_ptr<StateMachine::State>> sm = {
+    std::vector<std::shared_ptr<StateMachine<Miner>::State>> sm = {
             std::make_shared<StateIdle>(StateIdle("Idle", this, &stateMachine)),
-            std::make_shared<StateDig>(StateDig("Dig", this, &stateMachine))
+            std::make_shared<StateDig>(StateDig("Dig", this, &stateMachine)),
+            std::make_shared<StateFall>(StateFall("Fall", this, &stateMachine))
                     };
     return {this, sm};
+}
+
+void Miner::digLayer()
+{
+    depth++;
+    Tunnel::Layer currentLayer = tunnel->nextLayer();
+    materialsMined[currentLayer.materialType] += currentLayer.amount;
+
+    // How miner will react to standing on the new top layer
+    switch (tunnel->layers[tunnel->getFloorLayerIndex()].materialType)
+    {
+        case Material::T_AIR:
+            stateMachine.nextState(SI_FALL);
+            break;
+        default:
+            // Default is an ore you can stand on and mine regularly
+            break;
+    }
+
+    // Send to ui
+    dug.send(depth);
 }

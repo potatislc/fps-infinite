@@ -9,7 +9,7 @@ std::stringstream UiGameplay::minerDepthText;
 void UiGameplay::start()
 {
     sdlRenderer = Application::renderer.sdlRenderer;
-    onMinerMined(0);
+    onMinerDug(0);
 }
 
 void UiGameplay::update()
@@ -28,7 +28,7 @@ void UiGameplay::draw(SDL_Renderer *renderTarget)
     }
 }
 
-void UiGameplay::onMinerMined(uint depth)
+void UiGameplay::onMinerDug(uint depth)
 {
     minerDepthText.str("");
     minerDepthText << depth << "m";
@@ -36,7 +36,7 @@ void UiGameplay::onMinerMined(uint depth)
                                                            minerDepthText.str().c_str(), (SDL_Color){255, 255, 255, 255}));
 }
 
-UiGameplay::UiGameplay(Tunnel *tunnel, Miner *miner) : tunnel(tunnel), miner(miner)
+UiGameplay::UiGameplay(Tunnel *tunnel, Miner *miner) : tunnel(tunnel)
 {
-    miner->mined.setReceiverFunc(onMinerMined);
+    miner->dug.setReceiverFunc(onMinerDug);
 }

@@ -18,7 +18,7 @@ public:
     static AppDebug appDebug;
     static const uint16_t fps;
     static float frameTime;
-    static float deltaTimeScale;
+    static float timeScale;
     static float deltaTime;
     bool quit = false;
     SDL_Event event{};

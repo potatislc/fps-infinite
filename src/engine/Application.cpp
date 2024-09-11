@@ -7,8 +7,8 @@ Renderer Application::renderer;
 AppDebug Application::appDebug;
 const uint16_t Application::fps = 60;
 float Application::frameTime = 1.f / (float)fps;
-float Application::deltaTimeScale = 1.f;
-float Application::deltaTime = frameTime * deltaTimeScale;
+float Application::timeScale = 1.f;
+float Application::deltaTime = frameTime * timeScale;
 
 bool Application::init()
 {
@@ -27,7 +27,7 @@ void Application::run(IGameObject& game)
     while (!quit)
     {
         uint64_t frameStart = SDL_GetPerformanceCounter();
-        deltaTime = frameTime * deltaTimeScale;
+        deltaTime = frameTime * timeScale;
 
         // Handle events on queue
         while (SDL_PollEvent(&event) != 0)

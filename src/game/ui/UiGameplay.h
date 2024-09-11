@@ -8,11 +8,10 @@
 class UiGameplay : IGameObject
 {
     Tunnel* tunnel;
-    Miner* miner;
     static SDL_Renderer* sdlRenderer;
     static std::stringstream minerDepthText;
     static UniqueTexture minerDepthMessage;
-    static void onMinerMined(uint depth);
+    static void onMinerDug(uint depth);
 public:
     UiGameplay(Tunnel* tunnel, Miner* miner);
     void start() override;

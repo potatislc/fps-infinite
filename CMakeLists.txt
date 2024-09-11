@@ -103,7 +103,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/game/ui/UiGameplay.h
         src/engine/state_machine/StateMachine.h
         src/engine/state_machine/StateMachine.cpp
-        src/game/miner/MinerStates.h)
+        src/game/miner/states/StateDig.cpp
+        src/game/miner/states/StateFall.cpp)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)

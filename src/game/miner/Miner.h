@@ -11,14 +11,17 @@
 class Miner : IGameObject
 {
     Tunnel* tunnel;
-    UniqueTexture mockupLook;
-    StateMachine stateMachine;
-    void mine();
+    static UniqueTexture mockupLook;
+    StateMachine<Miner> stateMachine;
+
+    void digLayer();
 public:
     uint depth = 0;
+    float velocity = 0.f;
     std::array<size_t, Material::T_LENGTH> materialsMined {};
-    UniqueEvent<uint> mined;
-    Miner(Tunnel* tunnel, StateMachine stateMachine);
+    UniqueEvent<uint> dug;
+
+    Miner(Tunnel* tunnel, StateMachine<Miner> stateMachine);
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderTarget) override;
@@ -33,24 +36,33 @@ public:
         SI_LENGTH
     };
 
-    StateMachine defaultStateMachine();
+    StateMachine<Miner> defaultStateMachine();
 
-    class StateIdle : public StateMachine::State
+    class StateIdle : public StateMachine<Miner>::State
     {
     public:
-        StateIdle(const char* name, void* owner, StateMachine* stateMachine) : StateMachine::State(name, owner, stateMachine) {}
+        StateIdle(const char* name, Miner* owner, StateMachine<Miner>* stateMachine) : StateMachine<Miner>::State(name, owner, stateMachine) {};
     };
 
-    class StateDig : public StateMachine::State
+    class StateDig : public StateMachine<Miner>::State
     {
         void update() override;
+        void draw(SDL_Renderer* renderTarget) override;
     public:
-        StateDig(const char* name, void* owner, StateMachine* stateMachine) : StateMachine::State(name, owner, stateMachine) {}
+        StateDig(const char* name, Miner* owner, StateMachine<Miner>* stateMachine) : StateMachine<Miner>::State(name, owner, stateMachine) {};
     };
 
-    class StateFall
+    class StateFall : public StateMachine<Miner>::State
     {
+        float gravity = 400000.f;
+        float maxVelocity = 40000.f;
+        float drawingAngle = 0.f;
+        int drawingOffset = 0;
 
+        void update() override;
+        void draw(SDL_Renderer* renderTarget) override;
+    public:
+        StateFall(const char* name, Miner* owner, StateMachine<Miner>* stateMachine) : StateMachine<Miner>::State(name, owner, stateMachine) {};
     };
 
     class StateDead

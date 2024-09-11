@@ -43,6 +43,7 @@ public:
     std::vector<LayerBehavior> layerBehaviors;
 
     Layer nextLayer();
+    uint getFloorLayerIndex();
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderTarget);

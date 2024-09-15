@@ -12,7 +12,7 @@ void Miner::StateFall::update()
         if (drawingOffset >= Game::tileSize)
         {
             owner->digLayer();
-            drawingOffset = 0;
+            drawingOffset -= Game::tileSize;
         }
     }
     else

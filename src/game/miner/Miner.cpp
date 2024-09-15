@@ -1,7 +1,6 @@
 #include "Miner.h"
 
 #include <utility>
-#include "game/Game.h"
 #include "engine/Application.h"
 #include "engine/ResourceLoader.h"
 

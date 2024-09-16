@@ -63,6 +63,7 @@ SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, FontAt
         return nullptr;
     }
 
+    SDL_SetTextureBlendMode(messageTexture, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(renderTarget, messageTexture);
     SDL_SetRenderDrawColor(renderTarget, 0, 0, 0, 0); // RGBA: 0,0,0,0 for transparency
     SDL_RenderClear(renderTarget);

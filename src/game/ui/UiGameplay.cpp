@@ -3,6 +3,7 @@
 #include "engine/Application.h"
 #include "game/Game.h"
 #include "engine/ResourceLoader.h"
+#include <math.h>
 
 SDL_Renderer* UiGameplay::sdlRenderer = nullptr;
 UniqueTexture UiGameplay::minerDepthMessage;
@@ -24,6 +25,9 @@ void UiGameplay::update()
 
 void UiGameplay::draw(SDL_Renderer *renderTarget)
 {
+    SDL_SetRenderDrawColor(renderTarget, 0, 0, 0, 0);
+    SDL_Rect bgRect = {64, 0, Game::mainCam.view.w, 16};
+    SDL_RenderFillRect(renderTarget, &bgRect);
     if (minerDepthMessage.get() != nullptr)
     {
         SDL_Rect source = {0, 0, minerDepthMessage.getSize().x, minerDepthMessage.getSize().y};
@@ -38,7 +42,7 @@ void UiGameplay::draw(SDL_Renderer *renderTarget)
     {
         if (materialsMinedMessage[i].get() != nullptr)
         {
-            offsetX -= materialsMinedMessage[i].getSize().x + margin;
+            offsetX -= (int)fmax(materialsMinedMessage[i].getSize().x, materialIcons.getSize().y) + margin;
             // Icon
             SDL_Rect source = {i * materialIcons.getSize().y, 0, materialIcons.getSize().y, materialIcons.getSize().y};
             SDL_Rect dest = {offsetX, 0, source.w, source.h};

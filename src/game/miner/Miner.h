@@ -18,8 +18,8 @@ class Miner : IGameObject
 public:
     uint depth = 0;
     float velocity = 0.f;
-    std::array<size_t, Material::T_LENGTH> materialsMined {};
-    UniqueEvent<uint> dug;
+    std::array<uint, Material::T_LENGTH> materialsMined {};
+    UniqueEvent<uint, Material::Type, uint> dug; // Depth, type, amount
 
     Miner(Tunnel* tunnel, StateMachine<Miner> stateMachine);
     void start() override;

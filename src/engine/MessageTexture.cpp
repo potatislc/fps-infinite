@@ -24,6 +24,9 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontA
                                    Utils::Vector2I position, SDL_Color color = Utils::Colors::white)
 {
     FontAtlas* fontAtlas = &fontAtlases[fontAtlasId];
+    SDL_SetTextureColorMod(fontAtlas->texture.get(), color.r, color.g, color.b);
+    SDL_SetTextureAlphaMod(fontAtlas->texture.get(), color.a);
+
     for (size_t i = 0; i < strlen(message); i++)
     {
         uint8_t atlasPos = getAtlasPos(message[i]);
@@ -61,10 +64,8 @@ SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, FontAt
     }
 
     SDL_SetRenderTarget(renderTarget, messageTexture);
-
     SDL_SetRenderDrawColor(renderTarget, 0, 0, 0, 0); // RGBA: 0,0,0,0 for transparency
     SDL_RenderClear(renderTarget);
-
     SDL_SetTextureColorMod(fontAtlas->texture.get(), color.r, color.g, color.b);
     SDL_SetTextureAlphaMod(fontAtlas->texture.get(), color.a);
 
@@ -94,8 +95,8 @@ MessageTexture::FontAtlas MessageTexture::getFontAtlas(MessageTexture::FontAtlas
 }
 
 #define ATLAS_RANGE_NUM 10
-#define ATLAS_RANGE_ABC ATLAS_RANGE_NUM + 26
-#define ATLAS_RANGE_SPEC_1 ATLAS_RANGE_ABC + 16
+#define ATLAS_RANGE_ABC (ATLAS_RANGE_NUM + 26)
+#define ATLAS_RANGE_SPEC_1 (ATLAS_RANGE_ABC + 16)
 
 inline uint8_t MessageTexture::getAtlasPos(char c)
 {

@@ -43,6 +43,8 @@ void Miner::digLayer()
     depth++;
     Tunnel::Layer currentLayer = tunnel->nextLayer();
     materialsMined[currentLayer.materialType] += currentLayer.amount;
+    // Send to ui
+    dug.send(depth, currentLayer.materialType, materialsMined[currentLayer.materialType]);
 
     // How miner will react to standing on the new top layer
     switch (tunnel->layers[tunnel->getFloorLayerIndex()].materialType)
@@ -54,7 +56,4 @@ void Miner::digLayer()
             // Default is an ore you can stand on and mine regularly
             break;
     }
-
-    // Send to ui
-    dug.send(depth);
 }

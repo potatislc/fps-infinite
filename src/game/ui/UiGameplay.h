@@ -11,6 +11,7 @@ class UiGameplay : IGameObject
     static SDL_Renderer* sdlRenderer;
     static std::stringstream minerDepthText;
     static UniqueTexture minerDepthMessage;
+    static UniqueTexture materialIcons;
     static std::array<UniqueTexture, Material::T_LENGTH> materialsMinedMessage;
     static void onMinerDug(uint depth, Material::Type materialType, uint materialAmount);
 public:

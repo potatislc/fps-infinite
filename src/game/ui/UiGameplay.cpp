@@ -2,15 +2,18 @@
 #include "engine/MessageTexture.h"
 #include "engine/Application.h"
 #include "game/Game.h"
+#include "engine/ResourceLoader.h"
 
 SDL_Renderer* UiGameplay::sdlRenderer = nullptr;
 UniqueTexture UiGameplay::minerDepthMessage;
 std::stringstream UiGameplay::minerDepthText;
 std::array<UniqueTexture, Material::T_LENGTH> UiGameplay::materialsMinedMessage;
+UniqueTexture UiGameplay::materialIcons;
 
 void UiGameplay::start()
 {
     sdlRenderer = Application::renderer.sdlRenderer;
+    materialIcons.set(ResourceLoader::loadTexture(TEXTURES_PATH"material_icons.png"));
     onMinerDug(0, Material::T_AIR, 0);
 }
 
@@ -31,14 +34,19 @@ void UiGameplay::draw(SDL_Renderer *renderTarget)
 
     const int margin = 8;
     int offsetX = Game::mainCam.view.w;
-    for (uint i = 1; i < Material::T_LENGTH; i++)
+    for (int i = 1; i < Material::T_LENGTH; i++)
     {
         if (materialsMinedMessage[i].get() != nullptr)
         {
             offsetX -= materialsMinedMessage[i].getSize().x + margin;
-            SDL_Rect source = {0, 0, materialsMinedMessage[i].getSize().x, materialsMinedMessage[i].getSize().y};
-            SDL_Rect dest = {offsetX, 8, materialsMinedMessage[i].getSize().x, materialsMinedMessage[i].getSize().y};
+            // Icon
+            SDL_Rect source = {i * materialIcons.getSize().y, 0, materialIcons.getSize().y, materialIcons.getSize().y};
+            SDL_Rect dest = {offsetX, 0, source.w, source.h};
             SDL_Point origin = {0, 0};
+            SDL_RenderCopyEx(renderTarget, materialIcons.get(), &source, &dest, 0.0, &origin, SDL_FLIP_NONE);
+            // Text
+            source = {0, 0, materialsMinedMessage[i].getSize().x, materialsMinedMessage[i].getSize().y};
+            dest = {offsetX, 8, materialsMinedMessage[i].getSize().x, materialsMinedMessage[i].getSize().y};
             SDL_RenderCopyEx(renderTarget, materialsMinedMessage[i].get(), &source, &dest, 0.0, &origin, SDL_FLIP_NONE);
         }
     }

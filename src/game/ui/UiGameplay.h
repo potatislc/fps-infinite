@@ -7,6 +7,17 @@
 
 class UiGameplay : IGameObject
 {
+    class CollectionParticle
+    {
+        Utils::Vector2 position;
+        const Utils::Vector2 targetPosition;
+    };
+
+    class CollectionParticleHandler
+    {
+
+    };
+
     Tunnel* tunnel;
     static SDL_Renderer* sdlRenderer;
     static std::stringstream minerDepthText;

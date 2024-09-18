@@ -18,13 +18,13 @@ void Tunnel::start()
     // All layers before starting layer should be air
     for (uint8_t i = 0; i < floorLayerIndex; i++)
     {
-        layers.emplace_back(Material::T_AIR, 1);
+        layers.emplace_back(Material::T_AIR, 1 + Utils::uRand(3));
     }
 
     // All layers afterward are dirt for now
     for (uint8_t i = floorLayerIndex; i < activeLayersCount; i++)
     {
-        layers.emplace_back(Material::T_DIRT, 1);
+        layers.emplace_back(Material::T_DIRT, 1 + Utils::uRand(3));
     }
 }
 
@@ -45,7 +45,7 @@ Tunnel::Layer Tunnel::nextLayer()
     uint8_t nextVeinLength = Utils::uRandRange(nextMaterial.veinLength.min, nextMaterial.veinLength.max);
     for (uint8_t i = 0; i < nextVeinLength; i++)
     {
-        layers.emplace_back(nextMaterialType, 1);
+        layers.emplace_back(nextMaterialType, 1 + Utils::uRand(3));
     }
 
     return prevTopLayer;
@@ -53,7 +53,7 @@ Tunnel::Layer Tunnel::nextLayer()
 
 void Tunnel::drawCenterColumn(SDL_Renderer *renderTarget)
 {
-    for (size_t i = 0; i < layers.size(); i++)
+    for (size_t i = 0; i < layers.size(); i++) // Change to i <= floorLayerIndex soon!
     {
         SDL_Rect src = { layers[i].materialType * Game::tileSize, 0, Game::tileSize, Game::tileSize };
         SDL_Rect dest = { Application::renderer.viewport.w / 2 - Game::tileHalfSize, (int)i * Game::tileSize, Game::tileSize, Game::tileSize };
@@ -75,9 +75,4 @@ void Tunnel::draw(SDL_Renderer* renderTarget)
 {
     drawCenterColumn(renderTarget);
     drawWalls(renderTarget);
-}
-
-uint Tunnel::getFloorLayerIndex()
-{
-    return floorLayerIndex;
 }

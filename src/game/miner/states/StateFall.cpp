@@ -7,7 +7,7 @@ void Miner::StateFall::update()
     owner->velocity = fmin(owner->velocity + gravity * Application::deltaTime, maxVelocity);
     drawingOffset += static_cast<int>(owner->velocity * Application::deltaTime);
 
-    if (owner->tunnel->layers[owner->tunnel->getFloorLayerIndex()].materialType == Material::T_AIR)
+    if (owner->tunnel->layers[owner->tunnel->floorLayerIndex].materialType == Material::T_AIR)
     {
         if (drawingOffset >= Game::tileSize)
         {

@@ -10,11 +10,10 @@
 class Tunnel : IGameObject
 {
     const uint8_t activeLayersCount = 16;
-    uint8_t floorLayerIndex = 5;
     UniqueTexture materialAtlas;
 
     void drawCenterColumn(SDL_Renderer* renderTarget);
-    void drawWalls(SDL_Renderer* renderTarget);
+    static void drawWalls(SDL_Renderer* renderTarget);
 public:
     enum LayerBehaviorType
     {
@@ -41,9 +40,9 @@ public:
 
     std::vector<Layer> layers;
     std::vector<LayerBehavior> layerBehaviors;
+    const uint8_t floorLayerIndex = 5;
 
     Layer nextLayer();
-    uint getFloorLayerIndex();
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderTarget);

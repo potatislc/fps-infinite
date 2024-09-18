@@ -47,7 +47,7 @@ void Miner::digLayer()
     dug.send(depth, currentLayer.materialType, materialsMined[currentLayer.materialType]);
 
     // How miner will react to standing on the new top layer
-    switch (tunnel->layers[tunnel->getFloorLayerIndex()].materialType)
+    switch (tunnel->layers[tunnel->floorLayerIndex].materialType)
     {
         case Material::T_AIR:
             stateMachine.nextState(SI_FALL);

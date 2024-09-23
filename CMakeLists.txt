@@ -107,7 +107,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/game/miner/states/StateDig.cpp
         src/game/miner/states/StateFall.cpp
         src/game/CollectionParticle.h
-        src/game/CollectionParticle.cpp)
+        src/game/CollectionParticle.cpp
+        src/engine/GameScene.h
+        src/engine/GameScene.cpp)
 
 # Link SDL2 library
 # target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)

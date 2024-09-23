@@ -4,7 +4,7 @@
 
 void Miner::StateDig::update()
 {
-    Game::mainCam.view.y = (int)std::lerp(Game::mainCam.view.y, 0, .2f);
+    Game::mainCam.view.y = (int)std::lerp(Game::mainCam.view.y, 0, 10. * Application::deltaTime);
 
     if (InputMap::getBoundKeyInput("Dig") == InputMap::S_PRESSED || InputMap::getBoundMouseInput("Dig") == InputMap::S_PRESSED)
     {
@@ -18,5 +18,6 @@ void Miner::StateDig::draw(SDL_Renderer *renderTarget)
 {
     SDL_Rect source = {0, 0, mockupLook.getSize().x, mockupLook.getSize().y};
     SDL_Rect dest = {Application::renderer.viewport.w / 2 - Game::tileHalfSize, Application::renderer.viewport.h / 2 - Game::tileSize, 31, Game::tileSize * 2};
-    Game::mainCam.drawTexture(mockupLook.get(), &source, &dest);
+    SDL_Point origin = {0, 0};
+    Game::mainCam.drawTextureEx(mockupLook.get(), &source, &dest, 0.0, &origin, SDL_FLIP_NONE);
 }

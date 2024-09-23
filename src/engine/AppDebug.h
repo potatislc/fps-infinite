@@ -11,5 +11,6 @@ class AppDebug
 public:
     void init();
     void printFps(uint64_t frameCount);
-    void drawFps(uint64_t frameCount);
+    void drawAvgFps(uint64_t frameCount);
+    void drawFps(double frameTime);
 };

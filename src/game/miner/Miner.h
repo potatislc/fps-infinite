@@ -54,9 +54,8 @@ public:
 
     class StateFall : public StateMachine<Miner>::State
     {
-        float gravity = 400000.f;
-        float maxVelocity = 40000.f;
-        float drawingAngle = 0.f;
+        float gravity = 800.f;
+        float maxVelocity = 2000.f;
         int drawingOffset = 0;
 
         void update() override;

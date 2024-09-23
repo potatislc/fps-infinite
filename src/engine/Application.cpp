@@ -5,10 +5,10 @@
 Window Application::window;
 Renderer Application::renderer;
 AppDebug Application::appDebug;
-const uint16_t Application::fps = 60;
-float Application::frameTime = 1.f / (float)fps;
-float Application::timeScale = 1.f;
-float Application::deltaTime = frameTime * timeScale;
+uint16_t Application::targetFps = 60;
+double Application::frameTime = 1. / (double)targetFps;
+double Application::timeScale = 1.;
+double Application::deltaTime = frameTime * timeScale;
 
 bool Application::init()
 {
@@ -24,12 +24,19 @@ void Application::run(IGameObject& game)
 {
     game.start();
 
+    uint64_t lastTime = SDL_GetPerformanceCounter();
+    uint64_t currentTime;
+    auto performanceFrequency = static_cast<double>(SDL_GetPerformanceFrequency());
+    double frameDelay = 1000. / targetFps;
+    uint64_t frameStart;
+
     while (!quit)
     {
-        uint64_t frameStart = SDL_GetPerformanceCounter();
-        deltaTime = frameTime * timeScale;
+        frameStart = SDL_GetPerformanceCounter();
+        currentTime = SDL_GetPerformanceCounter();
+        deltaTime = ((double)(currentTime - lastTime) / performanceFrequency) * timeScale;
+        lastTime = currentTime;
 
-        // Handle events on queue
         while (SDL_PollEvent(&event) != 0)
         {
             if (event.type == SDL_QUIT)
@@ -66,19 +73,14 @@ void Application::run(IGameObject& game)
 
         game.update();
         game.draw(renderer.sdlRenderer);
-        // appDebug.drawFps(frameCount);
+        frameCount++;
+        appDebug.drawAvgFps(frameCount);
         renderer.render();
 
-        frameCount++;
-
-        // Frame rate cap
-        uint64_t frameEnd = SDL_GetPerformanceCounter();
-        frameTime = (float)(frameEnd - frameStart) / (float)SDL_GetPerformanceFrequency();
-        if (targetFrameTime > frameTime)
+        frameTime = (double)(SDL_GetPerformanceCounter() - frameStart) * 1000 / (double)SDL_GetPerformanceFrequency();
+        if (frameTime < frameDelay && capFPS)
         {
-#if !UNCAP_FPS
-            SDL_Delay((uint32_t)((targetFrameTime - frameTime) * 1000.f));
-#endif
+            SDL_Delay((uint32_t)(frameDelay - frameTime));
         }
     }
 }

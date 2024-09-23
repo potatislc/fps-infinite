@@ -4,7 +4,7 @@
 
 void Miner::StateFall::update()
 {
-    owner->velocity = fmin(owner->velocity + gravity * Application::deltaTime, maxVelocity);
+    owner->velocity = fminf(owner->velocity + gravity * (float)Application::deltaTime, maxVelocity);
     drawingOffset += static_cast<int>(owner->velocity * Application::deltaTime);
 
     if (owner->tunnel->layers[owner->tunnel->floorLayerIndex].materialType == Material::T_AIR)

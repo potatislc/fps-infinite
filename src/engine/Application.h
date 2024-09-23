@@ -5,21 +5,19 @@
 #include "IGameObject.h"
 #include "AppDebug.h"
 
-#define UNCAP_FPS false
-
 class Application
 {
-    float targetFrameTime = 1.f / (float)fps;
     uint64_t frameCount = 0;
+    bool capFPS = true;
 public:
     static Window window;
     static Renderer renderer;
     static MessageTexture messageTexture;
     static AppDebug appDebug;
-    static const uint16_t fps;
-    static float frameTime;
-    static float timeScale;
-    static float deltaTime;
+    static uint16_t targetFps;
+    static double frameTime;
+    static double timeScale;
+    static double deltaTime;
     bool quit = false;
     SDL_Event event{};
 

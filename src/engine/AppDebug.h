@@ -7,7 +7,7 @@
 class AppDebug
 {
     std::stringstream timeText;
-    MessageTextureTTF fpsText;
+    MessageTexture fpsText;
 public:
     void init();
     void printFps(uint64_t frameCount);

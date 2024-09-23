@@ -1,6 +1,5 @@
 #pragma once
 #include <SDL.h>
-#include <SDL_ttf.h>
 #include <map>
 #include "engine/utils/Utils.h"
 #include "UniqueTexture.h"
@@ -45,6 +44,7 @@ private:
 // TTF
 //
 
+/*
 class MessageTextureTTF
 {
     TTF_Font* font;
@@ -56,3 +56,4 @@ public:
     void setText(SDL_Renderer* renderer_, const char *fontPath, const char* message, SDL_Color color_);
     void updateText(const char* message);
 };
+*/

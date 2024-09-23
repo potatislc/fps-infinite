@@ -14,7 +14,7 @@ bool Application::init()
 {
     if (!window.init()) return false;
     if (!renderer.init(window.sdlWindow)) return false;
-    TTF_Init();
+    // TTF_Init();
     MessageTexture::loadFontAtlases();
     appDebug.init();
     return true;

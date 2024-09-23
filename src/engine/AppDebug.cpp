@@ -16,13 +16,13 @@ void AppDebug::drawAvgFps(uint64_t frameCount)
 
     timeText.str("");
     timeText << "FPS: " << avgFPS;
-    MessageTexture::renderMessage(fpsText.renderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
+    MessageTexture::renderMessage(Application::renderer.sdlRenderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
 }
 
 void AppDebug::init()
 {
     SDL_Color color = {0, 200, 0};
-    fpsText.setText(Application::renderer.sdlRenderer, FONTS_TTF_PATH"PixelifySans-Regular.ttf", "Test", color);
+    // fpsText.setText(Application::renderer.sdlRenderer, FONTS_TTF_PATH"PixelifySans-Regular.ttf", "Test", color);
 }
 
 void AppDebug::drawFps(double frameTime)
@@ -31,5 +31,5 @@ void AppDebug::drawFps(double frameTime)
 
     timeText.str("");
     timeText << "FPS: " << FPS;
-    MessageTexture::renderMessage(fpsText.renderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
+    MessageTexture::renderMessage(Application::renderer.sdlRenderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
 }

@@ -132,7 +132,7 @@ inline uint8_t MessageTexture::getAtlasPos(char c)
 //
 // TTF
 //
-
+/*
 void MessageTextureTTF::setText(SDL_Renderer *renderer_, const char *fontPath, const char *message, SDL_Color color_)
 {
     font = TTF_OpenFont(fontPath, 16);
@@ -156,3 +156,4 @@ void MessageTextureTTF::updateText(const char *message)
     texture.set(SDL_CreateTextureFromSurface(renderer, surfaceMessage));
     SDL_FreeSurface(surfaceMessage);
 }
+*/

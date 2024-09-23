@@ -51,7 +51,6 @@ if(NOT freetype_POPULATED)
     FetchContent_Populate(freetype)
     add_subdirectory(${freetype_SOURCE_DIR} ${freetype_BINARY_DIR})
 endif()
-]]#
 
 # Find the FreeType package
 find_package(Freetype CONFIG REQUIRED)
@@ -65,9 +64,11 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL2_ttf)
 
-include_directories("${CMAKE_CURRENT_LIST_DIR}/src/")
 # -DCMAKE_CXX_FLAGS="-I /src/"
 # include_directories(${freetype_SOURCE_DIR}/include)
+]]#
+
+include_directories("${CMAKE_CURRENT_LIST_DIR}/src/")
 
 add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/Application.cpp
@@ -105,10 +106,12 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/state_machine/StateMachine.cpp
         src/game/miner/states/StateDig.cpp
         src/game/miner/states/StateFall.cpp
-        src/game/CollectionParticle.h)
+        src/game/CollectionParticle.h
+        src/game/CollectionParticle.cpp)
 
 # Link SDL2 library
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)
+# target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/") # Set the asset path macro to the absolute path on the dev machine
 #target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="relative-path-to-res-in-the-game-package") # Set the asset path macro in release mode

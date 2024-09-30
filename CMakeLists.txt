@@ -33,6 +33,32 @@ set(BUILD_SHARED_LIBS FALSE)
 
 FetchContent_MakeAvailable(SDL2_image)
 
+FetchContent_Declare(
+        glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG ${IGG_GLM_TAG}
+)
+
+FetchContent_MakeAvailable(glm)
+#[[
+FetchContent_Declare(
+        raylib
+        GIT_REPOSITORY "https://github.com/raysan5/raylib.git"
+        GIT_TAG "master"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(raylib)
+
+FetchContent_Declare(
+        raylib_cpp
+        GIT_REPOSITORY "https://github.com/RobLoach/raylib-cpp.git"
+        GIT_TAG "v5.0.2"
+        GIT_PROGRESS TRUE
+)
+
+FetchContent_MakeAvailable(raylib_cpp)
+#]]
 #[[
 # Fetch FreeType
 FetchContent_Declare(
@@ -113,7 +139,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
 
 # Link SDL2 library
 # target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)
+# target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static raylib raylib_cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static glm)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/") # Set the asset path macro to the absolute path on the dev machine
 #target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="relative-path-to-res-in-the-game-package") # Set the asset path macro in release mode

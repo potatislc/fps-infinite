@@ -40,59 +40,6 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(glm)
-#[[
-FetchContent_Declare(
-        raylib
-        GIT_REPOSITORY "https://github.com/raysan5/raylib.git"
-        GIT_TAG "master"
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
-)
-FetchContent_MakeAvailable(raylib)
-
-FetchContent_Declare(
-        raylib_cpp
-        GIT_REPOSITORY "https://github.com/RobLoach/raylib-cpp.git"
-        GIT_TAG "v5.0.2"
-        GIT_PROGRESS TRUE
-)
-
-FetchContent_MakeAvailable(raylib_cpp)
-#]]
-#[[
-# Fetch FreeType
-FetchContent_Declare(
-        freetype
-        GIT_REPOSITORY "https://github.com/aseprite/freetype2.git"
-        GIT_TAG "VER-2-10-0"
-)
-
-FetchContent_MakeAvailable(freetype)
-
-# Set FreeType variables for SDL2_ttf
-set(FREETYPE_LIBRARY freetype)
-set(FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}/include)
-FetchContent_GetProperties(freetype)
-if(NOT freetype_POPULATED)
-    FetchContent_Populate(freetype)
-    add_subdirectory(${freetype_SOURCE_DIR} ${freetype_BINARY_DIR})
-endif()
-
-# Find the FreeType package
-find_package(Freetype CONFIG REQUIRED)
-
-# Fetch SDL2_ttf
-FetchContent_Declare(
-        SDL2_ttf
-        GIT_REPOSITORY "https://github.com/libsdl-org/SDL_ttf.git"
-        GIT_TAG "release-2.22.0"
-)
-
-FetchContent_MakeAvailable(SDL2_ttf)
-
-# -DCMAKE_CXX_FLAGS="-I /src/"
-# include_directories(${freetype_SOURCE_DIR}/include)
-]]#
 
 include_directories("${CMAKE_CURRENT_LIST_DIR}/src/")
 
@@ -138,8 +85,6 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/GameScene.cpp)
 
 # Link SDL2 library
-# target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static Freetype::Freetype SDL2_ttf::SDL2_ttf-static)
-# target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static raylib raylib_cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static glm)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/") # Set the asset path macro to the absolute path on the dev machine

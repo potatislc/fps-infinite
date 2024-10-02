@@ -3,6 +3,7 @@
 #include "engine/Application.h"
 #include "game/Game.h"
 #include "engine/ResourceLoader.h"
+#include "game/CollectionParticle.h"
 #include <math.h>
 
 SDL_Renderer* UiGameplay::sdlRenderer = nullptr;
@@ -10,17 +11,18 @@ UniqueTexture UiGameplay::minerDepthMessage;
 std::stringstream UiGameplay::minerDepthText;
 std::array<UniqueTexture, Material::T_LENGTH> UiGameplay::materialsMinedMessage;
 UniqueTexture UiGameplay::materialIcons;
+GameScene UiGameplay::collectionParticles;
 
 void UiGameplay::start()
 {
     sdlRenderer = Application::renderer.sdlRenderer;
     materialIcons.set(ResourceLoader::loadTexture(TEXTURES_PATH"material_icons.png"));
-    onMinerDug(0, Material::T_AIR, 0);
+    // onMinerDug(0, Material::T_AIR, 0);
 }
 
 void UiGameplay::update()
 {
-
+    collectionParticles.update();
 }
 
 void UiGameplay::draw(SDL_Renderer *renderTarget)
@@ -54,6 +56,8 @@ void UiGameplay::draw(SDL_Renderer *renderTarget)
             SDL_RenderCopyEx(renderTarget, materialsMinedMessage[i].get(), &source, &dest, 0.0, &origin, SDL_FLIP_NONE);
         }
     }
+
+    collectionParticles.draw(renderTarget);
 }
 
 void UiGameplay::onMinerDug(uint depth, Material::Type type, uint materialAmount)
@@ -64,6 +68,7 @@ void UiGameplay::onMinerDug(uint depth, Material::Type type, uint materialAmount
                                                            minerDepthText.str().c_str(), (SDL_Color){255, 255, 255, 255}));
     materialsMinedMessage[type].set(
             MessageTexture::messageToTexture(sdlRenderer, MessageTexture::FAI_DEFAULT, std::to_string(materialAmount).c_str(), (SDL_Color){255, 255, 255, 255}));
+    collectionParticles.addGameObject((IGameObject*)(new CollectionParticle((glm::vec2){200, 200}, (glm::vec2){0, 0})));
 }
 
 UiGameplay::UiGameplay(Tunnel *tunnel, Miner *miner) : tunnel(tunnel)

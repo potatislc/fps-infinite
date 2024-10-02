@@ -8,14 +8,16 @@ class CollectionParticle : IGameObject
 {
     glm::vec2 position;
     const glm::vec2 targetPosition;
-    const float blastSpeed = 500.f;
+    const float blastSpeed = 800.f;
     glm::vec2 blastVelocity = {0, 0};
-    const float blastDecel = 500.f;
-    const float pullAccel = 500.f;
+    const float blastDecel = 3000.f;
+    const float pullSpeed = 1000.f;
     glm::vec2 pullVelocity = {0, 0};
-    CollectionParticle(glm::vec2 position, glm::vec2 targetPosition) :
-        position(position), targetPosition(targetPosition) {};
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderTarget) override;
+
+public:
+    CollectionParticle(glm::vec2 position, glm::vec2 targetPosition) :
+        position(position), targetPosition(targetPosition) {}
 };

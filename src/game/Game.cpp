@@ -33,6 +33,7 @@ void Game::start()
 void Game::update()
 {
     miner.update();
+    uiGameplay.update();
     if (InputMap::getBoundKeyInput("Cam Up") == InputMap::S_DOWN) mainCam.view.y--;
     if (InputMap::getBoundKeyInput("Cam Down") == InputMap::S_DOWN) mainCam.view.y++;
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);

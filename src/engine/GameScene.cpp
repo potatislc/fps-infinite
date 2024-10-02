@@ -10,17 +10,25 @@ void GameScene::start()
 
 void GameScene::update()
 {
-    for (const std::shared_ptr<IGameObject>& gameObject : gameObjects)
+    for (const auto& gameObject : gameObjects)
     {
-        gameObject->update();
+        if (gameObject == nullptr)
+        {
+            gameObjects.push_back(gameObject);
+            // break;
+        }
+        else
+        {
+            gameObject->update();
+        }
     }
 }
 
 void GameScene::draw(SDL_Renderer *renderTarget)
 {
-    for (const std::shared_ptr<IGameObject>& gameObject : gameObjects)
+    for (const auto& gameObject : gameObjects)
     {
-        gameObject->draw(renderTarget);
+        if (gameObject != nullptr) gameObject->draw(renderTarget);
     }
 }
 

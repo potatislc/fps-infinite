@@ -4,6 +4,7 @@
 #include <sstream>
 #include "engine/IGameObject.h"
 #include "game/miner/Miner.h"
+#include "engine/GameScene.h"
 
 class UiGameplay : IGameObject
 {
@@ -12,6 +13,7 @@ class UiGameplay : IGameObject
     static std::stringstream minerDepthText;
     static UniqueTexture minerDepthMessage;
     static UniqueTexture materialIcons;
+    static GameScene collectionParticles;
     static std::array<UniqueTexture, Material::T_LENGTH> materialsMinedMessage;
     static void onMinerDug(uint depth, Material::Type materialType, uint materialAmount);
 public:

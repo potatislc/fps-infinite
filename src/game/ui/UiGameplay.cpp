@@ -68,7 +68,7 @@ void UiGameplay::onMinerDug(uint depth, Material::Type type, uint materialAmount
                                                            minerDepthText.str().c_str(), (SDL_Color){255, 255, 255, 255}));
     materialsMinedMessage[type].set(
             MessageTexture::messageToTexture(sdlRenderer, MessageTexture::FAI_DEFAULT, std::to_string(materialAmount).c_str(), (SDL_Color){255, 255, 255, 255}));
-    collectionParticles.addGameObject((IGameObject*)(new CollectionParticle((glm::vec2){200, 200}, (glm::vec2){0, 0})));
+    collectionParticles.addChild((ASceneObject*) (new CollectionParticle((glm::vec2) {200, 200}, (glm::vec2) {0, 0})));
 }
 
 UiGameplay::UiGameplay(Tunnel *tunnel, Miner *miner) : tunnel(tunnel)

@@ -3,8 +3,9 @@
 #include <glm/glm.hpp>
 #include "engine/utils/Utils.h"
 #include "engine/IGameObject.h"
+#include "engine/GameScene.h"
 
-class CollectionParticle : IGameObject
+class CollectionParticle : ASceneObject
 {
     glm::vec2 position;
     const glm::vec2 targetPosition;

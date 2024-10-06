@@ -16,6 +16,11 @@ void CollectionParticle::update()
     glm::vec2 pullDir = glm::normalize(targetPosition - position);
     pullVelocity += pullDir * pullSpeed * (float)Application::deltaTime;
     position += pullVelocity * (float)Application::deltaTime;
+
+    if (position.y <= targetPosition.y)
+    {
+        queueFree();
+    }
 }
 
 void CollectionParticle::draw(SDL_Renderer *renderTarget)

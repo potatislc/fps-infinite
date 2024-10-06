@@ -8,4 +8,3 @@ public:
     virtual void update() = 0;
     virtual void draw(SDL_Renderer* renderTarget) = 0;
 };
-

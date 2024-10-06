@@ -2,38 +2,48 @@
 
 void GameScene::start()
 {
-    for (const std::shared_ptr<IGameObject>& gameObject : gameObjects)
+    for (const auto& child : children)
     {
-        gameObject->start();
+        child->start();
     }
 }
 
 void GameScene::update()
 {
-    for (const auto& gameObject : gameObjects)
+    for (const auto& child : children)
     {
-        if (gameObject == nullptr)
-        {
-            gameObjects.push_back(gameObject);
-            // break;
-        }
-        else
-        {
-            gameObject->update();
-        }
+        if (child != nullptr) child->update();
     }
 }
 
 void GameScene::draw(SDL_Renderer *renderTarget)
 {
-    for (const auto& gameObject : gameObjects)
+    for (const auto& child : children)
     {
-        if (gameObject != nullptr) gameObject->draw(renderTarget);
+        if (child != nullptr) child->draw(renderTarget);
     }
 }
 
-void GameScene::addGameObject(IGameObject* gameObject)
+void GameScene::addChild(ASceneObject* child)
 {
-    gameObjects.emplace_back(gameObject);
-    gameObject->start();
+    child->parent = this;
+    children.emplace_back(child);
+    child->start();
+}
+
+void GameScene::removeChild(ASceneObject* child)
+{
+    for (int i = 0; i < children.size(); i++)
+    {
+        if (children[i] == child)
+        {
+            children.erase(children.begin() + i);
+            return;
+        }
+    }
+}
+
+void ASceneObject::queueFree() {
+    if (parent != nullptr) parent->removeChild(this);
+    delete this;
 }

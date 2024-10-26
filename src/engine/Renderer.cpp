@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Renderer.h"
 #include "App.h"
 
@@ -50,8 +51,12 @@ void Renderer::ViewPortCamera::drawTextureEx(SDL_Texture *texture, const SDL_Rec
     SDL_RenderCopyEx(renderTarget, texture, src, dst, angle, center, flip);
 }
 
-void Renderer::ViewPortCamera::start(SDL_Renderer *_renderTarget, SDL_Rect _view)
+Renderer::ViewPortCamera::ViewPortCamera(SDL_Rect viewPort) : viewPort(viewPort)
+{
+
+}
+
+void Renderer::ViewPortCamera::setRenderTarget(SDL_Renderer *_renderTarget)
 {
     renderTarget = _renderTarget;
-    viewPort = _view;
 }

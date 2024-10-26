@@ -32,8 +32,8 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontA
         uint8_t atlasPos = getAtlasPos(message[i]);
         SDL_Rect charRect =
                 {
-                (atlasPos % (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
-                (atlasPos / (fontAtlas->texture.getSize().y / fontAtlas->charSize)) * fontAtlas->charSize,
+                (atlasPos % (fontAtlas->texture.getRect()->w / fontAtlas->charSize)) * fontAtlas->charSize,
+                (atlasPos / (fontAtlas->texture.getRect()->h / fontAtlas->charSize)) * fontAtlas->charSize,
                 fontAtlas->charSize,
                 fontAtlas->charSize
                 };
@@ -75,8 +75,8 @@ SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, FontAt
         uint8_t atlasPos = getAtlasPos(message[i]);
         SDL_Rect charRect =
                 {
-                        (atlasPos % (fontAtlas->texture.getSize().x / fontAtlas->charSize)) * fontAtlas->charSize,
-                        (atlasPos / (fontAtlas->texture.getSize().y / fontAtlas->charSize)) * fontAtlas->charSize,
+                        (atlasPos % (fontAtlas->texture.getRect()->w / fontAtlas->charSize)) * fontAtlas->charSize,
+                        (atlasPos / (fontAtlas->texture.getRect()->h / fontAtlas->charSize)) * fontAtlas->charSize,
                         fontAtlas->charSize,
                         fontAtlas->charSize
                 };

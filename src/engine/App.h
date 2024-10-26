@@ -8,7 +8,7 @@
 class App
 {
     uint64_t frameCount = 0;
-    bool capFPS = true;
+    bool capFPS = false;
 public:
     static Window window;
     static Renderer renderer;

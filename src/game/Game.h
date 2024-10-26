@@ -4,10 +4,12 @@
 #include "engine/game_object/IGameObject.h"
 #include "engine/game_object/EntityScene.h"
 #include "engine/Camera3D.h"
+#include "engine/Renderer.h"
 
 class Game : public IGameObject
 {
 public:
+    static Renderer::ViewPortCamera mapCamera;
     static Camera3D camera3D;
 
     Game();

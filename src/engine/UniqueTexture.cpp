@@ -25,9 +25,9 @@ SDL_Texture* UniqueTexture::get()
     return sdlTexture;
 }
 
-Utils::Vector2I UniqueTexture::getSize()
+SDL_Rect* UniqueTexture::getRect()
 {
-    return size;
+    return &rect;
 }
 
 UniqueTexture::UniqueTexture(SDL_Texture *texture) : sdlTexture(texture)
@@ -39,10 +39,10 @@ void UniqueTexture::updateSize(SDL_Texture *texture)
 {
     if (texture != nullptr)
     {
-        SDL_QueryTexture(texture, nullptr, nullptr, &size.x, &size.y);
+        SDL_QueryTexture(texture, nullptr, nullptr, &rect.w, &rect.h);
     }
     else
     {
-        size = {0, 0};
+        rect = {0, 0, 0, 0};
     }
 }

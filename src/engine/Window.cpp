@@ -2,7 +2,7 @@
 
 Window::Window()
 {
-    width = 426;
+    width = 427;
     height = 240;
     centerW = floor(Window::width / 2);
     centerH = floor(Window::height / 2);
@@ -15,6 +15,7 @@ bool Window::init()
         return false;
     }
 
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
     sdlWindow = SDL_CreateWindow("Dig Straight Down!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
     if (sdlWindow == nullptr)
     {

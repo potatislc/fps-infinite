@@ -11,5 +11,4 @@ public:
     void update() override;
     void draw(SDL_Renderer* renderer) override;
 private:
-    SDL_Texture* mapIcon = nullptr;
 };

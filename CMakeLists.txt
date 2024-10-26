@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(dig_straight_down C CXX)
+project(fps_infinite C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -44,21 +44,12 @@ FetchContent_MakeAvailable(glm)
 include_directories("${CMAKE_CURRENT_LIST_DIR}/src/")
 
 add_executable(${PROJECT_NAME} src/main.cpp
-        src/engine/Application.cpp
-        src/engine/Application.h
+        src/engine/App.cpp
+        src/engine/App.h
         src/engine/Renderer.cpp
         src/engine/Renderer.h
         src/engine/Window.cpp
         src/engine/Window.h
-        src/game/miner/Miner.cpp
-        src/game/miner/Miner.h
-        src/game/Tunnel.cpp
-        src/game/Tunnel.h
-        src/game/Game.cpp
-        src/game/Game.h
-        src/game/Material.cpp
-        src/game/Material.h
-        src/engine/IGameObject.h
         src/engine/InputMap.cpp
         src/engine/InputMap.h
         src/engine/ResourceLoader.h
@@ -73,16 +64,20 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/utils/UColors.cpp
         src/engine/UniqueTexture.cpp
         src/engine/UniqueTexture.h
-        src/game/ui/UiGameplay.cpp
-        src/game/ui/UiGameplay.h
         src/engine/state_machine/StateMachine.h
         src/engine/state_machine/StateMachine.cpp
-        src/game/miner/states/StateDig.cpp
-        src/game/miner/states/StateFall.cpp
-        src/game/CollectionParticle.h
-        src/game/CollectionParticle.cpp
-        src/engine/GameScene.h
-        src/engine/GameScene.cpp)
+        src/engine/game_object/IGameObject.h
+        src/engine/game_object/AEntity.h
+        src/game/Game.cpp
+        src/game/Game.h
+        src/game/Player.cpp
+        src/game/Player.h
+        src/engine/game_object/EntityScene.cpp
+        src/engine/game_object/EntityScene.h
+        src/engine/game_object/AEntity3D.h
+        src/game/ACharacter.h
+        src/engine/Camera3D.cpp
+        src/engine/Camera3D.h)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static glm)

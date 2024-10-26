@@ -1,5 +1,5 @@
 #include "Renderer.h"
-#include "Application.h"
+#include "App.h"
 
 bool Renderer::init(SDL_Window* sdlWindow)
 {
@@ -16,8 +16,8 @@ bool Renderer::init(SDL_Window* sdlWindow)
     SDL_RenderSetViewport(sdlRenderer, &viewport);
     // SDL_RenderSetScale(sdlRenderer, Application::window.width / viewport.w, Application::window.height / viewport.h);
     SDL_RenderSetLogicalSize(sdlRenderer,
-                             Application::window.width * viewport.w / Application::window.width,
-                             Application::window.height * viewport.h / Application::window.height);
+                             App::window.width * viewport.w / App::window.width,
+                             App::window.height * viewport.h / App::window.height);
     return true;
 }
 
@@ -32,26 +32,26 @@ Renderer::~Renderer()
 }
 
 
-void Renderer::Camera::viewTransform(SDL_Rect* rect)
+void Renderer::ViewPortCamera::viewTransform(SDL_Rect* rect)
 {
-    rect->x -= view.x;
-    rect->y -= view.y;
+    rect->x -= viewPort.x;
+    rect->y -= viewPort.y;
 }
 
-void Renderer::Camera::drawTexture(SDL_Texture *texture, const SDL_Rect *src, SDL_Rect *dst)
+void Renderer::ViewPortCamera::drawTexture(SDL_Texture *texture, const SDL_Rect *src, SDL_Rect *dst)
 {
     viewTransform(dst);
     SDL_RenderCopy(renderTarget, texture, src, dst);
 }
 
-void Renderer::Camera::drawTextureEx(SDL_Texture *texture, const SDL_Rect *src, SDL_Rect *dst, double angle, const SDL_Point *center, SDL_RendererFlip flip)
+void Renderer::ViewPortCamera::drawTextureEx(SDL_Texture *texture, const SDL_Rect *src, SDL_Rect *dst, double angle, const SDL_Point *center, SDL_RendererFlip flip)
 {
     viewTransform(dst);
     SDL_RenderCopyEx(renderTarget, texture, src, dst, angle, center, flip);
 }
 
-void Renderer::Camera::start(SDL_Renderer *_renderTarget, SDL_Rect _view)
+void Renderer::ViewPortCamera::start(SDL_Renderer *_renderTarget, SDL_Rect _view)
 {
     renderTarget = _renderTarget;
-    view = _view;
+    viewPort = _view;
 }

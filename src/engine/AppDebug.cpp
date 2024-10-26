@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include "AppDebug.h"
 #include "MessageTexture.h"
-#include "Application.h"
+#include "App.h"
 
 void AppDebug::printFps(uint64_t frameCount)
 {
@@ -16,7 +16,7 @@ void AppDebug::drawAvgFps(uint64_t frameCount)
 
     timeText.str("");
     timeText << "FPS: " << avgFPS;
-    MessageTexture::renderMessage(Application::renderer.sdlRenderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
+    MessageTexture::renderMessage(App::renderer.sdlRenderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
 }
 
 void AppDebug::init()
@@ -27,9 +27,9 @@ void AppDebug::init()
 
 void AppDebug::drawFps(double frameTime)
 {
-    double FPS = fmin(1 / frameTime, Application::targetFps);
+    double FPS = fmin(1 / frameTime, App::targetFps);
 
     timeText.str("");
     timeText << "FPS: " << FPS;
-    MessageTexture::renderMessage(Application::renderer.sdlRenderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
+    MessageTexture::renderMessage(App::renderer.sdlRenderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
 }

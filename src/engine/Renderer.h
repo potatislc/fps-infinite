@@ -6,11 +6,11 @@
 class Renderer
 {
 public:
-    class Camera
+    class ViewPortCamera
     {
     public:
         SDL_Renderer* renderTarget = nullptr;
-        SDL_Rect view = {0, 0, 0, 0};
+        SDL_Rect viewPort = {0, 0, 0, 0};
         float zoom = 1.f;
         void start(SDL_Renderer* _renderTarget, SDL_Rect _view);
         void drawTexture(SDL_Texture *texture, const SDL_Rect *src, SDL_Rect *dst);

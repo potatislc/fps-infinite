@@ -128,32 +128,3 @@ inline uint8_t MessageTexture::getAtlasPos(char c)
 #undef ATLAS_RANGE_NUM
 #undef ATLAS_RANGE_ABC
 #undef ATLAS_RANGE_SPEC_1
-
-//
-// TTF
-//
-/*
-void MessageTextureTTF::setText(SDL_Renderer *renderer_, const char *fontPath, const char *message, SDL_Color color_)
-{
-    font = TTF_OpenFont(fontPath, 16);
-    if(!font)
-    {
-        std::cout << "Can't open font: " << TTF_GetError() << std::endl;
-    }
-    renderer = renderer_;
-    color = color_;
-    updateText(message);
-}
-
-void MessageTextureTTF::updateText(const char *message)
-{
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, message, color);
-    if(surfaceMessage == nullptr)
-    {
-        printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
-    }
-
-    texture.set(SDL_CreateTextureFromSurface(renderer, surfaceMessage));
-    SDL_FreeSurface(surfaceMessage);
-}
-*/

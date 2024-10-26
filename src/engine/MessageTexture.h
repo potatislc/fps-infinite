@@ -39,21 +39,3 @@ private:
 
     static inline uint8_t getAtlasPos(char c); // Atlas can be at max 255 characters
 };
-
-//
-// TTF
-//
-
-/*
-class MessageTextureTTF
-{
-    TTF_Font* font;
-public:
-    UniqueTexture texture;
-    SDL_Renderer* renderer;
-    SDL_Color color;
-
-    void setText(SDL_Renderer* renderer_, const char *fontPath, const char* message, SDL_Color color_);
-    void updateText(const char* message);
-};
-*/

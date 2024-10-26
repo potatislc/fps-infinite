@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <vector>
 #include <memory>
-#include "engine/IGameObject.h"
+#include "engine/entities/IGameObject.h"
 #include "engine/utils/Utils.h"
 
 template <typename T>

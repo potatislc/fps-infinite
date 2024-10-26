@@ -2,10 +2,10 @@
 #include <cstdint>
 #include "Renderer.h"
 #include "Window.h"
-#include "IGameObject.h"
+#include "engine/game_object/IGameObject.h"
 #include "AppDebug.h"
 
-class Application
+class App
 {
     uint64_t frameCount = 0;
     bool capFPS = true;
@@ -21,7 +21,7 @@ public:
     bool quit = false;
     SDL_Event event{};
 
-    Application() = default;
+    App() = default;
     bool init();
     void run(IGameObject& game);
 };

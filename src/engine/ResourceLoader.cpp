@@ -2,7 +2,9 @@
 #include <cstdio>
 #include <string>
 #include "ResourceLoader.h"
-#include "Application.h"
+#include "App.h"
+
+ResourceLoader::LoadedTextures ResourceLoader::loadedTextures;
 
 SDL_Texture *ResourceLoader::loadTexture(const std::string& path)
 {
@@ -17,7 +19,7 @@ SDL_Texture *ResourceLoader::loadTexture(const std::string& path)
     else
     {
         //Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface(Application::renderer.sdlRenderer, loadedSurface);
+        newTexture = SDL_CreateTextureFromSurface(App::renderer.sdlRenderer, loadedSurface);
         if( newTexture == nullptr)
         {
             printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
@@ -28,4 +30,10 @@ SDL_Texture *ResourceLoader::loadTexture(const std::string& path)
     }
 
     return newTexture;
+}
+
+void ResourceLoader::LoadedTextures::loadAll()
+{
+    // Map Icons
+    playerMapIcon.set(loadTexture(TEXTURES_PATH"/map_icons/player.png"));
 }

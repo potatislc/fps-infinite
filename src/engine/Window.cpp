@@ -2,8 +2,8 @@
 
 Window::Window()
 {
-    width = 512;
-    height = 510;
+    width = 426;
+    height = 240;
     centerW = floor(Window::width / 2);
     centerH = floor(Window::height / 2);
 }

@@ -1,16 +1,16 @@
 #include "SDL2/SDL.h"
-#include "Application.h"
+#include "App.h"
 #include "InputMap.h"
 
-Window Application::window;
-Renderer Application::renderer;
-AppDebug Application::appDebug;
-uint16_t Application::targetFps = 60;
-double Application::frameTime = 1. / (double)targetFps;
-double Application::timeScale = 1.;
-double Application::deltaTime = frameTime * timeScale;
+Window App::window;
+Renderer App::renderer;
+AppDebug App::appDebug;
+uint16_t App::targetFps = 60;
+double App::frameTime = 1. / (double)targetFps;
+double App::timeScale = 1.;
+double App::deltaTime = frameTime * timeScale;
 
-bool Application::init()
+bool App::init()
 {
     if (!window.init()) return false;
     if (!renderer.init(window.sdlWindow)) return false;
@@ -20,7 +20,7 @@ bool Application::init()
     return true;
 }
 
-void Application::run(IGameObject& game)
+void App::run(IGameObject& game)
 {
     game.start();
 

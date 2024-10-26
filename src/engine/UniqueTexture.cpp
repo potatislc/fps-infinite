@@ -5,7 +5,7 @@
 
 void UniqueTexture::destroyTexture()
 {
-    if (sdlTexture != nullptr) SDL_DestroyTexture(sdlTexture);
+    if (sdlTexture) SDL_DestroyTexture(sdlTexture);
 }
 
 void UniqueTexture::set(SDL_Texture *texture)

@@ -5,6 +5,7 @@
 #include "engine/App.h"
 
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 427, 240});
+Camera3D Game::camera3D = Camera3D(90);
 
 Game::Game()
 {
@@ -31,7 +32,10 @@ void Game::update()
 
 void Game::draw(SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 50, 0, 175, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 50, 0, 175, 255);
+    SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
+    SDL_RenderFillRect(renderer, &rect);
     world.draw(renderer);
 }

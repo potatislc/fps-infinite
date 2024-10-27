@@ -2,6 +2,7 @@
 #include <utility>
 #include "SDL.h"
 #include "engine/utils/Utils.h"
+#include "glm/vec2.hpp"
 
 class Renderer
 {
@@ -24,6 +25,7 @@ public:
 
     SDL_Renderer* sdlRenderer;
     SDL_Rect viewport;
+    glm::vec2 viewportCenter = {0, 0};
 
     const std::pair<uint16_t, uint16_t> viewportDefaultSize = { 427, 240 };
     bool init(SDL_Window* sdlWindow);

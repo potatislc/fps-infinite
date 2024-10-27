@@ -14,8 +14,9 @@ bool Renderer::init(SDL_Window* sdlWindow)
     }
 
     viewport = (SDL_Rect){ 0, 0, viewportDefaultSize.first, viewportDefaultSize.second };
+    viewportCenter = glm::vec2(viewport.w / 2, viewport.h / 2);
     SDL_RenderSetViewport(sdlRenderer, &viewport);
-    // SDL_RenderSetScale(sdlRenderer, Application::window.width / viewport.w, Application::window.height / viewport.h);
+    SDL_RenderSetScale(sdlRenderer, App::window.width / viewport.w, App::window.height / viewport.h);
     SDL_RenderSetLogicalSize(sdlRenderer,
                              App::window.width * viewport.w / App::window.width,
                              App::window.height * viewport.h / App::window.height);

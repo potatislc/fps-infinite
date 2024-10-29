@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <iostream>
 #include "AppDebug.h"
 #include "MessageTexture.h"
 #include "App.h"
@@ -39,6 +40,7 @@ void AppDebug::drawAvgFps(uint64_t frameCount)
 
     timeText.str("");
     timeText << "FPS: " << avgFPS;
+    // std::cout << avgFPS << std::endl;
     MessageTexture::renderMessage(App::renderer.sdlRenderer, MessageTexture::FAI_DEFAULT, timeText.str().c_str(), (Utils::Vector2I){0, 0}, (SDL_Color){255, 255, 255, 255});
 }
 

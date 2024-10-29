@@ -9,6 +9,7 @@ public:
     float fov;
     float halfFov;
     Camera3D(float fov);
+    void drawFov(SDL_Renderer* renderer) const;
     void drawFloor(glm::vec3 position, float rotationY);
     void drawScene(EntityScene scene, glm::vec3 position, float rotationY);
 };

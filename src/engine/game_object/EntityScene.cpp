@@ -24,11 +24,11 @@ void EntityScene::draw(SDL_Renderer *renderTarget)
     }
 }
 
-void EntityScene::addChild(std::unique_ptr<AEntity> child)
+void EntityScene::addChild(const std::shared_ptr<AEntity>& child)
 {
     child->parent = this;
     child->start();
-    children.emplace_back(std::move(child));
+    children.emplace_back(child);
 }
 
 void EntityScene::removeChild(AEntity* child)

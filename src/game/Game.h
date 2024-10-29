@@ -5,6 +5,7 @@
 #include "engine/game_object/EntityScene.h"
 #include "engine/Camera3D.h"
 #include "engine/Renderer.h"
+#include "Player.h"
 
 class Game : public IGameObject
 {
@@ -19,4 +20,8 @@ public:
     void draw(SDL_Renderer* renderer) override;
 private:
     EntityScene world;
+    static std::shared_ptr<Player> currentPlayer;
+    SDL_Rect mapRect = {0, 0, 63, 63};
+
+    void drawMapEntities(SDL_Renderer* renderer, const EntityScene& entityScene);
 };

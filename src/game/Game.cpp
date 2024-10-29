@@ -43,18 +43,23 @@ void Game::draw(SDL_Renderer *renderer)
     drawMapEntities(renderer, world);
 }
 
-void Game::drawMapEntities(SDL_Renderer *renderer, const EntityScene& entityScene)
+void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene& entityScene)
 {
     glm::vec3 worldCenter = currentPlayer->position;
 
-    SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.x, mapRect.y, 32, 0, 0, 0, 0);
+    SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0, 0, 0, 0); // GetWindowSurface also
+    if (!mapSurface)
+    {
+        std::cerr << "SDL_CreateRGBSurface failed: " << SDL_GetError() << std::endl;
+        return;
+    }
 
     SDL_LockSurface(mapSurface);
 
     auto* pixels = (uint32_t*)mapSurface->pixels;
 
     uint32_t white = SDL_MapRGB(mapSurface->format, 255, 255, 255);
-    // pixels[0] = white;
+    pixels[0] = white;
 
     SDL_UnlockSurface(mapSurface);
 

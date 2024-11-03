@@ -22,6 +22,7 @@ private:
     EntityScene world;
     static std::shared_ptr<Player> currentPlayer;
     SDL_Rect mapRect = {0, 0, 64, 64};
+    const float mapScale = 1.f;
 
     void drawMapEntities(SDL_Renderer* renderer, const EntityScene& entityScene);
 };

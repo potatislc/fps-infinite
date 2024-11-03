@@ -44,7 +44,7 @@ void Game::draw(SDL_Renderer *renderer)
     drawMapEntities(renderer, world);
 }
 
-void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene& entityScene)
+void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<AEntity3D>& entityScene)
 {
 
     SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000); // GetWindowSurface also
@@ -55,10 +55,9 @@ void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene& entityScen
         uint32_t white = SDL_MapRGB(mapSurface->format, 255, 255, 255);
         SDL_Point worldCenter = {(int)currentPlayer->position.x, (int)currentPlayer->position.z};
         SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
-        for (const auto& entity : world.children)
+        for (const auto& entity : entityScene.children)
         {
-            auto* entity3D = (AEntity3D*)entity.get();
-            SDL_Point entityPos = {(int)entity3D->position.x, (int)entity3D->position.z}; // Has to account for angle later
+            SDL_Point entityPos = {(int)entity->position.x, (int)entity->position.z}; // Has to account for angle later
             SDL_Point mapPos = {mapCenter.x + (int)((float)(entityPos.x - worldCenter.x) * mapScale),
                                 mapCenter.y + (int)((float)(worldCenter.y - entityPos.y) * mapScale)};
             mapPos = {std::clamp(mapPos.x, 0, mapRect.w), std::clamp(mapPos.y, 0, mapRect.h)};

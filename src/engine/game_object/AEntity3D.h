@@ -1,3 +1,4 @@
+#pragma once
 
 #include "AEntity.h"
 #include "glm/vec3.hpp"

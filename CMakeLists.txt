@@ -72,7 +72,7 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/game/Game.h
         src/game/Player.cpp
         src/game/Player.h
-        src/engine/game_object/EntityScene.cpp
+        # src/engine/game_object/EntityScene.cpp
         src/engine/game_object/EntityScene.h
         src/engine/game_object/AEntity3D.h
         src/game/ACharacter.h

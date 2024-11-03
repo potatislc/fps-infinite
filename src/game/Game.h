@@ -19,10 +19,10 @@ public:
     void update() override;
     void draw(SDL_Renderer* renderer) override;
 private:
-    EntityScene world;
+    EntityScene<AEntity3D> world;
     static std::shared_ptr<Player> currentPlayer;
     SDL_Rect mapRect = {0, 0, 64, 64};
     const float mapScale = 1.f;
 
-    void drawMapEntities(SDL_Renderer* renderer, const EntityScene& entityScene);
+    void drawMapEntities(SDL_Renderer* renderer, const EntityScene<AEntity3D>& entityScene);
 };

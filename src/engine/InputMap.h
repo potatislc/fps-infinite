@@ -35,6 +35,10 @@ public:
     static void addKeyBinding(const std::string& name, SDL_Keycode code);
     static Status getBoundKeyInput(const std::string& name);
     static Status getBoundMouseInput(const std::string& name);
+
+    static bool isBoundKeyPressed(const std::string& name);
+    static bool isBoundKeyDown(const std::string& name);
+    static bool isBoundKeyReleased(const std::string& name);
 private:
     static void addKeyCode(SDL_Keycode code);
 };

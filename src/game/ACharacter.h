@@ -1,13 +1,13 @@
 #pragma once
 
-#include "engine/game_object/AEntity3D.h"
+#include "engine/game_object/Entity3D.h"
 
-class ACharacter : public AEntity3D
+class ACharacter : public Entity3D
 {
 public:
     // Collider collider
     ACharacter(glm::vec3 position, float rotationY, int hp)
-        : AEntity3D(position, rotationY), hp(hp) {}
+        : Entity3D(position, rotationY), hp(hp) {}
 protected:
     int hp;
 };

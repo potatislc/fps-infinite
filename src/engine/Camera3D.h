@@ -2,7 +2,7 @@
 
 #include "glm/vec3.hpp"
 #include "engine/game_object/EntityScene.h"
-#include "engine/game_object/AEntity3D.h"
+#include "engine/game_object/Entity3D.h"
 
 class Camera3D
 {

@@ -79,3 +79,8 @@ void InputMap::addKeyBinding(const std::string& name, SDL_Keycode code)
     if (!keyMap.contains(code)) addKeyCode(code);
     boundKeys[name] = {code, S_UP};
 }
+
+bool InputMap::isBoundKeyDown(const std::string& name)
+{
+    return getBoundKeyInput(name) == S_DOWN;
+}

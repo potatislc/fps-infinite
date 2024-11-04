@@ -23,7 +23,18 @@ void Game::start()
     ResourceLoader::loadedTextures.loadAll();
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
-    // world.addChild(std::make_shared<Player>((glm::vec3){5, 0, 6}, 0, 1)); Test
+
+    // Test entities
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 0, 6}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, 0, -12}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 0, 27}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, 0, -36}, 0));
+
+    for (int i = 0; i < 128; i++)
+    {
+        for (int j = 0; j < 128; j++)
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 8 - 512, 0, j * 8 - 512}, 0));
+    }
 }
 
 void Game::update()
@@ -44,7 +55,7 @@ void Game::draw(SDL_Renderer *renderer)
     drawMapEntities(renderer, world);
 }
 
-void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<AEntity3D>& entityScene)
+void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<Entity3D>& entityScene)
 {
 
     SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000); // GetWindowSurface also
@@ -60,8 +71,14 @@ void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<AEntity3D>&
             SDL_Point entityPos = {(int)entity->position.x, (int)entity->position.z}; // Has to account for angle later
             SDL_Point mapPos = {mapCenter.x + (int)((float)(entityPos.x - worldCenter.x) * mapScale),
                                 mapCenter.y + (int)((float)(worldCenter.y - entityPos.y) * mapScale)};
-            mapPos = {std::clamp(mapPos.x, 0, mapRect.w), std::clamp(mapPos.y, 0, mapRect.h)};
-            pixels[mapRect.w * mapPos.y + mapPos.x] = white;
+
+            // Clamp pixels inside of range
+            /*mapPos = {std::clamp(mapPos.x, 0, mapRect.w-1), std::clamp(mapPos.y, 0, mapRect.h-1)};
+            pixels[mapRect.w * mapPos.y + mapPos.x] = white;*/
+
+            // Hide pixels out of range
+            if (mapPos.x == std::clamp(mapPos.x, 0, mapRect.w-1) && mapPos.y == std::clamp(mapPos.y, 0, mapRect.h-1))
+                pixels[mapRect.w * mapPos.y + mapPos.x] = white;
         }
     }
     SDL_UnlockSurface(mapSurface);

@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "engine/InputMap.h"
+#include "engine/App.h"
 
 void Player::start()
 {
@@ -12,7 +13,7 @@ void Player::update()
                                  0.f,
                                  InputMap::isBoundKeyDown("Up") - InputMap::isBoundKeyDown("Down")
                                  };
-    position += direction * .1f;
+    position += direction * speed * (float)App::deltaTime;
 }
 
 void Player::draw(SDL_Renderer *renderer)

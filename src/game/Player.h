@@ -14,4 +14,5 @@ public:
 
 private:
     glm::vec2 velocity = {0, 0};
+    const float speed = 60;
 };

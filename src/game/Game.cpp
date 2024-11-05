@@ -30,10 +30,12 @@ void Game::start()
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 0, 27}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){30, 0, -36}, 0));
 
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < 64; i++)
     {
-        for (int j = 0; j < 128; j++)
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 8 - 512, 0, j * 8 - 512}, 0));
+        for (int j = 0; j < 64; j++)
+        {
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 8 - 256, 0, j * 8 - 256}, 0));
+        }
     }
 }
 
@@ -66,19 +68,24 @@ void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<Entity3D>& 
         uint32_t white = SDL_MapRGB(mapSurface->format, 255, 255, 255);
         SDL_Point worldCenter = {(int)currentPlayer->position.x, (int)currentPlayer->position.z};
         SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
+        float mapRadiusSq = (float)mapCenter.x * (float)mapCenter.y;
         for (const auto& entity : entityScene.children)
         {
             SDL_Point entityPos = {(int)entity->position.x, (int)entity->position.z}; // Has to account for angle later
             SDL_Point mapPos = {mapCenter.x + (int)((float)(entityPos.x - worldCenter.x) * mapScale),
                                 mapCenter.y + (int)((float)(worldCenter.y - entityPos.y) * mapScale)};
+            float mapDistSq = std::pow(mapPos.x - mapCenter.x, 2) + std::pow(mapPos.y - mapCenter.y, 2);
 
             // Clamp pixels inside of range
             /*mapPos = {std::clamp(mapPos.x, 0, mapRect.w-1), std::clamp(mapPos.y, 0, mapRect.h-1)};
             pixels[mapRect.w * mapPos.y + mapPos.x] = white;*/
 
             // Hide pixels out of range
-            if (mapPos.x == std::clamp(mapPos.x, 0, mapRect.w-1) && mapPos.y == std::clamp(mapPos.y, 0, mapRect.h-1))
-                pixels[mapRect.w * mapPos.y + mapPos.x] = white;
+            float distAlpha = mapDistSq / mapRadiusSq;
+            if (distAlpha < 1.f)
+            {
+                pixels[mapRect.w * mapPos.y + mapPos.x] = SDL_MapRGBA(mapSurface->format, 255, 255, 255, (uint8_t)(255 - 255 * distAlpha));
+            }
         }
     }
     SDL_UnlockSurface(mapSurface);

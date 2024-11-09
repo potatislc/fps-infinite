@@ -11,6 +11,10 @@ namespace Utils
     //
     // Math
     //
+    template <typename T> int sgn(T val)
+    {
+        return (T(0) < val) - (val < T(0));
+    }
     glm::vec2 vec2Rotated(glm::vec2 vec, float angle);
 
     //

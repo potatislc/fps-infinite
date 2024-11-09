@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ACharacter.h"
-#include "glm/vec2.hpp"
+#include "glm/glm.hpp"
 
 class Player : public ACharacter
 {
@@ -13,6 +13,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
 private:
-    glm::vec2 velocity = {0, 0};
-    const float speed = 60;
+    glm::vec2 moveVelocity = {0, 0};
+    const float speed = 30;
+    const float accel = 10;
 };

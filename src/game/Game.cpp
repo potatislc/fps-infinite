@@ -68,7 +68,6 @@ void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<Entity3D>& 
     SDL_LockSurface(mapSurface);
     {
         auto* pixels = (uint32_t*)mapSurface->pixels;
-        uint32_t white = SDL_MapRGB(mapSurface->format, 255, 255, 255);
         glm::vec2 worldCenter = {currentPlayer->position.x, currentPlayer->position.z};
         float worldAngle = currentPlayer->rotationY;
         SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
@@ -76,7 +75,7 @@ void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<Entity3D>& 
         for (const auto& entity : entityScene.children)
         {
             glm::vec2 relativePos =
-                    Utils::vec2Rotated({entity->position.x - worldCenter.x, entity->position.z - worldCenter.y}, worldAngle);
+                    Utils::vec2Rotated({entity->position.x - worldCenter.x, entity->position.z - worldCenter.y}, -worldAngle);
             SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
             float mapDistSq = std::pow(mapPos.x - mapCenter.x, 2) + std::pow(mapPos.y - mapCenter.y, 2);
 

@@ -77,7 +77,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/game_object/Entity3D.h
         src/game/ACharacter.h
         src/engine/Camera3D.cpp
-        src/engine/Camera3D.h)
+        src/engine/Camera3D.h
+        src/engine/utils/UMath.cpp)
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static glm)

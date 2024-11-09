@@ -10,14 +10,15 @@ void Player::start()
 
 void Player::update()
 {
-    const float lookDir = (float)(InputMap::isBoundKeyDown("LookRight") - InputMap::isBoundKeyDown("LookLeft"));
+    const float lookDir = (float)(InputMap::isBoundKeyDown("LookLeft") - InputMap::isBoundKeyDown("LookRight"));
     rotationY += lookDir * Game::settings.mouseSens * App::deltaTime;
 
-    const glm::vec3 direction = {InputMap::isBoundKeyDown("Right") - InputMap::isBoundKeyDown("Left"),
-                                 0.f,
-                                 InputMap::isBoundKeyDown("Up") - InputMap::isBoundKeyDown("Down")
-                                 };
-    position += direction * speed * App::deltaTime;
+    const glm::vec2 moveDir = Utils::vec2Rotated(
+            {InputMap::isBoundKeyDown("Right") - InputMap::isBoundKeyDown("Left"),
+             InputMap::isBoundKeyDown("Down") - InputMap::isBoundKeyDown("Up")
+             }, -rotationY);
+
+    position += (glm::vec3){moveDir.x, 0.f, moveDir.y} * speed * App::deltaTime;
 }
 
 void Player::draw(SDL_Renderer *renderer)

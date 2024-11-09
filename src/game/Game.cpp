@@ -69,25 +69,23 @@ void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<Entity3D>& 
     {
         auto* pixels = (uint32_t*)mapSurface->pixels;
         uint32_t white = SDL_MapRGB(mapSurface->format, 255, 255, 255);
-        SDL_Point worldCenter = {(int)currentPlayer->position.x, (int)currentPlayer->position.z};
+        glm::vec2 worldCenter = {currentPlayer->position.x, currentPlayer->position.z};
+        float worldAngle = currentPlayer->rotationY;
         SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
         float mapRadiusSq = (float)mapCenter.x * (float)mapCenter.y;
         for (const auto& entity : entityScene.children)
         {
-            SDL_Point entityPos = {(int)entity->position.x, (int)entity->position.z}; // Has to account for angle later
-            SDL_Point mapPos = {mapCenter.x + (int)((float)(entityPos.x - worldCenter.x) * mapScale),
-                                mapCenter.y + (int)((float)(worldCenter.y - entityPos.y) * mapScale)};
+            glm::vec2 relativePos =
+                    Utils::vec2Rotated({entity->position.x - worldCenter.x, entity->position.z - worldCenter.y}, worldAngle);
+            SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
             float mapDistSq = std::pow(mapPos.x - mapCenter.x, 2) + std::pow(mapPos.y - mapCenter.y, 2);
-
-            // Clamp pixels inside of range
-            /*mapPos = {std::clamp(mapPos.x, 0, mapRect.w-1), std::clamp(mapPos.y, 0, mapRect.h-1)};
-            pixels[mapRect.w * mapPos.y + mapPos.x] = white;*/
 
             // Hide pixels out of range
             float distAlpha = mapDistSq / mapRadiusSq;
             if (distAlpha < 1.f)
             {
-                pixels[mapRect.w * mapPos.y + mapPos.x] = SDL_MapRGBA(mapSurface->format, 255, 255, 255, (uint8_t)(255 - 255 * distAlpha));
+                pixels[mapRect.w * mapPos.y + mapPos.x] =
+                        SDL_MapRGBA(mapSurface->format, 255, 255, 255, (uint8_t)(255 - 255 * distAlpha));
             }
         }
     }

@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <SDL.h>
+#include "glm/vec2.hpp"
 
 namespace Utils
 {
@@ -10,6 +11,7 @@ namespace Utils
     //
     // Math
     //
+    glm::vec2 vec2Rotated(glm::vec2 vec, float angle);
 
     //
     // Vector

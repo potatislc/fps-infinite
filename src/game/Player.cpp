@@ -13,10 +13,12 @@ void Player::update()
 {
     const float lookDir = (float)(InputMap::isBoundKeyDown("LookRight") - InputMap::isBoundKeyDown("LookLeft"));
     rotationY += lookDir * Game::settings.mouseSens * App::deltaTime;
-
-    glm::vec2 moveDir =
-            {InputMap::isBoundKeyDown("Right") - InputMap::isBoundKeyDown("Left"),
-             InputMap::isBoundKeyDown("Down") - InputMap::isBoundKeyDown("Up")};
+    glm::vec2 moveDir = {InputMap::isBoundKeyDown("Right") - InputMap::isBoundKeyDown("Left"),
+                         InputMap::isBoundKeyDown("Down") - InputMap::isBoundKeyDown("Up")};
+    moveVelocity = glm::clamp(
+            moveVelocity + moveDir * accel * App::deltaTime,
+            glm::vec2(-1, -1),
+            glm::vec2(1, 1));
 
     if (moveDir.x == 0)
     {
@@ -30,20 +32,20 @@ void Player::update()
         moveVelocity.y -= (float)Utils::sgn(moveVelocity.y) * accel * App::deltaTime;
     }
 
-    moveVelocity = glm::clamp(
-            moveVelocity + moveDir * accel * App::deltaTime,
-            glm::vec2(-1, -1),
-            glm::vec2(1, 1));
-
     glm::vec2 rotatedMoveVel = Utils::vec2Rotated(moveVelocity, rotationY);
     position += (glm::vec3){rotatedMoveVel.x, 0, rotatedMoveVel.y} * speed * App::deltaTime;
 }
 
 void Player::draw(SDL_Renderer *renderer)
 {
+    // Debug line
     SDL_Point screenCenter = {(int)App::renderer.viewportCenter.x, (int)App::renderer.viewportCenter.y};
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_RenderDrawLine(renderer, screenCenter.x, screenCenter.y, (float)screenCenter.x + moveVelocity.x * 16, (float)screenCenter.y + moveVelocity.y * 16);
+    SDL_RenderDrawLine(renderer,
+                       screenCenter.x,
+                       screenCenter.y,
+                       screenCenter.x + (int)(moveVelocity.x * 16),
+                       screenCenter.y + (int)(moveVelocity.y * 16));
 }
 
 Player::Player(glm::vec3 position, float rotationY, int hp)

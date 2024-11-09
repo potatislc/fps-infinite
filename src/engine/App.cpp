@@ -8,7 +8,7 @@ AppDebug App::appDebug;
 uint16_t App::targetFps = 60;
 double App::frameTime = 1. / (double)targetFps;
 double App::timeScale = 1.;
-double App::deltaTime = frameTime * timeScale;
+float App::deltaTime = (float)(frameTime * timeScale);
 
 bool App::init()
 {
@@ -34,7 +34,7 @@ void App::run(IGameObject& game)
     {
         frameStart = SDL_GetPerformanceCounter();
         currentTime = SDL_GetPerformanceCounter();
-        deltaTime = ((double)(currentTime - lastTime) / performanceFrequency) * timeScale;
+        deltaTime = (float)(((double)(currentTime - lastTime) / performanceFrequency) * timeScale);
         lastTime = currentTime;
 
         while (SDL_PollEvent(&event) != 0)

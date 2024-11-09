@@ -8,6 +8,7 @@
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 427, 240});
 Camera3D Game::camera3D = Camera3D(90);
+Game::Settings Game::settings;
 
 Game::Game()
 {
@@ -16,6 +17,8 @@ Game::Game()
     InputMap::addKeyBinding("Right", SDLK_d);
     InputMap::addKeyBinding("Up", SDLK_w);
     InputMap::addKeyBinding("Down", SDLK_s);
+    InputMap::addKeyBinding("LookLeft", SDLK_LEFT);
+    InputMap::addKeyBinding("LookRight", SDLK_RIGHT);
 }
 
 void Game::start()

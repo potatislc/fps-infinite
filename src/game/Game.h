@@ -10,8 +10,15 @@
 class Game : public IGameObject
 {
 public:
+    class Settings
+    {
+    public:
+        float mouseSens = 10.f;
+    };
+
     static Renderer::ViewPortCamera mapCamera;
     static Camera3D camera3D;
+    static Settings settings;
 
     Game();
     ~Game() override = default;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AEntity.h"
+#include "engine/utils/Utils.h"
 
 template <typename T>
 class EntityScene : public AEntity
@@ -17,7 +18,14 @@ public:
 
     void addChild(const std::shared_ptr<T>& child);
     void removeChild(T* child);
+    size_t getSize();
 };
+
+template<typename T>
+size_t EntityScene<T>::getSize()
+{
+    return children.size();
+}
 
 template <typename T>
 void EntityScene<T>::start()

@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <SDL.h>
 #include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
 
 namespace Utils
 {
@@ -16,6 +17,7 @@ namespace Utils
         return (T(0) < val) - (val < T(0));
     }
     glm::vec2 vec2Rotated(glm::vec2 vec, float angle);
+    float vec3Distance(const glm::vec3& a, const glm::vec3& b);
 
     //
     // Vector

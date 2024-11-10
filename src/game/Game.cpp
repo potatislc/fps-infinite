@@ -60,6 +60,7 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_RenderFillRect(renderer, &rect);
     world.draw(renderer);
     camera3D.drawFovLines(renderer);
+    drawEntitiesDepth(renderer);
     drawEntitiesToMap(renderer);
 }
 
@@ -71,7 +72,7 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
     {
         auto* pixels = (uint32_t*)mapSurface->pixels;
         glm::vec2 worldCenter = {currentPlayer->position.x, currentPlayer->position.z};
-        float worldAngle = currentPlayer->rotationY;
+        float worldAngle = -currentPlayer->rotationY;
         for (const auto& entity : world.children)
         {
             glm::vec2 relativePos =
@@ -97,4 +98,23 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
 
     SDL_FreeSurface(mapSurface);
     SDL_DestroyTexture(mapTexture);
+}
+
+void Game::drawEntitiesDepth(SDL_Renderer* renderer)
+{
+    glm::vec3 cameraPos = camera3D.position;
+
+    std::sort(world.children.begin(), world.children.end(),
+              [&cameraPos](const std::shared_ptr<Entity3D>& a, const std::shared_ptr<Entity3D>& b) {
+                  float distA = (a->position.x - cameraPos.x) * (a->position.x - cameraPos.x)
+                                       + (a->position.z - cameraPos.z) * (a->position.z - cameraPos.z);
+                  float distB = (b->position.x - cameraPos.x) * (b->position.x - cameraPos.x)
+                                       + (b->position.z - cameraPos.z) * (b->position.z - cameraPos.z);
+                  return distA > distB;
+              });
+
+    for (const std::shared_ptr<Entity3D>& entity : world.children)
+    {
+        camera3D.drawTexture(renderer, entity->position);
+    }
 }

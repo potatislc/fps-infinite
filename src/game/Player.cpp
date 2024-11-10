@@ -11,7 +11,7 @@ void Player::start()
 
 void Player::update()
 {
-    const float lookDir = (float)(InputMap::isBoundKeyDown("LookRight") - InputMap::isBoundKeyDown("LookLeft"));
+    const float lookDir = (float)(InputMap::isBoundKeyDown("LookLeft") - InputMap::isBoundKeyDown("LookRight"));
     rotationY += lookDir * Game::settings.mouseSens * App::deltaTime;
     glm::vec2 moveDir = {InputMap::isBoundKeyDown("Right") - InputMap::isBoundKeyDown("Left"),
                          InputMap::isBoundKeyDown("Down") - InputMap::isBoundKeyDown("Up")};

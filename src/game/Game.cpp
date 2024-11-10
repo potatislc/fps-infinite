@@ -7,7 +7,7 @@
 
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 427, 240});
-Camera3D Game::camera3D = Camera3D(90);
+Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90);
 Game::Settings Game::settings;
 
 Game::Game()
@@ -45,6 +45,9 @@ void Game::start()
 void Game::update()
 {
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
+
+    camera3D.position = currentPlayer->position;
+    camera3D.rotationY = currentPlayer->rotationY;
     world.update();
 }
 
@@ -56,30 +59,26 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
     SDL_RenderFillRect(renderer, &rect);
     world.draw(renderer);
-    camera3D.drawFov(renderer);
-    drawMapEntities(renderer, world);
+    camera3D.drawFovLines(renderer);
+    drawEntitiesToMap(renderer);
 }
 
-void Game::drawMapEntities(SDL_Renderer* renderer, const EntityScene<Entity3D>& entityScene)
+void Game::drawEntitiesToMap(SDL_Renderer* renderer)
 {
-
-    SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000); // GetWindowSurface also
+    SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
     SDL_LockSurface(mapSurface);
     {
         auto* pixels = (uint32_t*)mapSurface->pixels;
         glm::vec2 worldCenter = {currentPlayer->position.x, currentPlayer->position.z};
         float worldAngle = currentPlayer->rotationY;
-        SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
-        float mapRadiusSq = (float)mapCenter.x * (float)mapCenter.y;
-        for (const auto& entity : entityScene.children)
+        for (const auto& entity : world.children)
         {
             glm::vec2 relativePos =
                     Utils::vec2Rotated({entity->position.x - worldCenter.x, entity->position.z - worldCenter.y}, -worldAngle);
             SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
             float mapDistSq = std::pow(mapPos.x - mapCenter.x, 2) + std::pow(mapPos.y - mapCenter.y, 2);
 
-            // Hide pixels out of range
             float distAlpha = mapDistSq / mapRadiusSq;
             if (distAlpha < 1.f)
             {

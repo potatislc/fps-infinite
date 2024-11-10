@@ -6,8 +6,8 @@
 class Entity3D : public AEntity
 {
 public:
-    glm::vec3 position;
     float rotationY;
+    glm::vec3 position;
 
     Entity3D(glm::vec3 position, float rotationY)
         : position(position), rotationY(rotationY) {};

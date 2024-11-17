@@ -9,6 +9,7 @@ class Camera3D : public Entity3D
 public:
     float fov;
     float halfFov;
+    float fovScale;
 
     Camera3D(glm::vec3 position, float rotationY, float fov);
     void drawFovLines(SDL_Renderer* renderer) const;

@@ -8,7 +8,7 @@
 Camera3D::Camera3D(glm::vec3 position, float rotationY, float fov) :
     Entity3D(position, rotationY), fov(fov * (float) M_PI / 180), halfFov((fov / 2) * (float) M_PI / 180)
 {
-
+    fovScale = tan(halfFov);
 }
 
 void Camera3D::drawFovLines(SDL_Renderer* renderer) const
@@ -24,24 +24,21 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
 }
 
 void Camera3D::drawTexture(SDL_Renderer* renderer, glm::vec3 worldPoint) {
-    glm::vec2 worldPoint2D = {worldPoint.x, worldPoint.z};
-    glm::vec2 position2D = {position.x, position.z};
-    glm::vec2 pointDir = glm::normalize(position2D - worldPoint2D);
-    glm::vec2 camDir = glm::normalize(glm::vec2(glm::cos(rotationY), glm::sin(rotationY)));
-    float pointAngle = std::atan2(pointDir.y, pointDir.x);
-    float camAngle = std::atan2(camDir.y, camDir.x);
-    float angleBetween = std::atan2(std::sin(pointAngle - camAngle), std::cos(pointAngle - camAngle));
-    if (std::abs(angleBetween) > halfFov) return;
-    float d = glm::distance(worldPoint2D, position2D);
+    glm::vec3 pointDir = position - worldPoint;
+    float pointAngle = std::atan2(pointDir.z, pointDir.x);
+    float angleBetween = std::atan2(std::sin(pointAngle - rotationY), std::cos(pointAngle - rotationY));
+    if (angleBetween > halfFov || angleBetween < -halfFov) return;
+    pointDir.y = 0;
+    float d = glm::length(pointDir);
     float h = glm::cos(angleBetween) * d;
 
-    float scale = (8.f / h) * (32.f / tan(halfFov));
+    float scale = (8.f / h) * (32.f / fovScale);
 
     float normalizedAngle = angleBetween / halfFov; // Range [-1, 1]
-    int screenX = (int)((normalizedAngle + 1.0f) * 0.5f * (float)App::renderer.viewport.w);
+    int screenX = static_cast<int>((normalizedAngle + 1.0f) * 0.5f * (float)App::renderer.viewport.w);
 
     SDL_Rect dst = {screenX - (int)scale / 2,
-                    (int)App::renderer.viewportCenter.y + (int)(worldPoint.y * scale) - (int)scale / 2,
+                    (int)(App::renderer.viewportCenter.y + (worldPoint.y * scale) - scale / 2),
                     (int)scale,
                     (int)scale};
 

@@ -7,7 +7,7 @@
 
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
-Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90);
+Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 180);
 Game::Settings Game::settings;
 
 Game::Game()

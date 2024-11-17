@@ -5,8 +5,8 @@
 #include "ResourceLoader.h"
 #include "glm/gtc/constants.hpp"
 
-Camera3D::Camera3D(glm::vec3 position, float rotationY, float fov) :
-    Entity3D(position, rotationY), fov(fov * (float) M_PI / 180), halfFov((fov / 2) * (float) M_PI / 180)
+Camera3D::Camera3D(glm::vec3 position, float rotationY, float fov, int farPlane) :
+    Entity3D(position, rotationY), fov(fov * (float) M_PI / 180), halfFov((fov / 2) * (float) M_PI / 180), farPlane(farPlane)
 {
     fovScale = tan(halfFov);
 }
@@ -24,12 +24,12 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
 }
 
 void Camera3D::drawTexture(SDL_Renderer* renderer, glm::vec3 worldPoint) {
-    glm::vec3 pointDir = position - worldPoint;
-    float pointAngle = std::atan2(pointDir.z, pointDir.x);
+    glm::vec2 pointDir2D = {position.x - worldPoint.x, position.z - worldPoint.z};
+    float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
     float angleBetween = std::atan2(std::sin(pointAngle - rotationY), std::cos(pointAngle - rotationY));
     if (angleBetween > halfFov || angleBetween < -halfFov) return;
-    pointDir.y = 0;
-    float d = glm::length(pointDir);
+    float d = glm::length(pointDir2D);
+    if ((int)d > farPlane) return; // Probably won't be needed in final product since it's rendered in cells
     float h = glm::cos(angleBetween) * d;
 
     float scale = (8.f / h) * (32.f / fovScale);

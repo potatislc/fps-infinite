@@ -10,8 +10,9 @@ public:
     float fov;
     float halfFov;
     float fovScale;
+    int farPlane;
 
-    Camera3D(glm::vec3 position, float rotationY, float fov);
+    Camera3D(glm::vec3 position, float rotationY, float fov, int farPlane);
     void drawFovLines(SDL_Renderer* renderer) const;
     void drawTexture(SDL_Renderer* renderer, glm::vec3 worldPos);
 };

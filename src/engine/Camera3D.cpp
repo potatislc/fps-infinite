@@ -24,7 +24,6 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
 }
 
 void Camera3D::drawTexture(SDL_Renderer* renderer, glm::vec3 worldPoint) {
-    SDL_Point center = {(int)App::renderer.viewportCenter.x, (int)App::renderer.viewportCenter.y};
     glm::vec2 worldPoint2D = {worldPoint.x, worldPoint.z};
     glm::vec2 position2D = {position.x, position.z};
     glm::vec2 pointDir = glm::normalize(position2D - worldPoint2D);
@@ -36,15 +35,15 @@ void Camera3D::drawTexture(SDL_Renderer* renderer, glm::vec3 worldPoint) {
     float d = glm::distance(worldPoint2D, position2D);
     float h = glm::cos(angleBetween) * d;
 
-    int scale = static_cast<int>((16.f / h) * (32.f / tan(halfFov)));
+    float scale = (8.f / h) * (32.f / tan(halfFov));
 
     float normalizedAngle = angleBetween / halfFov; // Range [-1, 1]
     int screenX = (int)((normalizedAngle + 1.0f) * 0.5f * (float)App::renderer.viewport.w);
 
-    SDL_Rect dst = {screenX - scale / 2,
-                    (int)App::renderer.viewportCenter.y - scale / 2,
-                    scale,
-                    scale};
+    SDL_Rect dst = {screenX - (int)scale / 2,
+                    (int)App::renderer.viewportCenter.y + (int)(worldPoint.y * scale) - (int)scale / 2,
+                    (int)scale,
+                    (int)scale};
 
     SDL_RenderCopy(renderer,
                    ResourceLoader::loadedTextures.playerMapIcon.get(),

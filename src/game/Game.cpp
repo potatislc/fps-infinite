@@ -28,10 +28,10 @@ void Game::start()
     world.addChild(currentPlayer);
 
     // Test entities
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 0, 6}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, 0, -12}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 0, 27}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, 0, -36}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, -1, 6}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -2, -12}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, -10, 27}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, 6, -36}, 0));
 
     for (int i = 0; i < 64; i++)
     {

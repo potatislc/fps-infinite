@@ -6,7 +6,7 @@
 #include "engine/App.h"
 
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
-Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 427, 240});
+Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90);
 Game::Settings Game::settings;
 
@@ -47,7 +47,7 @@ void Game::update()
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
 
     camera3D.position = currentPlayer->position;
-    camera3D.rotationY = currentPlayer->rotationY;
+    camera3D.rotationY = currentPlayer->rotationY + (float)(M_PI / 2);
     world.update();
 }
 
@@ -58,10 +58,11 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_SetRenderDrawColor(renderer, 50, 0, 175, 255);
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
     SDL_RenderFillRect(renderer, &rect);
-    world.draw(renderer);
-    camera3D.drawFovLines(renderer);
+    drawBackground(renderer);
     drawEntitiesDepth(renderer);
     drawEntitiesToMap(renderer);
+    world.draw(renderer);
+    camera3D.drawFovLines(renderer);
 }
 
 void Game::drawEntitiesToMap(SDL_Renderer* renderer)
@@ -116,4 +117,24 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
     {
         if (entity.get() != currentPlayer.get()) camera3D.drawTexture(renderer, entity->position);
     }
+}
+
+void Game::drawBackground(SDL_Renderer* renderer)
+{
+    SDL_Rect dst = *ResourceLoader::loadedTextures.testBg.getRect();
+    dst.x = (int)((dst.w / M_PI_2) * -camera3D.rotationY * .25f) % dst.w;
+
+    SDL_RenderCopy(
+            renderer,
+            ResourceLoader::loadedTextures.testBg.get(),
+            ResourceLoader::loadedTextures.testBg.getRect(),
+            &dst);
+
+    dst.x -= dst.w * Utils::sgn(dst.x);
+
+    SDL_RenderCopy(
+            renderer,
+            ResourceLoader::loadedTextures.testBg.get(),
+            ResourceLoader::loadedTextures.testBg.getRect(),
+            &dst);
 }

@@ -14,8 +14,8 @@ public:
     class LoadedTextures
     {
     public:
-        // Map Icons
         UniqueTexture playerMapIcon;
+        UniqueTexture testBg;
 
         void loadAll();
     };

@@ -34,6 +34,6 @@ SDL_Texture *ResourceLoader::loadTexture(const std::string& path)
 
 void ResourceLoader::LoadedTextures::loadAll()
 {
-    // Map Icons
     playerMapIcon.set(loadTexture(TEXTURES_PATH"/map_icons/player.png"));
+    testBg.set(loadTexture(TEXTURES_PATH"/backgrounds/test-bg.png"));
 }

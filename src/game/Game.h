@@ -13,7 +13,7 @@ public:
     class Settings
     {
     public:
-        float mouseSens = 4.f;
+        float mouseSens = 2.f;
     };
 
     static Renderer::ViewPortCamera mapCamera;
@@ -35,4 +35,5 @@ private:
 
     void drawEntitiesDepth(SDL_Renderer* renderer);
     void drawEntitiesToMap(SDL_Renderer* renderer);
+    void drawBackground(SDL_Renderer* renderer);
 };

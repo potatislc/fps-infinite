@@ -72,11 +72,10 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
     {
         auto* pixels = (uint32_t*)mapSurface->pixels;
         glm::vec2 worldCenter = {currentPlayer->position.x, currentPlayer->position.z};
-        float worldAngle = -currentPlayer->rotationY;
         for (const auto& entity : world.children)
         {
             glm::vec2 relativePos =
-                    Utils::vec2Rotated({entity->position.x - worldCenter.x, entity->position.z - worldCenter.y}, -worldAngle);
+                    Utils::vec2Rotated({entity->position.x - worldCenter.x, entity->position.z - worldCenter.y}, -currentPlayer->rotationY);
             SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
             float mapDistSq = std::pow(mapPos.x - mapCenter.x, 2) + std::pow(mapPos.y - mapCenter.y, 2);
 
@@ -115,6 +114,6 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 
     for (const std::shared_ptr<Entity3D>& entity : world.children)
     {
-        camera3D.drawTexture(renderer, entity->position);
+        if (entity.get() != currentPlayer.get()) camera3D.drawTexture(renderer, entity->position);
     }
 }

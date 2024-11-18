@@ -15,5 +15,5 @@ public:
 private:
     glm::vec2 moveVelocity = {0, 0};
     const float speed = 30;
-    const float accel = 10;
+    const float accel = 5;
 };

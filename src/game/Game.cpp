@@ -104,18 +104,21 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 {
     glm::vec3 cameraPos = camera3D.position;
 
-    std::sort(world.children.begin(), world.children.end(),
-              [&cameraPos](const std::shared_ptr<Entity3D>& a, const std::shared_ptr<Entity3D>& b) {
-                  float distA = (a->position.x - cameraPos.x) * (a->position.x - cameraPos.x)
-                                       + (a->position.z - cameraPos.z) * (a->position.z - cameraPos.z);
-                  float distB = (b->position.x - cameraPos.x) * (b->position.x - cameraPos.x)
-                                       + (b->position.z - cameraPos.z) * (b->position.z - cameraPos.z);
-                  return distA > distB;
-              });
+    std::vector<std::pair<float, std::shared_ptr<Entity3D>>> entityDistances;
 
-    for (const std::shared_ptr<Entity3D>& entity : world.children)
-    {
-        if (entity.get() != currentPlayer.get()) camera3D.drawTexture(renderer, entity->position);
+    for (const auto& entity : world.children) {
+        if (entity.get() != currentPlayer.get()) {
+            float distSquared = (entity->position.x - cameraPos.x) * (entity->position.x - cameraPos.x) +
+                                (entity->position.z - cameraPos.z) * (entity->position.z - cameraPos.z);
+            entityDistances.emplace_back(distSquared, entity);
+        }
+    }
+
+    std::sort(entityDistances.begin(), entityDistances.end(),
+              [](const auto& a, const auto& b) { return a.first > b.first; });
+
+    for (const auto& [_, entity] : entityDistances) {
+        camera3D.drawTexture(renderer, entity->position);
     }
 }
 

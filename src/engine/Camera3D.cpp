@@ -32,10 +32,15 @@ void Camera3D::drawTexture(SDL_Renderer* renderer, glm::vec3 worldPoint) {
     if ((int)d > farPlane) return; // Probably won't be needed in final product since it's rendered in cells
     float h = glm::cos(angleBetween) * d;
 
-    float scale = (8.f / h) * (32.f / fovScale);
+    int frameSize = ResourceLoader::loadedTextures.swarm.getRect()->h;
+    float scale = (16.f / h) * ((float)frameSize / fovScale);
 
     float normalizedAngle = angleBetween / halfFov; // Range [-1, 1]
     int screenX = static_cast<int>((normalizedAngle + 1.0f) * 0.5f * (float)App::renderer.viewport.w);
+
+    float wrappedAngle = fmod(pointAngle + 2 * M_PI, 2 * M_PI);
+    int directionIndex = static_cast<int>(wrappedAngle / (M_PI / 4));
+    SDL_Rect src = {directionIndex * frameSize, 0, frameSize, frameSize};
 
     SDL_Rect dst = {screenX - (int)scale / 2,
                     (int)(App::renderer.viewportCenter.y + (worldPoint.y * scale) - scale / 2),
@@ -43,7 +48,7 @@ void Camera3D::drawTexture(SDL_Renderer* renderer, glm::vec3 worldPoint) {
                     (int)scale};
 
     SDL_RenderCopy(renderer,
-                   ResourceLoader::loadedTextures.playerMapIcon.get(),
-                   ResourceLoader::loadedTextures.playerMapIcon.getRect(),
+                   ResourceLoader::loadedTextures.swarm.get(),
+                   &src,
                    &dst);
 }

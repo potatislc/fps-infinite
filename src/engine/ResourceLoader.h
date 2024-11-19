@@ -16,6 +16,7 @@ public:
     public:
         UniqueTexture playerMapIcon;
         UniqueTexture testBg;
+        UniqueTexture swarm;
 
         void loadAll();
     };

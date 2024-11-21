@@ -24,6 +24,7 @@ Game::Game()
 void Game::start()
 {
     ResourceLoader::loadedTextures.loadAll();
+    camera3D.initFloorSurface();
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
 
@@ -37,7 +38,7 @@ void Game::start()
     {
         for (int j = 0; j < 64; j++)
         {
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 8 - 256, 0, j * 8 - 256}, 0));
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 16 - 8 * 64, 0, j * 16 - 8 * 64}, 0));
         }
     }
 }
@@ -106,18 +107,28 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 
     std::vector<std::pair<float, std::shared_ptr<Entity3D>>> entityDistances;
 
-    for (const auto& entity : world.children) {
-        if (entity.get() != currentPlayer.get()) {
+    for (const auto& entity : world.children)
+    {
+
+        if (entity.get() != currentPlayer.get())
+        {
+            glm::vec2 pointDir2D = {camera3D.position.x - entity->position.x, camera3D.position.z - entity->position.z};
+            float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
+            float angleBetween = std::atan2(std::sin(pointAngle - camera3D.rotationY), std::cos(pointAngle - camera3D.rotationY));
             float distSquared = (entity->position.x - cameraPos.x) * (entity->position.x - cameraPos.x) +
                                 (entity->position.z - cameraPos.z) * (entity->position.z - cameraPos.z);
-            entityDistances.emplace_back(distSquared, entity);
+            if (angleBetween < camera3D.halfFov && angleBetween > -camera3D.halfFov && distSquared < camera3D.farPlane * camera3D.farPlane)
+            {
+                entityDistances.emplace_back(distSquared, entity);
+            }
         }
     }
 
     std::sort(entityDistances.begin(), entityDistances.end(),
               [](const auto& a, const auto& b) { return a.first > b.first; });
 
-    for (const auto& [_, entity] : entityDistances) {
+    for (const auto& [_, entity] : entityDistances)
+    {
         camera3D.drawTexture(renderer, entity->position);
     }
 }

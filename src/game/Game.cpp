@@ -38,7 +38,7 @@ void Game::start()
     {
         for (int j = 0; j < 64; j++)
         {
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 16 - 8 * 64, 0, j * 16 - 8 * 64}, 0));
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 1 - 1 * 64, 0, j * 1 - 1 * 64}, 0));
         }
     }
 }
@@ -105,7 +105,7 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 {
     glm::vec3 cameraPos = camera3D.position;
 
-    std::vector<std::pair<float, std::shared_ptr<Entity3D>>> entityDistances;
+    std::vector<std::pair<float, Entity3D*>> entityDistances;
 
     for (const auto& entity : world.children)
     {
@@ -119,7 +119,7 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
                                 (entity->position.z - cameraPos.z) * (entity->position.z - cameraPos.z);
             if (angleBetween < camera3D.halfFov && angleBetween > -camera3D.halfFov && distSquared < camera3D.farPlane * camera3D.farPlane)
             {
-                entityDistances.emplace_back(distSquared, entity);
+                entityDistances.emplace_back(distSquared, entity.get());
             }
         }
     }

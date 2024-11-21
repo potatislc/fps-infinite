@@ -24,7 +24,7 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
     // SDL_RenderDrawLine(renderer, center.x, center.y, center.x, 0);
 }
 
-void Camera3D::drawTexture(SDL_Renderer* renderer, glm::vec3 worldPoint) {
+void Camera3D::drawTexture(SDL_Renderer* renderer, const glm::vec3& worldPoint) {
     glm::vec2 pointDir2D = {position.x - worldPoint.x, position.z - worldPoint.z};
     float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
     float angleBetween = std::atan2(std::sin(pointAngle - rotationY), std::cos(pointAngle - rotationY));

@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <unordered_map>
 #include <string>
+#include "glm/vec2.hpp"
 
 class InputMap
 {
@@ -31,6 +32,8 @@ public:
 
     static std::unordered_map<uint8_t, bool> mouseMap;
     static std::unordered_map<std::string, MouseBinding> boundMouseButtons;
+    static glm::vec2 mousePosition;
+    static glm::vec2 mouseMotion;
 
     static void addKeyBinding(const std::string& name, SDL_Keycode code);
     static Status getBoundKeyInput(const std::string& name);

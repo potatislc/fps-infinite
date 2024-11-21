@@ -1,6 +1,7 @@
 #include "SDL2/SDL.h"
 #include "App.h"
 #include "InputMap.h"
+#include "glm/glm.hpp"
 
 Window App::window;
 Renderer App::renderer;
@@ -37,6 +38,12 @@ void App::run(IGameObject& game)
         deltaTime = (float)(((double)(currentTime - lastTime) / performanceFrequency) * timeScale);
         lastTime = currentTime;
 
+        int mouseX, mouseY;
+        SDL_GetRelativeMouseState(&mouseX, &mouseY);
+        InputMap::mouseMotion = {mouseX, mouseY};
+        SDL_GetMouseState(&mouseX, &mouseY);
+        InputMap::mousePosition = {mouseX, mouseY};
+
         while (SDL_PollEvent(&event) != 0)
         {
             if (event.type == SDL_QUIT)
@@ -45,29 +52,17 @@ void App::run(IGameObject& game)
                 break;
             }
 
-            if (InputMap::keyMap.count(event.key.keysym.sym))
+            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
             {
-                switch(event.type)
+                if (InputMap::keyMap.count(event.key.keysym.sym))
                 {
-                    case SDL_KEYDOWN:
-                        InputMap::keyMap[event.key.keysym.sym] = true;
-                        break;
-
-                    case SDL_KEYUP:
-                        InputMap::keyMap[event.key.keysym.sym] = false;
-                        break;
-
-                    case SDL_MOUSEBUTTONDOWN:
-                        InputMap::mouseMap[event.button.button] = true;
-                        break;
-
-                    case SDL_MOUSEBUTTONUP:
-                        InputMap::mouseMap[event.button.button] = false;
-                        break;
-
-                    default:
-                        break;
+                    InputMap::keyMap[event.key.keysym.sym] = (event.type == SDL_KEYDOWN);
                 }
+            }
+
+            if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+            {
+                InputMap::mouseMap[event.button.button] = (event.type == SDL_MOUSEBUTTONDOWN);
             }
         }
 

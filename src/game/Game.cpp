@@ -62,7 +62,7 @@ void Game::draw(SDL_Renderer *renderer)
     drawEntitiesDepth(renderer);
     drawEntitiesToMap(renderer);
     world.draw(renderer);
-    camera3D.drawFovLines(renderer);
+    // camera3D.drawFovLines(renderer);
 }
 
 void Game::drawEntitiesToMap(SDL_Renderer* renderer)

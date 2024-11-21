@@ -13,7 +13,7 @@ public:
     class Settings
     {
     public:
-        float mouseSens = 2.f;
+        float mouseSens = .5f;
     };
 
     static Renderer::ViewPortCamera mapCamera;

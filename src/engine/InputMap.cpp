@@ -21,6 +21,9 @@ std::unordered_map<std::string, InputMap::MouseBinding> InputMap::boundMouseButt
                 INPUT_BINDING("Dig", SDL_BUTTON_LEFT)
         };
 
+glm::vec2 InputMap::mousePosition = {0, 0};
+glm::vec2 InputMap::mouseMotion = {0, 0};
+
 // Input methods
 
 #define SET_BINDING_STATUS(binding_status, S_ONCE, S_CONTINUOUS) binding_status = (binding_status != S_ONCE && binding_status != S_CONTINUOUS) ? S_ONCE : S_CONTINUOUS

@@ -60,6 +60,7 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
     SDL_RenderFillRect(renderer, &rect);
     drawBackground(renderer);
+    camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor.get());
     drawEntitiesDepth(renderer);
     drawEntitiesToMap(renderer);
     world.draw(renderer);

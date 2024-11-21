@@ -54,12 +54,26 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Texture* floor)
 {
     SDL_LockSurface(floorSurface);
     {
+        auto* pixels = (uint32_t*)floorSurface->pixels;
 
+        for (int i = 0; i < floorRect.w * floorRect.h; i++)
+        {
+            pixels[i] = SDL_MapRGB(floorSurface->format, 0, 0, (int)(i / floorRect.w));
+        }
     }
     SDL_UnlockSurface(floorSurface);
+
+    SDL_Texture* floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
+    SDL_UpdateTexture(floorTexture, &floorRect, floorSurface->pixels, floorSurface->pitch);
+    SDL_Rect src = floorRect;
+    SDL_Rect dst = floorRect;
+    dst.y = (int)App::renderer.viewportCenter.y;
+
+    SDL_RenderCopy(renderer, floorTexture, &src, &dst);
 }
 
 void Camera3D::initFloorSurface()
 {
-    floorSurface = SDL_CreateRGBSurface(0, App::renderer.viewport.w, (int)App::renderer.viewportCenter.y, 32, 0, 0, 0, 0);
+    floorRect = {0, 0, App::renderer.viewport.w, (int)App::renderer.viewportCenter.y};
+    floorSurface = SDL_CreateRGBSurface(0, floorRect.w, floorRect.h, 32, 0, 0, 0, 0);
 }

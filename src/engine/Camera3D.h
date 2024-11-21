@@ -19,4 +19,5 @@ public:
     void drawFloor(SDL_Renderer* renderer, SDL_Texture* floor);
 private:
     SDL_Surface* floorSurface;
+    SDL_Rect floorRect = {0, 0};
 };

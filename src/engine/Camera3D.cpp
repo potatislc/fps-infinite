@@ -24,7 +24,8 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
     // SDL_RenderDrawLine(renderer, center.x, center.y, center.x, 0);
 }
 
-void Camera3D::drawTexture(SDL_Renderer* renderer, const glm::vec3& worldPoint) {
+void Camera3D::drawTexture3D(SDL_Renderer* renderer, const glm::vec3& worldPoint)
+{
     glm::vec2 pointDir2D = {position.x - worldPoint.x, position.z - worldPoint.z};
     float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
     float angleBetween = std::atan2(std::sin(pointAngle - rotationY), std::cos(pointAngle - rotationY));
@@ -50,30 +51,84 @@ void Camera3D::drawTexture(SDL_Renderer* renderer, const glm::vec3& worldPoint) 
                    &dst);
 }
 
-void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Texture* floor)
+/*void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floor)
 {
-    SDL_LockSurface(floorSurface);
+    SDL_LockSurface(projectedFloor);
     {
-        auto* pixels = (uint32_t*)floorSurface->pixels;
+        auto* pixels = (uint32_t*)projectedFloor->pixels;
 
-        for (int i = 0; i < floorRect.w * floorRect.h; i++)
+        for (int i = 0; i < projectedFloorRect.w * projectedFloorRect.h; i++)
         {
-            pixels[i] = SDL_MapRGB(floorSurface->format, 0, 0, (int)(i / floorRect.w));
+            pixels[i] = SDL_MapRGB(projectedFloor->format, 0, 0, (int)(i / projectedFloorRect.w));
         }
     }
-    SDL_UnlockSurface(floorSurface);
+    SDL_UnlockSurface(projectedFloor);
 
-    SDL_Texture* floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
-    SDL_UpdateTexture(floorTexture, &floorRect, floorSurface->pixels, floorSurface->pitch);
-    SDL_Rect src = floorRect;
-    SDL_Rect dst = floorRect;
+    SDL_Texture* floorTexture = SDL_CreateTextureFromSurface(renderer, projectedFloor);
+    SDL_UpdateTexture(floorTexture, &projectedFloorRect, projectedFloor->pixels, projectedFloor->pitch);
+    SDL_Rect src = projectedFloorRect;
+    SDL_Rect dst = projectedFloorRect;
     dst.y = (int)App::renderer.viewportCenter.y;
 
     SDL_RenderCopy(renderer, floorTexture, &src, &dst);
+}*/
+
+void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
+{
+    SDL_LockSurface(projectedFloor);
+    {
+        auto* pixels = (uint32_t*)projectedFloor->pixels;
+
+        int w = projectedFloorRect.w;
+        int h = projectedFloorRect.h;
+        glm::vec2 cameraDir = {std::cos(rotationY), std::sin(rotationY)};
+        glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x}; // Perpendicular to camera direction
+
+        for (int y = 1; y < h; y++)
+        {
+            float rowDistance = (h / (float)(2 * ((h - y) - App::renderer.viewportCenter.y))) / fovScale;
+
+            for (int x = 0; x < w; x++)
+            {
+                float screenX = (x / (float)w) * 2.0f - 1.0f;
+                glm::vec2 floorPoint = (glm::vec2){position.x / 2, position.z / 2} +
+                                       cameraDir * rowDistance +
+                                       cameraRight * (screenX * rowDistance);
+                int floorWidth = floorTexture.getRect()->w;
+                int floorHeight = floorTexture.getRect()->h;
+                int texX = static_cast<int>(floorPoint.x * 16) % floorWidth;
+                int texY = static_cast<int>(floorPoint.y * 16) % floorHeight;
+                if (texX < 0) texX += floorWidth;
+                if (texY < 0) texY += floorHeight;
+
+                uint32_t* floorPixels;
+                int floorPitch;
+                SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
+                uint32_t color = floorPixels[texY * (floorPitch / sizeof(uint32_t)) + texX];
+                SDL_UnlockTexture(floorTexture.get());
+
+                pixels[y * w + x] = color;
+            }
+        }
+    }
+    SDL_UnlockSurface(projectedFloor);
+
+    SDL_Texture* finalFloorTexture = SDL_CreateTextureFromSurface(renderer, projectedFloor);
+    SDL_UpdateTexture(finalFloorTexture, &projectedFloorRect, projectedFloor->pixels, projectedFloor->pitch);
+
+    SDL_Rect src = projectedFloorRect;
+    SDL_Rect dst = projectedFloorRect;
+    dst.y = (int)App::renderer.viewportCenter.y;
+
+    SDL_RenderCopy(renderer, finalFloorTexture, &src, &dst);
+    // SDL_RenderCopy(renderer, floorTexture.get(), &src, &dst);
+
+    SDL_DestroyTexture(finalFloorTexture);
 }
+
 
 void Camera3D::initFloorSurface()
 {
-    floorRect = {0, 0, App::renderer.viewport.w, (int)App::renderer.viewportCenter.y};
-    floorSurface = SDL_CreateRGBSurface(0, floorRect.w, floorRect.h, 32, 0, 0, 0, 0);
+    projectedFloorRect = {0, 0, App::renderer.viewport.w, (int)App::renderer.viewportCenter.y};
+    projectedFloor = SDL_CreateRGBSurface(0, projectedFloorRect.w, projectedFloorRect.h, 32, 0, 0, 0, 0);
 }

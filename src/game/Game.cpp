@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include "Game.h"
 #include "engine/InputMap.h"
 #include "Player.h"
@@ -38,7 +39,7 @@ void Game::start()
     {
         for (int j = 0; j < 64; j++)
         {
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 1 - 1 * 64, 0, j * 1 - 1 * 64}, 0));
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 4 - 1 * 64, 0, j * 4 - 1 * 64}, 0));
         }
     }
 }
@@ -59,10 +60,12 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_SetRenderDrawColor(renderer, 50, 0, 175, 255);
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
     SDL_RenderFillRect(renderer, &rect);
+
     drawBackground(renderer);
-    camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor.get());
+    camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor);
     drawEntitiesDepth(renderer);
     drawEntitiesToMap(renderer);
+    drawMap(renderer);
     world.draw(renderer);
     // camera3D.drawFovLines(renderer);
 }
@@ -92,14 +95,9 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
     }
     SDL_UnlockSurface(mapSurface);
 
-    SDL_Texture* mapTexture = SDL_CreateTextureFromSurface(renderer, mapSurface);
+    mapTexture = SDL_CreateTextureFromSurface(renderer, mapSurface);
     SDL_UpdateTexture(mapTexture, &mapRect, mapSurface->pixels, mapSurface->pitch);
-    SDL_Point screenCenter = {(int)App::renderer.viewportCenter.x, (int)App::renderer.viewportCenter.y};
-    SDL_Rect dstRect = {screenCenter.x - mapRect.w / 2, screenCenter.y - mapRect.h / 2, mapRect.w, mapRect.h};
-    SDL_RenderCopy(renderer, mapTexture, &mapRect, &dstRect);
-
     SDL_FreeSurface(mapSurface);
-    SDL_DestroyTexture(mapTexture);
 }
 
 void Game::drawEntitiesDepth(SDL_Renderer* renderer)
@@ -130,7 +128,7 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 
     for (const auto& [_, entity] : entityDistances)
     {
-        camera3D.drawTexture(renderer, entity->position);
+        camera3D.drawTexture3D(renderer, entity->position);
     }
 }
 
@@ -152,4 +150,13 @@ void Game::drawBackground(SDL_Renderer* renderer)
             ResourceLoader::loadedTextures.testBg.get(),
             ResourceLoader::loadedTextures.testBg.getRect(),
             &dst);
+}
+
+void Game::drawMap(SDL_Renderer* renderer)
+{
+    SDL_Point screenCenter = {(int)App::renderer.viewportCenter.x, (int)App::renderer.viewportCenter.y};
+    SDL_Rect dstRect = {screenCenter.x - mapRect.w / 2, screenCenter.y - mapRect.h / 2, mapRect.w, mapRect.h};
+    SDL_RenderCopy(renderer, mapTexture, &mapRect, &dstRect);
+
+    SDL_DestroyTexture(mapTexture);
 }

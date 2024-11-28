@@ -84,6 +84,9 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
         glm::vec2 cameraDir = {std::cos(rotationY), std::sin(rotationY)};
         glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x}; // Perpendicular to camera direction
 
+        int floorWidth = floorTexture.getRect()->w;
+        int floorHeight = floorTexture.getRect()->h;
+
         for (int y = 1; y < h; y++)
         {
             float rowDistance = (h / (float)(2 * ((h - y) - App::renderer.viewportCenter.y))) / fovScale;
@@ -94,8 +97,6 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
                 glm::vec2 floorPoint = (glm::vec2){position.x / 2, position.z / 2} +
                                        cameraDir * rowDistance +
                                        cameraRight * (screenX * rowDistance);
-                int floorWidth = floorTexture.getRect()->w;
-                int floorHeight = floorTexture.getRect()->h;
                 int texX = static_cast<int>(floorPoint.x * 16) % floorWidth;
                 int texY = static_cast<int>(floorPoint.y * 16) % floorHeight;
                 if (texX < 0) texX += floorWidth;

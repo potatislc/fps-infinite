@@ -41,7 +41,7 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, const glm::vec3& worldPoint
     SDL_Rect src = {(int)((pointAngle + M_PI) / (M_PI / 4)) * frameSize, 0, frameSize, frameSize};
 
     SDL_Rect dst = {screenX - (int)scale / 2,
-                    (int)(App::renderer.viewportCenter.y + (-pointDir.z * scale) - scale / 2),
+                    (int)(App::renderer.viewportCenter.y + (pointDir.z * scale) - scale / 2),
                     (int)scale,
                     (int)scale};
 

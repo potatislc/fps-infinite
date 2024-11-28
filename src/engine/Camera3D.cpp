@@ -78,49 +78,73 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
     // Lock the surface for direct pixel manipulation
     SDL_LockSurface(projectedFloor);
     uint32_t* pixels = (uint32_t*)projectedFloor->pixels;
+    uint32_t* floorPixels;
+    int floorPitch;
+    SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
 
     int w = projectedFloorRect.w;
     int h = projectedFloorRect.h;
 
-    float cosAngle = glm::cos(-rotationY + M_PI / 2);
-    float sinAngle = glm::sin(-rotationY + M_PI / 2);
+    glm::vec2 cameraDir = {std::cos(rotationY), std::sin(rotationY)};
+    glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x};
     glm::vec2 camPos = glm::vec2(position.x, position.z);
     int texWidth = floorTexture.getRect()->w;
     int texHeight = floorTexture.getRect()->h;
-    float scale = 1.0f;
+    float scale = 16.0f;
 
-    for (int i = 0; i < w; ++i)
+    for (int y = 1; y < h; y++)
     {
-        for (int j = 0; j < h; ++j)
+        float rowDistance = (h / (float)(2 * ((h - y) - App::renderer.viewportCenter.y))) / fovScale;
+
+        for (int x = 0; x < w; x++)
         {
-            // Screen coordinates relative to the center
-            float x = i - w / 2.0f;
-            float y = j - h;
-            float z = j; // Depth adjustment
+            float screenX = (x / (float)w) * 2.0f - 1.0f;
+            glm::vec2 floorPoint = (glm::vec2){position.x / 2, position.z / 2} +
+                                   cameraDir * rowDistance +
+                                   cameraRight * (screenX * rowDistance);
+            int floorWidth = floorTexture.getRect()->w;
+            int floorHeight = floorTexture.getRect()->h;
+            int texX = static_cast<int>(floorPoint.x * 16) % floorWidth;
+            int texY = static_cast<int>(floorPoint.y * 16) % floorHeight;
+            if (texX < 0) texX += floorWidth;
+            if (texY < 0) texY += floorHeight;
+            uint32_t color = floorPixels[texY * (floorPitch / sizeof(uint32_t)) + texX];
 
-            // Apply rotation
-            float px = x * cosAngle + y * sinAngle;
-            float py = -x * sinAngle + y * cosAngle;
+            /*float depth = std::min(std::max(2.5f * (y / h), 0.0f), 1.0f);
+            uint8_t fog = static_cast<uint8_t>((1 - depth) * 230);
+            uint8_t r = (color & 0xFF0000) >> 16;
+            uint8_t g = (color & 0x00FF00) >> 8;
+            uint8_t b = (color & 0x0000FF);
+            r = static_cast<uint8_t>(r * depth + fog);
+            g = static_cast<uint8_t>(g * depth + fog);
+            b = static_cast<uint8_t>(b * depth + fog);
+            // Set the pixel in the screen buffer
+            pixels[y * w + x] = (r << 16) | (g << 8) | b;
+*/
+            pixels[y * w + x] = color;
+        }
+    }
 
-            // Floor projection
-            float floorX = px / z + camPos.x;
-            float floorY = py / z + camPos.y;
+    /*for (int i = 0; i < w; i++)
+    {
+        float rowDistance = (h / (float)(2 * ((h - i) - App::renderer.viewportCenter.y))) / fovScale;
 
-            // Texture coordinates
-            int texX = (int)(floorX * scale) % texWidth;
-            int texY = (int)(floorY * scale) % texHeight;
+        for (int j = 0; j < h; j++)
+        {
+            float screenX = (j / (float)w) * 2.0f - 1.0f;
+            glm::vec2 floorPoint = (glm::vec2){position.x / 2, position.z / 2} +
+                                   cameraDir * rowDistance +
+                                   cameraRight * (screenX * rowDistance);
+
+            int texX = (int)(floorPoint.x * scale) % texWidth;
+            int texY = (int)(floorPoint.y * scale) % texHeight;
             if (texX < 0) texX += texWidth;
             if (texY < 0) texY += texHeight;
 
-            uint32_t* floorPixels;
-            int floorPitch;
-            SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
-            SDL_Texture* test = floorTexture.get();
             uint32_t color = floorPixels[texY * (floorPitch / sizeof(uint32_t)) + texX];
-            SDL_UnlockTexture(floorTexture.get());
 
             // Apply fog shading based on depth (optional)
-            float depth = std::min(std::max(2.5f * (std::abs(z) / h), 0.0f), 1.0f);
+            float depth = std::min(std::max(2.5f * (std::abs(j) / h), 0.0f), 1.0f);
             uint8_t fog = static_cast<uint8_t>((1 - depth) * 230);
 
             uint8_t r = (color & 0xFF0000) >> 16;
@@ -132,11 +156,14 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
             b = static_cast<uint8_t>(b * depth + fog);
 
             // Set the pixel in the screen buffer
-            pixels[j * w + i] = (r << 16) | (g << 8) | b;
+            // pixels[j * w + i] = (r << 16) | (g << 8) | b;
+            pixels[j * w + i] = color;
+            // pixels[i * h + j] = color;
         }
-    }
+    }*/
 
     // Unlock the floor texture and surface
+    SDL_UnlockTexture(floorTexture.get());
     SDL_UnlockSurface(projectedFloor);
 
     // Create a texture from the surface and render it

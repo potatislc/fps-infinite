@@ -24,4 +24,5 @@ public:
 
     static LoadedTextures loadedTextures;
     static SDL_Texture* loadTexture(const std::string& path);
+    static SDL_Texture* loadTextureStreaming(const std::string& path);
 };

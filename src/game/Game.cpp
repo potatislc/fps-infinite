@@ -30,16 +30,16 @@ void Game::start()
     world.addChild(currentPlayer);
 
     // Test entities
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, -1, 6}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -2, -12}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, -10, 27}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, 6, -36}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, -1}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, -2}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, -10}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
 
     for (int i = 0; i < 64; i++)
     {
         for (int j = 0; j < 64; j++)
         {
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 4 - 1 * 64, 0, j * 4 - 1 * 64}, 0));
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 4 - 1 * 64, j * 4 - 1 * 64, glm::sin(j) - 1}, 0));
         }
     }
 }
@@ -61,8 +61,8 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
     SDL_RenderFillRect(renderer, &rect);
 
-    drawBackground(renderer);
     camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor);
+    drawBackground(renderer);
     drawEntitiesDepth(renderer);
     drawEntitiesToMap(renderer);
     drawMap(renderer);
@@ -77,13 +77,16 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
     SDL_LockSurface(mapSurface);
     {
         auto* pixels = (uint32_t*)mapSurface->pixels;
-        glm::vec2 worldCenter = {currentPlayer->position.x, currentPlayer->position.z};
+        glm::vec3 worldCenter = currentPlayer->position;
+        float worldRotationY = -currentPlayer->rotationY;
         for (const auto& entity : world.children)
         {
             glm::vec2 relativePos =
-                    Utils::vec2Rotated({entity->position.x - worldCenter.x, entity->position.z - worldCenter.y}, -currentPlayer->rotationY);
+                    Utils::vec2Rotated(entity->position - worldCenter, worldRotationY);
             SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
-            float mapDistSq = std::pow(mapPos.x - mapCenter.x, 2) + std::pow(mapPos.y - mapCenter.y, 2);
+            auto dx = static_cast<float>(mapPos.x - mapCenter.x);
+            auto dy = static_cast<float>(mapPos.y - mapCenter.y);
+            float mapDistSq = dx * dx + dy * dy;
 
             float distAlpha = mapDistSq / mapRadiusSq;
             if (distAlpha < 1.f)
@@ -111,11 +114,11 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 
         if (entity.get() != currentPlayer.get())
         {
-            glm::vec2 pointDir2D = {camera3D.position.x - entity->position.x, camera3D.position.z - entity->position.z};
+            glm::vec2 pointDir2D = {camera3D.position.x - entity->position.x, cameraPos.y - entity->position.y};
             float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
             float angleBetween = std::atan2(std::sin(pointAngle - camera3D.rotationY), std::cos(pointAngle - camera3D.rotationY));
             float distSquared = (entity->position.x - cameraPos.x) * (entity->position.x - cameraPos.x) +
-                                (entity->position.z - cameraPos.z) * (entity->position.z - cameraPos.z);
+                                (entity->position.y - cameraPos.y) * (entity->position.y - cameraPos.y);
             if (angleBetween < camera3D.halfFov && angleBetween > -camera3D.halfFov && distSquared < camera3D.farPlane * camera3D.farPlane)
             {
                 entityDistances.emplace_back(distSquared, entity.get());
@@ -136,6 +139,7 @@ void Game::drawBackground(SDL_Renderer* renderer)
 {
     SDL_Rect dst = *ResourceLoader::loadedTextures.testBg.getRect();
     dst.x = (int)((dst.w / M_PI_2) * -camera3D.rotationY * .25f) % dst.w;
+    dst.h++;
 
     SDL_RenderCopy(
             renderer,

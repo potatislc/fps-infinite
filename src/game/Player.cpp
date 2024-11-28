@@ -36,7 +36,7 @@ void Player::update()
     }
 
     glm::vec2 rotatedMoveVel = Utils::vec2Rotated(moveVelocity, rotationY);
-    position += (glm::vec3){rotatedMoveVel.x, 0, rotatedMoveVel.y} * speed * App::deltaTime;
+    position += (glm::vec3){rotatedMoveVel.x, rotatedMoveVel.y, 0} * speed * App::deltaTime;
 }
 
 void Player::draw(SDL_Renderer *renderer)

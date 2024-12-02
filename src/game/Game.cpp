@@ -35,13 +35,13 @@ void Game::start()
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
 
-    for (int i = 0; i < 64; i++)
+    /*for (int i = 0; i < 64; i++)
     {
         for (int j = 0; j < 64; j++)
         {
             world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 4 - 1 * 64, j * 4 - 1 * 64, glm::sin(j) + 1}, 0));
         }
-    }
+    }*/
 }
 
 void Game::update()
@@ -61,11 +61,12 @@ void Game::draw(SDL_Renderer *renderer)
         camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor);
         drawBackground(renderer);
         drawEntitiesDepth(renderer);
-        drawEntitiesToMap(renderer);
-        drawMap(renderer);
-        world.draw(renderer);
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_RenderCopy(renderer, renderTarget, NULL, NULL);
+    SDL_SetRenderTarget(renderer, nullptr);
+    SDL_RenderCopy(renderer, renderTarget, nullptr, nullptr);
+    SDL_DestroyTexture(renderTarget);
+
+    drawEntitiesToMap(renderer);
+    drawMap(renderer);
     // camera3D.drawFovLines(renderer);
 }
 

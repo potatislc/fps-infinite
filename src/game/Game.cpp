@@ -55,18 +55,17 @@ void Game::update()
 
 void Game::draw(SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 50, 0, 175, 255);
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
-    SDL_RenderFillRect(renderer, &rect);
-
-    camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor);
-    drawBackground(renderer);
-    drawEntitiesDepth(renderer);
-    drawEntitiesToMap(renderer);
-    drawMap(renderer);
-    world.draw(renderer);
+    SDL_Texture *renderTarget = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
+    SDL_SetRenderTarget(renderer, renderTarget);
+        camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor);
+        drawBackground(renderer);
+        drawEntitiesDepth(renderer);
+        drawEntitiesToMap(renderer);
+        drawMap(renderer);
+        world.draw(renderer);
+    SDL_SetRenderTarget(renderer, NULL);
+    SDL_RenderCopy(renderer, renderTarget, NULL, NULL);
     // camera3D.drawFovLines(renderer);
 }
 
@@ -106,20 +105,21 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
 void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 {
     glm::vec3 cameraPos = camera3D.position;
-
+    float cameraAngle = camera3D.rotationY;
+    float halfFov = camera3D.halfFov;
+    auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
     std::vector<std::pair<float, Entity3D*>> entityDistances;
 
     for (const auto& entity : world.children)
     {
-
         if (entity.get() != currentPlayer.get())
         {
             glm::vec2 pointDir2D = {camera3D.position.x - entity->position.x, cameraPos.y - entity->position.y};
             float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
-            float angleBetween = std::atan2(std::sin(pointAngle - camera3D.rotationY), std::cos(pointAngle - camera3D.rotationY));
+            float angleBetween = std::atan2(std::sin(pointAngle - cameraAngle), std::cos(pointAngle - cameraAngle));
             float distSquared = (entity->position.x - cameraPos.x) * (entity->position.x - cameraPos.x) +
                                 (entity->position.y - cameraPos.y) * (entity->position.y - cameraPos.y);
-            if (angleBetween < camera3D.halfFov && angleBetween > -camera3D.halfFov && distSquared < camera3D.farPlane * camera3D.farPlane)
+            if (angleBetween < halfFov && angleBetween > -halfFov && distSquared < farPlaneSquared)
             {
                 entityDistances.emplace_back(distSquared, entity.get());
             }
@@ -129,9 +129,11 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
     std::sort(entityDistances.begin(), entityDistances.end(),
               [](const auto& a, const auto& b) { return a.first > b.first; });
 
+    UniqueTexture& testTex = ResourceLoader::loadedTextures.swarm;
+    SDL_Rect& viewport = App::renderer.viewport;
     for (const auto& [_, entity] : entityDistances)
     {
-        camera3D.drawTexture3D(renderer, entity->position);
+        camera3D.drawTexture3D(renderer, testTex, entity->position, viewport);
     }
 }
 

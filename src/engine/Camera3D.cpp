@@ -24,29 +24,30 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
     // SDL_RenderDrawLine(renderer, center.x, center.y, center.x, 0);
 }
 
-void Camera3D::drawTexture3D(SDL_Renderer* renderer, const glm::vec3& worldPoint)
+void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTexture,
+                             const glm::vec3& worldPoint, SDL_Rect& viewport)
 {
     glm::vec3 pointDir = position - worldPoint;
     float pointAngle = std::atan2(pointDir.y, pointDir.x);
-    float angleBetween = std::atan2(std::sin(pointAngle - rotationY), std::cos(pointAngle - rotationY));
+    float angleBetween = std::atan2(glm::sin(pointAngle - rotationY), glm::cos(pointAngle - rotationY));
     float d = glm::length(pointDir);
     float h = glm::cos(angleBetween) * d;
 
-    int frameSize = ResourceLoader::loadedTextures.swarm.getRect()->h;
+    int frameSize = uniqueTexture.getRect()->h;
     float scale = (16.f / h) * ((float)frameSize / fovScale);
 
     float normalizedAngle = angleBetween / halfFov;
-    int screenX = static_cast<int>((normalizedAngle + 1.0f) * 0.5f * (float)App::renderer.viewport.w);
+    int screenX = static_cast<int>((normalizedAngle + 1.0f) * 0.5f * (float)viewport.w);
 
     SDL_Rect src = {(int)((pointAngle + M_PI) / (M_PI / 4)) * frameSize, 0, frameSize, frameSize};
 
     SDL_Rect dst = {screenX - (int)scale / 2,
-                    (int)(App::renderer.viewportCenter.y + (pointDir.z * scale) - scale / 2),
+                    (int)((float)viewport.h / 2 + (pointDir.z * scale) - scale / 2),
                     (int)scale,
                     (int)scale};
 
     SDL_RenderCopy(renderer,
-                   ResourceLoader::loadedTextures.swarm.get(),
+                   uniqueTexture.get(),
                    &src,
                    &dst);
 }

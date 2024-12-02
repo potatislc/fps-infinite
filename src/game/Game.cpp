@@ -48,9 +48,9 @@ void Game::update()
 {
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
 
+    world.update();
     camera3D.position = currentPlayer->position;
     camera3D.rotationY = currentPlayer->rotationY + (float)(M_PI / 2);
-    world.update();
 }
 
 void Game::draw(SDL_Renderer *renderer)

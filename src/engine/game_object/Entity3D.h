@@ -14,5 +14,6 @@ public:
     virtual ~Entity3D() = default;
     virtual void start() override {};
     virtual void update() override {};
-    virtual void draw(SDL_Renderer* renderTarget) override {};
+    virtual void draw(SDL_Renderer* renderer) override {};
+    virtual void draw3D(SDL_Renderer* renderer) {};
 };

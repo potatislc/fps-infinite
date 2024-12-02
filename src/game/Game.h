@@ -5,7 +5,7 @@
 #include "engine/game_object/EntityScene.h"
 #include "engine/Camera3D.h"
 #include "engine/Renderer.h"
-#include "Player.h"
+#include "game/characters/Player.h"
 
 class Game : public IGameObject
 {

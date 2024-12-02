@@ -70,12 +70,12 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/engine/game_object/AEntity.h
         src/game/Game.cpp
         src/game/Game.h
-        src/game/Player.cpp
-        src/game/Player.h
+        src/game/characters/Player.cpp
+        src/game/characters/Player.h
         # src/engine/game_object/EntityScene.cpp
         src/engine/game_object/EntityScene.h
         src/engine/game_object/Entity3D.h
-        src/game/ACharacter.h
+        src/game/characters/ACharacter.h
         src/engine/Camera3D.cpp
         src/engine/Camera3D.h
         src/engine/utils/UMath.cpp)

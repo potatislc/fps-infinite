@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "engine/InputMap.h"
 #include "engine/App.h"
-#include "Game.h"
+#include "game/Game.h"
 
 void Player::start()
 {

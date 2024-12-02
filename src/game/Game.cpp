@@ -2,7 +2,7 @@
 #include <thread>
 #include "Game.h"
 #include "engine/InputMap.h"
-#include "Player.h"
+#include "game/characters/Player.h"
 #include "engine/ResourceLoader.h"
 #include "engine/App.h"
 
@@ -113,7 +113,8 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 
     for (const auto& entity : world.children)
     {
-        if (entity.get() != currentPlayer.get())
+        auto* entityPtr = entity.get();
+        if (entityPtr != currentPlayer.get())
         {
             glm::vec2 pointDir2D = {camera3D.position.x - entity->position.x, cameraPos.y - entity->position.y};
             float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
@@ -122,7 +123,7 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
                                 (entity->position.y - cameraPos.y) * (entity->position.y - cameraPos.y);
             if (angleBetween < halfFov && angleBetween > -halfFov && distSquared < farPlaneSquared)
             {
-                entityDistances.emplace_back(distSquared, entity.get());
+                entityDistances.emplace_back(distSquared, entityPtr);
             }
         }
     }

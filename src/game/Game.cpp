@@ -30,7 +30,7 @@ void Game::start()
     world.addChild(currentPlayer);
 
     // Test entities
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 2}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 2}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
@@ -49,8 +49,6 @@ void Game::update()
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
 
     world.update();
-    camera3D.position = currentPlayer->position;
-    camera3D.rotationY = currentPlayer->rotationY + (float)(M_PI / 2);
 }
 
 void Game::draw(SDL_Renderer *renderer)

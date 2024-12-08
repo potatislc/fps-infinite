@@ -89,5 +89,4 @@ void ResourceLoader::LoadedTextures::loadAll()
     testBg.set(loadTexture(TEXTURES_PATH"/backgrounds/test-bg.png"));
     swarm.set(loadTexture(TEXTURES_PATH"/entities/swarm.png"));
     testFloor.set(loadTextureStreaming(TEXTURES_PATH"/floors/test-floor.png"));
-
 }

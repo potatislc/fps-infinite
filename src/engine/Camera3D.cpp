@@ -4,6 +4,7 @@
 #include "App.h"
 #include "ResourceLoader.h"
 #include "glm/gtc/constants.hpp"
+#include "game/Game.h"
 
 Camera3D::Camera3D(glm::vec3 position, float rotationY, float fov, int farPlane) :
     Entity3D(position, rotationY), fov(fov * (float) M_PI / 180), halfFov((fov / 2) * (float) M_PI / 180), farPlane(farPlane)
@@ -72,10 +73,12 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
     int fogLine = h / 5;
     float horizonY = App::renderer.viewportCenter.y;
 
-    // Draw with fog
-    for (int y = 1; y < fogLine; y++)
+    float cameraHeight = position.z * 96;
+
+    for (int y = 1; y < h; y++)
     {
-        float rowDistance = ((float)h / (float)(2 * ((float)(h - y) - horizonY))) / fovScale;
+        float perspectiveY = ((float)(h - y) - horizonY);
+        float rowDistance = (cameraHeight / perspectiveY) / fovScale;
         glm::vec2 floorRow = cameraPos + cameraDir * rowDistance;
         glm::vec2 orthoRow = cameraRight * rowDistance;
         float fogStrength = glm::clamp(1.0f - (float)y / (float)fogLine, 0.0f, .8f);
@@ -90,34 +93,21 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
             if (texY < 0) texY += floorHeight;
             uint32_t color = floorPixels[texY * floorPixelsWidth + texX];
 
-            uint8_t r = (color >> 16) & 0xFF;
-            uint8_t g = (color >> 8) & 0xFF;
-            uint8_t b = color & 0xFF;
+            if (y < fogLine)
+            {
+                uint8_t r = (color >> 16) & 0xFF;
+                uint8_t g = (color >> 8) & 0xFF;
+                uint8_t b = color & 0xFF;
 
-            r = static_cast<uint8_t>((float)r + fogStrength * (float)(255 - r));
-            g = static_cast<uint8_t>((float)g + fogStrength * (float)(255 - g));
-            b = static_cast<uint8_t>((float)b + fogStrength * (float)(255 - b));
-
-            pixels[y * w + x] = (r << 16) | (g << 8) | b;
-        }
-    }
-
-    // Draw without fog
-    for (int y = fogLine; y < h; y++)
-    {
-        float rowDistance = ((float)h / (float)(2 * ((float)(h - y) - horizonY))) / fovScale;
-        glm::vec2 floorRow = cameraPos + cameraDir * rowDistance;
-        glm::vec2 orthoRow = cameraRight * rowDistance;
-
-        for (int x = 0; x < w; x++)
-        {
-            float screenX = ((float)x / (float)w) * 2.0f - 1.0f;
-            glm::vec2 floorPoint = floorRow + orthoRow * screenX;
-            int texX = static_cast<int>(floorPoint.x * scale) % floorWidth;
-            int texY = static_cast<int>(floorPoint.y * scale) % floorHeight;
-            if (texX < 0) texX += floorWidth;
-            if (texY < 0) texY += floorHeight;
-            pixels[y * w + x] = floorPixels[texY * floorPixelsWidth + texX];
+                r = static_cast<uint8_t>((float)r + fogStrength * (float)(255 - r));
+                g = static_cast<uint8_t>((float)g + fogStrength * (float)(255 - g));
+                b = static_cast<uint8_t>((float)b + fogStrength * (float)(255 - b));
+                pixels[y * w + x] = (r << 16) | (g << 8) | b;
+            }
+            else
+            {
+                pixels[y * w + x] = floorPixels[texY * floorPixelsWidth + texX];
+            }
         }
     }
 
@@ -135,6 +125,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
 
     SDL_DestroyTexture(finalFloorTexture);
 }
+
 
 void Camera3D::initFloorSurface()
 {

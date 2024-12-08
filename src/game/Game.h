@@ -25,9 +25,10 @@ public:
     void start() override;
     void update() override;
     void draw(SDL_Renderer* renderer) override;
+
+    static std::shared_ptr<Player> currentPlayer;
 private:
     EntityScene<Entity3D> world;
-    static std::shared_ptr<Player> currentPlayer;
     SDL_Texture* mapTexture;
     SDL_Rect mapRect = {0, 0, 64, 64};
     const float mapScale = 1.f;

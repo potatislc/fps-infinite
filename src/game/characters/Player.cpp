@@ -37,6 +37,20 @@ void Player::update()
 
     glm::vec2 rotatedMoveVel = Utils::vec2Rotated(moveVelocity, rotationY);
     position += (glm::vec3){rotatedMoveVel.x, rotatedMoveVel.y, 0} * speed * App::deltaTime;
+
+    if (glm::length(moveVelocity) > 0 || headBobPhase > 0)
+    {
+        headBobPhase += headBobSpeed * App::deltaTime;
+        if (headBobPhase >= M_PI * 2) headBobPhase = 0;
+    }
+
+    headBob = -glm::sin(headBobPhase) * (glm::length(moveVelocity * ((glm::length(moveVelocity) > 0) ? glm::normalize(moveVelocity) : glm::vec2(1, 1)))) * headBobMag;
+
+    Game::camera3D.position = position + glm::vec3{
+        0,
+        0,
+        eyeHeight + headBob};
+    Game::camera3D.rotationY = rotationY + (float)(M_PI / 2);
 }
 
 void Player::draw(SDL_Renderer *renderer)

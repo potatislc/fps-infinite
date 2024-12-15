@@ -101,25 +101,28 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
 void Game::drawEntitiesDepth(SDL_Renderer* renderer)
 {
     glm::vec3 cameraPos = camera3D.position;
-    float cameraAngle = camera3D.rotationY;
-    float halfFov = camera3D.halfFov;
     auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
     std::vector<std::pair<float, Entity3D*>> entityDistances;
     entityDistances.reserve(world.getSize());
+    glm::vec2 camPos = camera3D.position;
+    glm::vec2 forward = {std::cos(camera3D.rotationY), std::sin(camera3D.rotationY)};
+    glm::vec2 right = {-forward.y, forward.x};
 
     for (const auto& entity : world.children)
     {
         auto* entityPtr = entity.get();
+
         if (entityPtr != currentPlayer.get())
         {
-            glm::vec2 pointDir2D = {camera3D.position.x - entity->position.x, cameraPos.y - entity->position.y};
-            float pointAngle = std::atan2(pointDir2D.y, pointDir2D.x);
-            float angleBetween = std::atan2(std::sin(pointAngle - cameraAngle), std::cos(pointAngle - cameraAngle));
-            float distSquared = (entity->position.x - cameraPos.x) * (entity->position.x - cameraPos.x) +
-                                (entity->position.y - cameraPos.y) * (entity->position.y - cameraPos.y);
-            if (angleBetween < halfFov && angleBetween > -halfFov && distSquared < farPlaneSquared)
+            glm::vec2 relativePos = (glm::vec2)entity->position - camPos;
+            float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
+            float distForward = glm::dot((glm::vec2)relativePos, forward);
+            float distRight = glm::dot((glm::vec2)relativePos, right);
+            float screenX = (distRight / distForward);
+
+            if (screenX > -1  && screenX < 1 && distSq < farPlaneSquared)
             {
-                entityDistances.emplace_back(distSquared, entityPtr);
+                entityDistances.emplace_back(distSq, entityPtr);
             }
         }
     }

@@ -34,14 +34,14 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
     glm::vec2 forward = {std::cos(rotationY), std::sin(rotationY)};
     glm::vec2 right = {-forward.y, forward.x};
 
-    float distanceZ = glm::dot(relativePos, glm::vec3(forward, 0.0f));
-    float distanceX = glm::dot(relativePos, glm::vec3(right, 0.0f));
-    float distanceY = relativePos.z;
+    float distForward = glm::dot((glm::vec2)relativePos, forward);
+    float distRight = glm::dot((glm::vec2)relativePos, right);
+    float distUp = relativePos.z;
 
-    float screenX = (distanceX / distanceZ) * (viewport.w / 2.0f) + viewport.w / 2.0f;
-    float screenY = (distanceY / distanceZ) * (viewport.h) + viewport.h / 2.0f;
+    float screenX = (distRight / distForward) * (viewport.w / 2.0f) + viewport.w / 2.0f;
+    float screenY = (distUp / distForward) * viewport.h + viewport.h / 2.0f;
 
-    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distanceZ));
+    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distForward));
 
     SDL_Rect src = {0, 0, uniqueTexture.getRect()->h, uniqueTexture.getRect()->h};
     SDL_Rect dst = {

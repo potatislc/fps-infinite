@@ -34,6 +34,7 @@ private:
     const float mapScale = 1.f;
     const SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
     const float mapRadiusSq = (float)mapCenter.x * (float)mapCenter.y;
+    const float mapRenderRadiusSq = mapRadiusSq;
 
     void drawEntitiesDepth(SDL_Renderer* renderer);
     void drawEntitiesToMap(SDL_Renderer* renderer);

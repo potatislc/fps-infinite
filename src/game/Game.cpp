@@ -78,16 +78,14 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
         float worldRotationY = -currentPlayer->rotationY;
         for (const auto& entity : world.children)
         {
-            glm::vec2 relativePos =
-                    Utils::vec2Rotated(entity->position - worldCenter, worldRotationY);
-            SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
-            auto dx = static_cast<float>(mapPos.x - mapCenter.x);
-            auto dy = static_cast<float>(mapPos.y - mapCenter.y);
-            float mapDistSq = dx * dx + dy * dy;
-
-            float distAlpha = mapDistSq / mapRadiusSq;
-            if (distAlpha < 1.f)
+            glm::vec2 dist = entity->position - worldCenter;
+            float mapDistSq = dist.x * dist.x + dist.y * dist.y;
+            if (mapDistSq < mapRenderRadiusSq)
             {
+                glm::vec2 relativePos =
+                        Utils::vec2Rotated(dist, worldRotationY);
+                SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
+                float distAlpha = mapDistSq / mapRadiusSq;
                 pixels[mapRect.w * mapPos.y + mapPos.x] =
                         SDL_MapRGBA(mapSurface->format, 255, 255, 255, (uint8_t)(255 - 255 * distAlpha));
             }

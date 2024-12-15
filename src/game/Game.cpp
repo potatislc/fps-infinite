@@ -29,19 +29,18 @@ void Game::start()
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
 
-    // Test entities
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 2}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 2}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
 
-    /*for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 64; i++)
     {
         for (int j = 0; j < 64; j++)
         {
             world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 4 - 1 * 64, j * 4 - 1 * 64, glm::sin(j) + 1}, 0));
         }
-    }*/
+    }
 }
 
 void Game::update()
@@ -108,6 +107,7 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
     float halfFov = camera3D.halfFov;
     auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
     std::vector<std::pair<float, Entity3D*>> entityDistances;
+    entityDistances.reserve(world.getSize());
 
     for (const auto& entity : world.children)
     {

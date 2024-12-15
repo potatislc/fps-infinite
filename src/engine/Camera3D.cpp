@@ -28,29 +28,30 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
 void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTexture,
                              const glm::vec3& worldPoint, SDL_Rect& viewport)
 {
-    glm::vec3 pointDir = position - worldPoint;
-    float pointAngle = std::atan2(pointDir.y, pointDir.x);
-    float angleBetween = std::atan2(glm::sin(pointAngle - rotationY), glm::cos(pointAngle - rotationY));
-    float d = glm::length(pointDir);
-    float h = glm::cos(angleBetween) * d;
+    if (worldPoint.z <= 0) return;
+    glm::vec3 relativePos = position - worldPoint;
 
-    int frameSize = uniqueTexture.getRect()->h;
-    float scale = (16.f / h) * ((float)frameSize / fovScale);
+    glm::vec2 forward = {std::cos(rotationY), std::sin(rotationY)};
+    glm::vec2 right = {-forward.y, forward.x};
 
-    float normalizedAngle = angleBetween / halfFov;
-    int screenX = static_cast<int>((normalizedAngle + 1.0f) * 0.5f * (float)viewport.w);
+    float distanceZ = glm::dot(relativePos, glm::vec3(forward, 0.0f));
+    float distanceX = glm::dot(relativePos, glm::vec3(right, 0.0f));
+    float distanceY = relativePos.z;
 
-    SDL_Rect src = {(int)((pointAngle + M_PI) / (M_PI / 4)) * frameSize, 0, frameSize, frameSize};
+    float screenX = (distanceX / distanceZ) * (viewport.w / 2.0f) + viewport.w / 2.0f;
+    float screenY = (distanceY / distanceZ) * (viewport.h) + viewport.h / 2.0f;
 
-    SDL_Rect dst = {screenX - (int)scale / 2,
-                    (int)((float)viewport.h / 2 + (pointDir.z * scale) - scale / 2),
-                    (int)scale,
-                    (int)scale};
+    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distanceZ));
 
-    SDL_RenderCopy(renderer,
-                   uniqueTexture.get(),
-                   &src,
-                   &dst);
+    SDL_Rect src = {0, 0, uniqueTexture.getRect()->h, uniqueTexture.getRect()->h};
+    SDL_Rect dst = {
+            static_cast<int>(screenX - textureScale / 2),
+            static_cast<int>(screenY - textureScale / 2),
+            textureScale,
+            textureScale
+    };
+
+    SDL_RenderCopy(renderer, uniqueTexture.get(), &src, &dst);
 }
 
 void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
@@ -71,14 +72,12 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
     int floorHeight = floorTexture.getRect()->h;
     float scale = 4.f;
     int fogLine = h / 5;
-    float horizonY = App::renderer.viewportCenter.y;
 
-    float cameraHeight = position.z * 96;
+    float cameraHeight = position.z * (float)h;
 
     for (int y = 1; y < h; y++)
     {
-        float perspectiveY = ((float)(h - y) - horizonY);
-        float rowDistance = (cameraHeight / perspectiveY) / fovScale;
+        float rowDistance = (cameraHeight / (float)-y);
         glm::vec2 floorRow = cameraPos + cameraDir * rowDistance;
         glm::vec2 orthoRow = cameraRight * rowDistance;
         float fogStrength = glm::clamp(1.0f - (float)y / (float)fogLine, 0.0f, .8f);

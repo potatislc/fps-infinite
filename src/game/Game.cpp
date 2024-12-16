@@ -75,7 +75,7 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
     {
         auto* pixels = (uint32_t*)mapSurface->pixels;
         glm::vec3 worldCenter = currentPlayer->position;
-        float worldRotationY = -currentPlayer->rotationY;
+        float worldRotationY = -currentPlayer->rotationZ;
         for (const auto& entity : world.children)
         {
             glm::vec2 dist = entity->position - worldCenter;
@@ -105,7 +105,7 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
     std::vector<std::pair<float, Entity3D*>> entityDistances;
     entityDistances.reserve(world.getSize());
     glm::vec2 camPos = camera3D.position;
-    glm::vec2 forward = {std::cos(camera3D.rotationY), std::sin(camera3D.rotationY)};
+    glm::vec2 forward = {std::cos(camera3D.rotationZ), std::sin(camera3D.rotationZ)};
     glm::vec2 right = {-forward.y, forward.x};
 
     for (const auto& entity : world.children)
@@ -134,14 +134,14 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
     SDL_Rect& viewport = App::renderer.viewport;
     for (const auto& [_, entity] : entityDistances)
     {
-        camera3D.drawTexture3D(renderer, testTex, entity->position, viewport);
+        camera3D.drawTexture3D(renderer, testTex, entity->position, entity->rotationZ, viewport);
     }
 }
 
 void Game::drawBackground(SDL_Renderer* renderer)
 {
     SDL_Rect dst = *ResourceLoader::loadedTextures.testBg.getRect();
-    dst.x = (int)((dst.w / M_PI_2) * -camera3D.rotationY * .25f) % dst.w;
+    dst.x = (int)((dst.w / M_PI_2) * -camera3D.rotationZ * .25f) % dst.w;
     dst.h++;
 
     SDL_RenderCopy(

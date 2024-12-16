@@ -26,12 +26,12 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
 }
 
 void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTexture,
-                             const glm::vec3& worldPoint, SDL_Rect& viewport)
+                             const glm::vec3& targetPoint, float targetRotZ, SDL_Rect& viewport)
 {
-    if (worldPoint.z <= 0) return;
-    glm::vec3 relativePos = position - worldPoint;
+    if (targetPoint.z <= 0) return;
+    glm::vec3 relativePos = position - targetPoint;
 
-    glm::vec2 forward = {std::cos(rotationY), std::sin(rotationY)};
+    glm::vec2 forward = {std::cos(rotationZ), std::sin(rotationZ)};
     glm::vec2 right = {-forward.y, forward.x};
 
     float distForward = glm::dot((glm::vec2)relativePos, forward);
@@ -43,7 +43,45 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
 
     int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distForward));
 
-    SDL_Rect src = {0, 0, uniqueTexture.getRect()->h, uniqueTexture.getRect()->h};
+    int rotFrame = 0;
+    glm::vec2 targetForward = {std::cos(targetRotZ), std::sin(targetRotZ)};
+    float forwardDot = glm::dot(forward, targetForward);
+
+    if (forwardDot < -0.85)
+    {
+        rotFrame = 0; // Front
+    }
+    else if (forwardDot > 0.85)
+    {
+        rotFrame = 4; // Back
+    }
+    else
+    {
+        glm::vec2 targetRight = {-targetForward.y, targetForward.x};
+        float rightDot = glm::dot(forward, targetRight);
+
+        if (rightDot < -0.85)
+        {
+            rotFrame = 2;
+        }
+        else if (rightDot > 0.85)
+        {
+            rotFrame = 6;
+        }
+        else
+        {
+            if (forwardDot > 0)
+            {
+                rotFrame = (rightDot > 0) ? 5 : 3;
+            }
+            else
+            {
+                rotFrame = (rightDot > 0) ? 7 : 1;
+            }
+        }
+    }
+
+    SDL_Rect src = {rotFrame * uniqueTexture.getRect()->h, 0, uniqueTexture.getRect()->h, uniqueTexture.getRect()->h};
     SDL_Rect dst = {
             static_cast<int>(screenX - textureScale / 2),
             static_cast<int>(screenY - textureScale / 2),
@@ -66,7 +104,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
     int h = projectedFloorRect.h;
     glm::vec2 cameraPos = position;
     cameraPos /= 2;
-    glm::vec2 cameraDir = {std::cos(rotationY), std::sin(rotationY)};
+    glm::vec2 cameraDir = {std::cos(rotationZ), std::sin(rotationZ)};
     glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x};
     int floorWidth = floorTexture.getRect()->w;
     int floorHeight = floorTexture.getRect()->h;

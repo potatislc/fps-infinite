@@ -38,7 +38,7 @@ void Game::start()
     {
         for (int j = 0; j < 64; j++)
         {
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 4 - 1 * 64, j * 4 - 1 * 64, glm::sin(j) + 1}, 0));
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 8 - 1 * 64, j * 8 - 1 * 64, glm::sin(j) * 2 + 2}, 0));
         }
     }
 }

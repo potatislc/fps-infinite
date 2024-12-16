@@ -41,17 +41,19 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
     float screenX = (distRight / distForward) * (viewport.w / 2.0f) + viewport.w / 2.0f;
     float screenY = (distUp / distForward) * viewport.h + viewport.h / 2.0f;
 
-    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distForward));
+    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distForward) * 2);
 
     int rotFrame = 0;
     glm::vec2 targetForward = {std::cos(targetRotZ), std::sin(targetRotZ)};
     float forwardDot = glm::dot(forward, targetForward);
 
-    if (forwardDot < -0.85)
+#define CIRCLE_SECTOR .875f
+
+    if (forwardDot < -CIRCLE_SECTOR)
     {
         rotFrame = 0; // Front
     }
-    else if (forwardDot > 0.85)
+    else if (forwardDot > CIRCLE_SECTOR)
     {
         rotFrame = 4; // Back
     }
@@ -60,11 +62,11 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
         glm::vec2 targetRight = {-targetForward.y, targetForward.x};
         float rightDot = glm::dot(forward, targetRight);
 
-        if (rightDot < -0.85)
+        if (rightDot < -CIRCLE_SECTOR)
         {
             rotFrame = 2;
         }
-        else if (rightDot > 0.85)
+        else if (rightDot > CIRCLE_SECTOR)
         {
             rotFrame = 6;
         }
@@ -80,6 +82,8 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
             }
         }
     }
+
+#undef CIRCLE_SECTOR
 
     SDL_Rect src = {rotFrame * uniqueTexture.getRect()->h, 0, uniqueTexture.getRect()->h, uniqueTexture.getRect()->h};
     SDL_Rect dst = {

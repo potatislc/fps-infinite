@@ -88,5 +88,7 @@ void ResourceLoader::LoadedTextures::loadAll()
     playerMapIcon.set(loadTexture(TEXTURES_PATH"/map_icons/player.png"));
     testBg.set(loadTexture(TEXTURES_PATH"/backgrounds/test-bg.png"));
     swarm.set(loadTexture(TEXTURES_PATH"/entities/swarm.png"));
+    entityShadow.set(loadTexture(TEXTURES_PATH"/entities/entity-shadow.png"));
+
     testFloor.set(loadTextureStreaming(TEXTURES_PATH"/floors/test-floor.png"));
 }

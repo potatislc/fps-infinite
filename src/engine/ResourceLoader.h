@@ -18,6 +18,7 @@ public:
         UniqueTexture testBg;
         UniqueTexture swarm;
         UniqueTexture testFloor;
+        UniqueTexture entityShadow;
 
         void loadAll();
     };

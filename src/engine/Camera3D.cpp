@@ -96,16 +96,15 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
     SDL_RenderCopy(renderer, uniqueTexture.get(), &src, &dst);
 }
 
-void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
+void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture)
 {
-    SDL_LockSurface(projectedFloor);
-    auto* pixels = (uint32_t*)projectedFloor->pixels;
+    SDL_LockSurface(floorSurface);
+    auto* pixels = (uint32_t*)floorSurface->pixels;
     uint32_t* floorPixels;
     int floorPitch;
     SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
     int floorPixelsWidth = floorPitch / (int)sizeof(uint32_t);
-    int w = projectedFloorRect.w;
-    int h = projectedFloorRect.h;
+    SDL_Rect surfRect = {0, 0, floorSurface->w, floorSurface->h};
     glm::vec2 cameraPos = position;
     cameraPos /= 2;
     glm::vec2 cameraDir = {std::cos(rotationZ), std::sin(rotationZ)};
@@ -113,20 +112,20 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
     int floorWidth = floorTexture.getRect()->w;
     int floorHeight = floorTexture.getRect()->h;
     float scale = 4.f;
-    int fogLine = h / 5;
+    int fogLine = surfRect.h / 5;
 
-    float cameraHeight = position.z * (float)h;
+    float cameraHeight = position.z * (float)surfRect.h;
 
-    for (int y = 1; y < h; y++)
+    for (int y = 1; y < surfRect.h; y++)
     {
         float rowDistance = (cameraHeight / (float)-y);
         glm::vec2 floorRow = cameraPos + cameraDir * rowDistance;
         glm::vec2 orthoRow = cameraRight * rowDistance;
         float fogStrength = glm::clamp(1.0f - (float)y / (float)fogLine, 0.0f, .8f);
 
-        for (int x = 0; x < w; x++)
+        for (int x = 0; x < surfRect.w; x++)
         {
-            float screenX = ((float)x / (float)w) * 2.0f - 1.0f;
+            float screenX = ((float)x / (float)surfRect.w) * 2.0f - 1.0f;
             glm::vec2 floorPoint = floorRow + orthoRow * screenX;
             int texX = static_cast<int>(floorPoint.x * scale) % floorWidth;
             int texY = static_cast<int>(floorPoint.y * scale) % floorHeight;
@@ -143,23 +142,23 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
                 r = static_cast<uint8_t>((float)r + fogStrength * (float)(255 - r));
                 g = static_cast<uint8_t>((float)g + fogStrength * (float)(255 - g));
                 b = static_cast<uint8_t>((float)b + fogStrength * (float)(255 - b));
-                pixels[y * w + x] = (r << 16) | (g << 8) | b;
+                pixels[y * surfRect.w + x] = (r << 16) | (g << 8) | b;
             }
             else
             {
-                pixels[y * w + x] = floorPixels[texY * floorPixelsWidth + texX];
+                pixels[y * surfRect.w + x] = floorPixels[texY * floorPixelsWidth + texX];
             }
         }
     }
 
     SDL_UnlockTexture(floorTexture.get());
-    SDL_UnlockSurface(projectedFloor);
+    SDL_UnlockSurface(floorSurface);
 
-    SDL_Texture* finalFloorTexture = SDL_CreateTextureFromSurface(renderer, projectedFloor);
-    SDL_UpdateTexture(finalFloorTexture, &projectedFloorRect, projectedFloor->pixels, projectedFloor->pitch);
+    SDL_Texture* finalFloorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
+    SDL_UpdateTexture(finalFloorTexture, &surfRect, floorSurface->pixels, floorSurface->pitch);
 
-    SDL_Rect src = projectedFloorRect;
-    SDL_Rect dst = projectedFloorRect;
+    SDL_Rect src = surfRect;
+    SDL_Rect dst = surfRect;
     dst.y = static_cast<int>(App::renderer.viewportCenter.y);
 
     SDL_RenderCopy(renderer, finalFloorTexture, &src, &dst);
@@ -167,9 +166,8 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, UniqueTexture& floorTexture)
     SDL_DestroyTexture(finalFloorTexture);
 }
 
-
-void Camera3D::initFloorSurface()
+void Camera3D::initFloorSurface(SDL_Surface*& surface, int w, int h)
 {
-    projectedFloorRect = {0, 0, App::renderer.viewport.w, (int)App::renderer.viewportCenter.y};
-    projectedFloor = SDL_CreateRGBSurface(0, projectedFloorRect.w, projectedFloorRect.h, 32, 0, 0, 0, 0);
+    SDL_Rect rect = {0, 0, w, h};
+    surface = SDL_CreateRGBSurface(0, rect.w, rect.h, 32, 0, 0, 0, 0);
 }

@@ -25,7 +25,7 @@ Game::Game()
 void Game::start()
 {
     ResourceLoader::loadedTextures.loadAll();
-    camera3D.initFloorSurface();
+    Camera3D::initFloorSurface(projectedFloor, App::renderer.viewport.w, (int)App::renderer.viewportCenter.y);
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
 
@@ -55,7 +55,7 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
     SDL_Texture *renderTarget = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
     SDL_SetRenderTarget(renderer, renderTarget);
-        camera3D.drawFloor(renderer, ResourceLoader::loadedTextures.testFloor);
+        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.testFloor);
         drawBackground(renderer);
         drawEntitiesDepth(renderer);
     SDL_SetRenderTarget(renderer, nullptr);

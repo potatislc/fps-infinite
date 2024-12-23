@@ -12,7 +12,7 @@ bool Renderer::init(SDL_Window* sdlWindow)
         SDL_Quit();
         return -1;
     }
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0);
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, nullptr);
 
     viewport = (SDL_Rect){ 0, 0, viewportDefaultSize.first, viewportDefaultSize.second };
     viewportCenter = glm::vec2(viewport.w / 2, viewport.h / 2);

@@ -111,8 +111,10 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x};
     int floorWidth = floorTexture.getRect()->w;
     int floorHeight = floorTexture.getRect()->h;
-    float scale = 4.f;
+    float magnification = 16.f;
     int fogLine = surfRect.h / 5;
+    SDL_Point worldTexSize = {(int)(Game::worldSize.x * magnification / 2), (int)(Game::worldSize.y * magnification / 2)};
+    uint8_t worldBorderBrightness = 0x7F + (int)(std::abs(glm::sin(App::timeSinceInit * 2)) * 0x7F);
 
     float cameraHeight = position.z * (float)surfRect.h;
 
@@ -127,11 +129,23 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
         {
             float screenX = ((float)x / (float)surfRect.w) * 2.0f - 1.0f;
             glm::vec2 floorPoint = floorRow + orthoRow * screenX;
-            int texX = static_cast<int>(floorPoint.x * scale) % floorWidth;
-            int texY = static_cast<int>(floorPoint.y * scale) % floorHeight;
+            uint32_t color;
+            int texX = static_cast<int>(floorPoint.x * magnification);
+            int texY = static_cast<int>(floorPoint.y * magnification);
+            texX %= worldTexSize.x;
+            texY %= worldTexSize.y;
+
+            if (texX == 0 || texY == 0)
+            {
+                pixels[y * surfRect.w + x] = (worldBorderBrightness << 16) | (worldBorderBrightness << 8) | worldBorderBrightness;
+                continue;
+            }
+
+            texX %= floorWidth;
+            texY %= floorWidth;
             if (texX < 0) texX += floorWidth;
             if (texY < 0) texY += floorHeight;
-            uint32_t color = floorPixels[texY * floorPixelsWidth + texX];
+            color = floorPixels[texY * floorPixelsWidth + texX];
 
             if (y < fogLine)
             {
@@ -146,7 +160,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
             }
             else
             {
-                pixels[y * surfRect.w + x] = floorPixels[texY * floorPixelsWidth + texX];
+                pixels[y * surfRect.w + x] = color;
             }
         }
     }
@@ -166,7 +180,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     SDL_DestroyTexture(finalFloorTexture);
 }
 
-void Camera3D::initFloorSurface(SDL_Surface*& surface, int w, int h)
+void Camera3D::initFloorProjectionSurface(SDL_Surface*& surface, int w, int h)
 {
     SDL_Rect rect = {0, 0, w, h};
     surface = SDL_CreateRGBSurface(0, rect.w, rect.h, 32, 0, 0, 0, 0);

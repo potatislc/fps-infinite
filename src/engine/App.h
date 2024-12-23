@@ -17,7 +17,8 @@ public:
     static uint16_t targetFps;
     static double frameTime;
     static double timeScale;
-    static float deltaTime;
+    static float deltaTime; // Seconds
+    static double timeSinceInit; // Seconds
     bool quit = false;
     SDL_Event event{};
 

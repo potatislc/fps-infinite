@@ -16,6 +16,7 @@ public:
         float mouseSens = .5f;
     };
 
+    static glm::vec2 worldSize;
     static Renderer::ViewPortCamera mapCamera;
     static Camera3D camera3D;
     static Settings settings;
@@ -36,12 +37,13 @@ private:
     const float mapRadiusSq = (float)mapCenter.x * (float)mapCenter.y;
     const float mapRenderRadiusSq = mapRadiusSq;
 
-    SDL_Texture* decalFloor; // Loads floor texture, apply decals
-    SDL_Texture* shadowCastFloor; // Reload from decal floor every frame and cast shadows
+    UniqueTexture decalFloor; // Loads floor texture, apply decals
+    UniqueTexture shadowCastFloor; // Reload from decal floor every frame and cast shadows
     SDL_Surface* projectedFloor;
 
     void drawEntitiesDepth(SDL_Renderer* renderer);
     void drawEntitiesToMap(SDL_Renderer* renderer);
     void drawMap(SDL_Renderer* renderer);
     void drawBackground(SDL_Renderer* renderer);
+    void castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& shadowTex, SDL_Point castPos);
 };

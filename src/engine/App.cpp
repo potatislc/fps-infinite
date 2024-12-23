@@ -10,6 +10,7 @@ uint16_t App::targetFps = 60;
 double App::frameTime = 1. / (double)targetFps;
 double App::timeScale = 1.;
 float App::deltaTime = (float)(frameTime * timeScale);
+double App::timeSinceInit = 0;
 
 bool App::init()
 {
@@ -34,9 +35,9 @@ void App::run(IGameObject& game)
     while (!quit)
     {
         frameStart = SDL_GetPerformanceCounter();
-        currentTime = SDL_GetPerformanceCounter();
-        deltaTime = (float)(((double)(currentTime - lastTime) / performanceFrequency) * timeScale);
-        lastTime = currentTime;
+        deltaTime = (float)(((double)(frameStart - lastTime) / performanceFrequency) * timeScale);
+        timeSinceInit += deltaTime;
+        lastTime = frameStart;
 
         int mouseX, mouseY;
         SDL_GetRelativeMouseState(&mouseX, &mouseY);

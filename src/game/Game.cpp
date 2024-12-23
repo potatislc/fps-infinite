@@ -6,6 +6,7 @@
 #include "engine/ResourceLoader.h"
 #include "engine/App.h"
 
+glm::vec2 Game::worldSize = {128, 128};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 180);
@@ -25,7 +26,7 @@ Game::Game()
 void Game::start()
 {
     ResourceLoader::loadedTextures.loadAll();
-    Camera3D::initFloorSurface(projectedFloor, App::renderer.viewport.w, (int)App::renderer.viewportCenter.y);
+    Camera3D::initFloorProjectionSurface(projectedFloor, App::renderer.viewport.w, (int) App::renderer.viewportCenter.y);
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
 
@@ -64,6 +65,8 @@ void Game::draw(SDL_Renderer *renderer)
 
     drawEntitiesToMap(renderer);
     drawMap(renderer);
+    std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
+    MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, playerPosMsg.c_str(), (Utils::Vector2I){0, 32}, Utils::Colors::white);
     // camera3D.drawFovLines(renderer);
 }
 
@@ -166,4 +169,13 @@ void Game::drawMap(SDL_Renderer* renderer)
     SDL_RenderCopy(renderer, mapTexture, &mapRect, &dstRect);
 
     SDL_DestroyTexture(mapTexture);
+}
+
+void Game::castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& shadowTex, SDL_Point castPos)
+{
+    SDL_Rect* src = shadowTex.getRect();
+    SDL_Rect dst = *src;
+    dst.x = castPos.x;
+    dst.y = castPos.y;
+    SDL_RenderCopy(renderer, shadowTex.get(), src, &dst);
 }

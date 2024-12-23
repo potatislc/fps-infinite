@@ -29,26 +29,30 @@ void Game::start()
     Camera3D::initFloorProjectionSurface(projectedFloor, App::renderer.viewport.w, (int) App::renderer.viewportCenter.y);
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
+    currentPlayer->position = (glm::vec3){worldSize.x / 2, worldSize.y / 2, 0};
 
     world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
 
-    for (int i = 0; i < 64; i++)
+    /*for (int i = 0; i < 64; i++)
     {
         for (int j = 0; j < 64; j++)
         {
             world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 8 - 1 * 64, j * 8 - 1 * 64, glm::sin(j) * 2 + 2}, 0));
         }
-    }
+    }*/
 }
 
 void Game::update()
 {
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
-
-    world.update();
+    for (const auto& child : world.children)
+    {
+        child->update();
+        wrapInsideWorld(child->position);
+    }
 }
 
 void Game::draw(SDL_Renderer *renderer)
@@ -86,7 +90,7 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
             if (mapDistSq < mapRenderRadiusSq)
             {
                 glm::vec2 relativePos =
-                        Utils::vec2Rotated(dist, worldRotationY);
+                        Utils::vec2Rotate(dist, worldRotationY);
                 SDL_Point mapPos = {mapCenter.x + (int)relativePos.x, mapCenter.y + (int)relativePos.y};
                 float distAlpha = mapDistSq / mapRadiusSq;
                 pixels[mapRect.w * mapPos.y + mapPos.x] =
@@ -179,3 +183,10 @@ void Game::castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& shadowTex, S
     dst.y = castPos.y;
     SDL_RenderCopy(renderer, shadowTex.get(), src, &dst);
 }
+
+void Game::wrapInsideWorld(glm::vec3& vec)
+{
+    vec.x = Utils::fmod(vec.x, worldSize.x);
+    vec.y = Utils::fmod(vec.y, worldSize.y);
+}
+

@@ -12,12 +12,19 @@ namespace Utils
     //
     // Math
     //
-    template <typename T> int sgn(T val)
+    template <typename T>
+    int sgn(T val)
     {
         return (T(0) < val) - (val < T(0));
     }
-    glm::vec2 vec2Rotated(glm::vec2 vec, float angle);
-    float vec3Distance(const glm::vec3& a, const glm::vec3& b);
+
+    template <typename T>
+    T fmod(T a, T b)
+    {
+        return a - b * std::floor(a / b);
+    }
+
+    glm::vec2 vec2Rotate(glm::vec2 vec, float angle);
 
     //
     // Vector

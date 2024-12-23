@@ -35,7 +35,7 @@ void Player::update()
         moveVelocity.y -= (float)Utils::sgn(moveVelocity.y) * accel * App::deltaTime;
     }
 
-    glm::vec2 rotatedMoveVel = Utils::vec2Rotated(moveVelocity, rotationZ);
+    glm::vec2 rotatedMoveVel = Utils::vec2Rotate(moveVelocity, rotationZ);
     position += (glm::vec3){rotatedMoveVel.x, rotatedMoveVel.y, 0} * speed * App::deltaTime;
 
     if (glm::length(moveVelocity) > 0 || headBobPhase > 0)

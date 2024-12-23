@@ -8,6 +8,7 @@ Renderer App::renderer;
 AppDebug App::appDebug;
 uint16_t App::targetFps = 60;
 double App::frameTime = 1. / (double)targetFps;
+uint64_t App::frameCount = 0;
 double App::timeScale = 1.;
 float App::deltaTime = (float)(frameTime * timeScale);
 double App::timeSinceInit = 0;

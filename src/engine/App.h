@@ -7,8 +7,6 @@
 
 class App
 {
-    uint64_t frameCount = 0;
-    bool capFPS = false;
 public:
     static Window window;
     static Renderer renderer;
@@ -16,6 +14,7 @@ public:
     static AppDebug appDebug;
     static uint16_t targetFps;
     static double frameTime;
+    static uint64_t frameCount;
     static double timeScale;
     static float deltaTime; // Seconds
     static double timeSinceInit; // Seconds
@@ -25,4 +24,7 @@ public:
     App() = default;
     bool init();
     void run(IGameObject& game);
+
+private:
+    bool capFPS = false;
 };

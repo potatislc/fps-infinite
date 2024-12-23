@@ -114,7 +114,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     float magnification = 16.f;
     int fogLine = surfRect.h / 5;
     SDL_Point worldTexSize = {(int)(Game::worldSize.x * magnification / 2), (int)(Game::worldSize.y * magnification / 2)};
-    uint8_t worldBorderBrightness = 0x7F + (int)(std::abs(glm::sin(App::timeSinceInit * 2)) * 0x7F);
+    double borderAnim = App::timeSinceInit * 8;
 
     float cameraHeight = position.z * (float)surfRect.h;
 
@@ -137,6 +137,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
 
             if (texX == 0 || texY == 0)
             {
+                uint8_t worldBorderBrightness = 0x7F + (int)(std::abs(glm::sin(borderAnim + (double)x / 16)) * 0x7f);
                 pixels[y * surfRect.w + x] = (worldBorderBrightness << 16) | (worldBorderBrightness << 8) | worldBorderBrightness;
                 continue;
             }

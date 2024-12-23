@@ -46,4 +46,5 @@ private:
     void drawMap(SDL_Renderer* renderer);
     void drawBackground(SDL_Renderer* renderer);
     void castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& shadowTex, SDL_Point castPos);
+    void wrapInsideWorld(glm::vec3& vec);
 };

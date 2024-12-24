@@ -13,7 +13,7 @@ public:
     class Settings
     {
     public:
-        float mouseSens = .5f;
+        float mouseSens = .002f;
     };
 
     static glm::vec2 worldSize;

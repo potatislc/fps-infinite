@@ -13,9 +13,8 @@ void Player::start()
 void Player::update()
 {
     // const float lookDir = (float)(InputMap::isBoundKeyDown("LookRight") - InputMap::isBoundKeyDown("LookLeft"));
-    rotationZ += InputMap::mouseMotion.x * Game::settings.mouseSens * App::deltaTime;
-    rotationZ = (float)std::fmod(rotationZ, 2 * M_PI);
-    if (rotationZ < 0) rotationZ += 2 * M_PI;
+    rotationZ += InputMap::mouseMotion.x * Game::settings.mouseSens;
+    rotationZ = Utils::fmod(rotationZ, (float)M_PI * 2.f);
     glm::vec2 moveDir = {InputMap::isBoundKeyDown("Right") - InputMap::isBoundKeyDown("Left"),
                          InputMap::isBoundKeyDown("Down") - InputMap::isBoundKeyDown("Up")};
     moveVelocity = glm::clamp(

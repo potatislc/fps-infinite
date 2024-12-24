@@ -30,7 +30,7 @@ public:
     static std::shared_ptr<Player> currentPlayer;
 private:
     EntityScene<Entity3D> world;
-    SDL_Texture* mapTexture;
+    SDL_Texture* mapTexture = nullptr;
     SDL_Rect mapRect = {0, 0, 64, 64};
     const float mapScale = 1.f;
     const SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
@@ -39,7 +39,7 @@ private:
 
     UniqueTexture decalFloor; // Loads floor texture, apply decals
     UniqueTexture shadowCastFloor; // Reload from decal floor every frame and cast shadows
-    SDL_Surface* projectedFloor;
+    SDL_Surface* projectedFloor = nullptr;
 
     void drawEntitiesDepth(SDL_Renderer* renderer);
     void drawEntitiesToMap(SDL_Renderer* renderer);

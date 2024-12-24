@@ -91,4 +91,5 @@ void ResourceLoader::LoadedTextures::loadAll()
     entityShadow.set(loadTexture(TEXTURES_PATH"/entities/entity-shadow.png"));
 
     testFloor.set(loadTextureStreaming(TEXTURES_PATH"/floors/test-floor.png"));
+    quakeWater.set(loadTextureStreaming(TEXTURES_PATH"/floors/quake-water.png"));
 }

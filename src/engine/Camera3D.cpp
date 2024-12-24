@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <cstring>
 #include "Camera3D.h"
 #include "App.h"
 #include "ResourceLoader.h"
@@ -115,8 +116,26 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     int fogLine = surfRect.h / 5;
     SDL_Point worldTexSize = {(int)(Game::worldSize.x * magnification / 2), (int)(Game::worldSize.y * magnification / 2)};
     double borderAnim = App::timeSinceInit * 8;
+    auto waterAnim = (float)(App::timeSinceInit * 2);
 
     float cameraHeight = position.z * (float)surfRect.h;
+
+    // Ripple mode
+    float rippleMag = 2.f;
+    auto* ripplePixels = new uint32_t[floorPixelsWidth * floorPixelsWidth];
+    for (int y = 0; y < floorPixelsWidth; y++)
+    {
+        float tempY = (float)y / 4 + waterAnim;
+        for (int x = 0; x < floorPixelsWidth; x++)
+        {
+            float tempX = (float)x / 4 + waterAnim;
+            int rippleX = (int)(x + glm::sin(tempY) * glm::cos(tempX) * rippleMag) % floorPixelsWidth;
+            int rippleY = (int)(y + glm::sin(tempX) * glm::cos(tempY) * rippleMag) % floorPixelsWidth;
+            if (rippleX < 0) rippleX += floorPixelsWidth;
+            if (rippleY < 0) rippleY += floorPixelsWidth;
+            ripplePixels[x + y * floorPixelsWidth] = floorPixels[rippleX + rippleY * floorPixelsWidth];
+        }
+    }
 
     for (int y = 1; y < surfRect.h; y++)
     {
@@ -129,13 +148,15 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
         {
             float screenX = ((float)x / (float)surfRect.w) * 2.0f - 1.0f;
             glm::vec2 floorPoint = floorRow + orthoRow * screenX;
+            /*float temp1 = (float)x / 4 + waterAnim;
+            float temp2 = (float)y / 4 + waterAnim;
+            floorPoint.y += glm::sin(temp1) * glm::cos(temp2) * .02f;
+            floorPoint.x += glm::sin(temp2) * glm::cos(temp1) * .02f;*/
             uint32_t color;
             int texX = static_cast<int>(floorPoint.x * magnification);
             int texY = static_cast<int>(floorPoint.y * magnification);
-            texX %= worldTexSize.x;
-            texY %= worldTexSize.y;
 
-            if (texX == 0 || texY == 0)
+            if ((texX % worldTexSize.x == 0 || texY % worldTexSize.y == 0) && y >= fogLine / 4)
             {
                 uint8_t worldBorderBrightness = 0x7F + (int)(std::abs(glm::sin(borderAnim + (double)x / 16)) * 0x7f);
                 pixels[y * surfRect.w + x] = (worldBorderBrightness << 16) | (worldBorderBrightness << 8) | worldBorderBrightness;
@@ -146,23 +167,23 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
             texY %= floorWidth;
             if (texX < 0) texX += floorWidth;
             if (texY < 0) texY += floorHeight;
-            color = floorPixels[texY * floorPixelsWidth + texX];
+            color = ripplePixels[texY * floorPixelsWidth + texX];
+
+            uint8_t r = (color >> 16) & 0xFF;
+            uint8_t g = (color >> 8) & 0xFF;
+            uint8_t b = color & 0xFF;
 
             if (y < fogLine)
             {
-                uint8_t r = (color >> 16) & 0xFF;
-                uint8_t g = (color >> 8) & 0xFF;
-                uint8_t b = color & 0xFF;
+                pixels[y * surfRect.w + x] = (b << 16) | (g << 8) | r;
+                continue;
+            }
 
-                r = static_cast<uint8_t>((float)r + fogStrength * (float)(255 - r));
-                g = static_cast<uint8_t>((float)g + fogStrength * (float)(255 - g));
-                b = static_cast<uint8_t>((float)b + fogStrength * (float)(255 - b));
-                pixels[y * surfRect.w + x] = (r << 16) | (g << 8) | b;
-            }
-            else
-            {
-                pixels[y * surfRect.w + x] = color;
-            }
+            r = static_cast<uint8_t>((float)r + fogStrength * (float)(255 - r));
+            g = static_cast<uint8_t>((float)g + fogStrength * (float)(255 - g));
+            b = static_cast<uint8_t>((float)b + fogStrength * (float)(255 - b));
+
+            pixels[y * surfRect.w + x] = (b << 16) | (g << 8) | r;
         }
     }
 

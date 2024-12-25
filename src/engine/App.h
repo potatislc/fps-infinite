@@ -26,5 +26,5 @@ public:
     void run(IGameObject& game);
 
 private:
-    bool capFPS = false;
+    bool capFPS = true;
 };

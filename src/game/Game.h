@@ -16,7 +16,7 @@ public:
         float mouseSens = .002f;
     };
 
-    static glm::vec2 worldSize;
+    static glm::vec2 cellSize;
     static Renderer::ViewPortCamera mapCamera;
     static Camera3D camera3D;
     static Settings settings;
@@ -37,14 +37,17 @@ private:
     const float mapRadiusSq = (float)mapCenter.x * (float)mapCenter.y;
     const float mapRenderRadiusSq = mapRadiusSq;
 
-    UniqueTexture decalFloor; // Loads floor texture, apply decals
-    UniqueTexture shadowCastFloor; // Reload from decal floor every frame and cast shadows
     SDL_Surface* projectedFloor = nullptr;
 
-    void drawEntitiesDepth(SDL_Renderer* renderer);
-    void drawEntitiesToMap(SDL_Renderer* renderer);
+#define CELLS_W 5
+    std::array<bool, CELLS_W * CELLS_W> cellsToRender;
+    const uint8_t centerCellId = (CELLS_W * CELLS_W) / 2;
+
+    std::vector<std::pair<float, Entity3D*>> drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId);
+    void drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId);
     void drawMap(SDL_Renderer* renderer);
     void drawBackground(SDL_Renderer* renderer);
-    void castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& shadowTex, SDL_Point castPos);
+    void castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& floor, UniqueTexture& shadowTex, glm::vec2 castPos);
     void wrapInsideWorld(glm::vec3& vec);
+    glm::vec2 getCellPos(uint8_t cellId);
 };

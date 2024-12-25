@@ -6,7 +6,7 @@
 #include "engine/ResourceLoader.h"
 #include "engine/App.h"
 
-glm::vec2 Game::worldSize = {128, 128};
+glm::vec2 Game::cellSize = {96, 96};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 180);
@@ -29,13 +29,16 @@ void Game::start()
     Camera3D::initFloorProjectionSurface(projectedFloor, App::renderer.viewport.w, (int) App::renderer.viewportCenter.y);
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
-    currentPlayer->position = (glm::vec3){worldSize.x / 2, worldSize.y / 2, 0};
+    currentPlayer->position = (glm::vec3){cellSize.x / 2, cellSize.y / 2, 0};
 
     world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
 
+
+    // Should print 0, 0 (It does!)
+    std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     /*for (int i = 0; i < 64; i++)
     {
         for (int j = 0; j < 64; j++)
@@ -48,10 +51,12 @@ void Game::start()
 void Game::update()
 {
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
+
     for (const auto& child : world.children)
     {
         child->update();
         wrapInsideWorld(child->position);
+        // castShadowToFloor(App::renderer.sdlRenderer, shadowCastFloor, ResourceLoader::loadedTextures.entityShadow, child->position);
     }
 }
 
@@ -62,19 +67,19 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_SetRenderTarget(renderer, renderTarget);
         camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater);
         drawBackground(renderer);
-        drawEntitiesDepth(renderer);
+        drawEntitiesDepth(renderer, centerCellId);
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderCopy(renderer, renderTarget, nullptr, nullptr);
     SDL_DestroyTexture(renderTarget);
 
-    drawEntitiesToMap(renderer);
+    drawEntitiesToMap(renderer, centerCellId);
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
     MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, playerPosMsg.c_str(), (Utils::Vector2I){0, 32}, Utils::Colors::white);
     // camera3D.drawFovLines(renderer);
 }
 
-void Game::drawEntitiesToMap(SDL_Renderer* renderer)
+void Game::drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId)
 {
     SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
@@ -105,7 +110,7 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
     SDL_FreeSurface(mapSurface);
 }
 
-void Game::drawEntitiesDepth(SDL_Renderer* renderer)
+std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId)
 {
     glm::vec3 cameraPos = camera3D.position;
     auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
@@ -143,6 +148,8 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer)
     {
         camera3D.drawTexture3D(renderer, testTex, entity->position, entity->rotationZ, viewport);
     }
+
+    return entityDistances;
 }
 
 void Game::drawBackground(SDL_Renderer* renderer)
@@ -175,18 +182,23 @@ void Game::drawMap(SDL_Renderer* renderer)
     SDL_DestroyTexture(mapTexture);
 }
 
-void Game::castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& shadowTex, SDL_Point castPos)
+void Game::castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& floor, UniqueTexture& shadow, glm::vec2 castPos)
 {
-    SDL_Rect* src = shadowTex.getRect();
+    SDL_Rect* src = shadow.getRect();
     SDL_Rect dst = *src;
-    dst.x = castPos.x;
-    dst.y = castPos.y;
-    SDL_RenderCopy(renderer, shadowTex.get(), src, &dst);
+    dst.x = (int)castPos.x - dst.w / 2;
+    dst.y = (int)castPos.y - dst.h / 2;
+    SDL_RenderCopy(renderer, shadow.get(), src, &dst);
 }
 
 void Game::wrapInsideWorld(glm::vec3& vec)
 {
-    vec.x = Utils::fmod(vec.x, worldSize.x);
-    vec.y = Utils::fmod(vec.y, worldSize.y);
+    vec.x = Utils::fmod(vec.x, cellSize.x);
+    vec.y = Utils::fmod(vec.y, cellSize.y);
+}
+
+glm::vec2 Game::getCellPos(uint8_t cellId)
+{
+    return glm::vec2{(cellId % CELLS_W) - CELLS_W / 2, (cellId / 5) - CELLS_W / 2} * cellSize;
 }
 

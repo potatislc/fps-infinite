@@ -6,7 +6,7 @@
 Window App::window;
 Renderer App::renderer;
 AppDebug App::appDebug;
-uint16_t App::targetFps = 30;
+uint16_t App::targetFps = 120;
 double App::frameTime = 1. / (double)targetFps;
 uint64_t App::frameCount = 0;
 double App::timeScale = 1.;

@@ -114,7 +114,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     int floorHeight = floorTexture.getRect()->h;
     float magnification = 16.f;
     int fogLine = surfRect.h / 5;
-    SDL_Point worldTexSize = {(int)(Game::worldSize.x * magnification / 2), (int)(Game::worldSize.y * magnification / 2)};
+    SDL_Point worldTexSize = {(int)(Game::cellSize.x * magnification / 2), (int)(Game::cellSize.y * magnification / 2)};
     double borderAnim = App::timeSinceInit * 8;
     auto waterAnim = (float)(App::timeSinceInit * 2);
 

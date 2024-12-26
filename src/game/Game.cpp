@@ -6,7 +6,7 @@
 #include "engine/ResourceLoader.h"
 #include "engine/App.h"
 
-glm::vec2 Game::cellSize = {96, 96};
+glm::vec2 Game::cellSize = {64, 64};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 180);
@@ -31,14 +31,15 @@ void Game::start()
     world.addChild(currentPlayer);
     currentPlayer->position = (glm::vec3){cellSize.x / 2, cellSize.y / 2, 0};
 
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
+    /*world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));*/
     world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
 
 
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
+    std::cout << centerCellId << std::endl;
     /*for (int i = 0; i < 64; i++)
     {
         for (int j = 0; j < 64; j++)
@@ -67,7 +68,10 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_SetRenderTarget(renderer, renderTarget);
         camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater);
         drawBackground(renderer);
-        drawEntitiesDepth(renderer, centerCellId);
+        for (int i = 0; i < cellsToRender.size(); i++)
+        {
+            drawEntitiesDepth(renderer, i);
+        }
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderCopy(renderer, renderTarget, nullptr, nullptr);
     SDL_DestroyTexture(renderTarget);
@@ -112,13 +116,13 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId)
 
 std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId)
 {
-    glm::vec3 cameraPos = camera3D.position;
     auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
     std::vector<std::pair<float, Entity3D*>> entityDistances;
     entityDistances.reserve(world.getSize());
     glm::vec2 camPos = camera3D.position;
     glm::vec2 forward = {std::cos(camera3D.rotationZ), std::sin(camera3D.rotationZ)};
     glm::vec2 right = {-forward.y, forward.x};
+    glm::vec2 cellOffset = getCellPos(cellId);
 
     for (const auto& entity : world.children)
     {
@@ -126,7 +130,7 @@ std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* r
 
         if (entityPtr != currentPlayer.get())
         {
-            glm::vec2 relativePos = (glm::vec2)entity->position - camPos;
+            glm::vec2 relativePos = (glm::vec2)entity->position - cellOffset - camPos;
             float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
             float distForward = glm::dot((glm::vec2)relativePos, forward);
             float distRight = glm::dot((glm::vec2)relativePos, right);
@@ -146,7 +150,7 @@ std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* r
     SDL_Rect& viewport = App::renderer.viewport;
     for (const auto& [_, entity] : entityDistances)
     {
-        camera3D.drawTexture3D(renderer, testTex, entity->position, entity->rotationZ, viewport);
+        camera3D.drawTexture3D(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0), entity->rotationZ, viewport);
     }
 
     return entityDistances;
@@ -197,8 +201,8 @@ void Game::wrapInsideWorld(glm::vec3& vec)
     vec.y = Utils::fmod(vec.y, cellSize.y);
 }
 
-glm::vec2 Game::getCellPos(uint8_t cellId)
+glm::vec2 Game::getCellPos(int cellId)
 {
-    return glm::vec2{(cellId % CELLS_W) - CELLS_W / 2, (cellId / 5) - CELLS_W / 2} * cellSize;
+    return glm::vec2{(cellId % CELLS_W) - CELLS_W / 2, (cellId / CELLS_W) - CELLS_W / 2} * cellSize;
 }
 

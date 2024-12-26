@@ -113,7 +113,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     int floorWidth = floorTexture.getRect()->w;
     int floorHeight = floorTexture.getRect()->h;
     float magnification = 16.f;
-    int fogLine = surfRect.h / 5;
+    int fogLine = surfRect.h / 8;
     SDL_Point worldTexSize = {(int)(Game::cellSize.x * magnification / 2), (int)(Game::cellSize.y * magnification / 2)};
     double borderAnim = App::timeSinceInit * 8;
     auto waterAnim = (float)(App::timeSinceInit * 2);
@@ -155,25 +155,29 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
             uint32_t color;
             int texX = static_cast<int>(floorPoint.x * magnification);
             int texY = static_cast<int>(floorPoint.y * magnification);
+            texX %= worldTexSize.x;
+            texY %= worldTexSize.y;
+            if (texX < 0) texX += worldTexSize.x;
+            if (texY < 0) texY += worldTexSize.y;
 
-            if ((texX % worldTexSize.x == 0 || texY % worldTexSize.y == 0) && y >= fogLine / 4)
+#define BORDER_WIDTH 2
+            if ((texX <= BORDER_WIDTH || texY <= BORDER_WIDTH) && y >= fogLine / 4)
             {
                 uint8_t worldBorderBrightness = 0x7F + (int)(std::abs(glm::sin(borderAnim + (double)x / 16)) * 0x7f);
                 pixels[y * surfRect.w + x] = (worldBorderBrightness << 16) | (worldBorderBrightness << 8) | worldBorderBrightness;
                 continue;
             }
+#undef BORDER_WIDTH
 
             texX %= floorWidth;
             texY %= floorWidth;
-            if (texX < 0) texX += floorWidth;
-            if (texY < 0) texY += floorHeight;
             color = ripplePixels[texY * floorPixelsWidth + texX];
 
             uint8_t r = (color >> 16) & 0xFF;
             uint8_t g = (color >> 8) & 0xFF;
             uint8_t b = color & 0xFF;
 
-            if (y < fogLine)
+            if (y > fogLine)
             {
                 pixels[y * surfRect.w + x] = (b << 16) | (g << 8) | r;
                 continue;

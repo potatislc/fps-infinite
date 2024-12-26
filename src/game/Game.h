@@ -39,9 +39,9 @@ private:
 
     SDL_Surface* projectedFloor = nullptr;
 
-#define CELLS_W 5
+#define CELLS_W 7
     std::array<bool, CELLS_W * CELLS_W> cellsToRender;
-    const uint8_t centerCellId = (CELLS_W * CELLS_W) / 2;
+    const int centerCellId = (CELLS_W * CELLS_W) / 2;
 
     std::vector<std::pair<float, Entity3D*>> drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId);
     void drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId);
@@ -49,5 +49,5 @@ private:
     void drawBackground(SDL_Renderer* renderer);
     void castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& floor, UniqueTexture& shadowTex, glm::vec2 castPos);
     void wrapInsideWorld(glm::vec3& vec);
-    glm::vec2 getCellPos(uint8_t cellId);
+    glm::vec2 getCellPos(int cellId);
 };

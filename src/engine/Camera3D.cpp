@@ -94,6 +94,9 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
             textureScale
     };
 
+    const int maxBright = 16;
+    uint8_t brightness = (dst.w < maxBright) ? dst.w * (255/maxBright) : 255;
+    SDL_SetTextureColorMod(uniqueTexture.get(), brightness, brightness, brightness);
     SDL_RenderCopy(renderer, uniqueTexture.get(), &src, &dst);
 }
 
@@ -113,7 +116,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     int floorWidth = floorTexture.getRect()->w;
     int floorHeight = floorTexture.getRect()->h;
     float magnification = 16.f;
-    int fogLine = surfRect.h / 8;
+    int fogLine = surfRect.h / 5;
     SDL_Point worldTexSize = {(int)(Game::cellSize.x * magnification / 2), (int)(Game::cellSize.y * magnification / 2)};
     double borderAnim = App::timeSinceInit * 8;
     auto waterAnim = (float)(App::timeSinceInit * 2);
@@ -183,9 +186,9 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
                 continue;
             }
 
-            r = static_cast<uint8_t>((float)r + fogStrength * (float)(255 - r));
-            g = static_cast<uint8_t>((float)g + fogStrength * (float)(255 - g));
-            b = static_cast<uint8_t>((float)b + fogStrength * (float)(255 - b));
+            r = static_cast<uint8_t>((float)r - fogStrength * (float)(r));
+            g = static_cast<uint8_t>((float)g - fogStrength * (float)(g));
+            b = static_cast<uint8_t>((float)b - fogStrength * (float)(b));
 
             pixels[y * surfRect.w + x] = (b << 16) | (g << 8) | r;
         }

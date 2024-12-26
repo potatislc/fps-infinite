@@ -39,7 +39,7 @@ private:
 
     SDL_Surface* projectedFloor = nullptr;
 
-#define CELLS_W 7
+#define CELLS_W 5
     std::array<bool, CELLS_W * CELLS_W> cellsToRender;
     const int centerCellId = (CELLS_W * CELLS_W) / 2;
 

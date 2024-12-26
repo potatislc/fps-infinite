@@ -6,7 +6,7 @@
 #include "engine/ResourceLoader.h"
 #include "engine/App.h"
 
-glm::vec2 Game::cellSize = {64, 64};
+glm::vec2 Game::cellSize = {96, 96};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 180);
@@ -40,13 +40,13 @@ void Game::start()
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     std::cout << centerCellId << std::endl;
-    /*for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 16; i++)
     {
-        for (int j = 0; j < 64; j++)
+        for (int j = 0; j < 16; j++)
         {
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 8 - 1 * 64, j * 8 - 1 * 64, glm::sin(j) * 2 + 2}, 0));
+            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2}, 0));
         }
-    }*/
+    }
 }
 
 void Game::update()
@@ -85,6 +85,7 @@ void Game::draw(SDL_Renderer *renderer)
 
 void Game::drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId)
 {
+    glm::vec2 cellOffset = getCellPos(cellId);
     SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
     SDL_LockSurface(mapSurface);
@@ -160,7 +161,6 @@ void Game::drawBackground(SDL_Renderer* renderer)
 {
     SDL_Rect dst = *ResourceLoader::loadedTextures.testBg.getRect();
     dst.x = (int)((dst.w / M_PI_2) * -camera3D.rotationZ * .25f) % dst.w;
-    dst.h++;
 
     SDL_RenderCopy(
             renderer,

@@ -43,6 +43,7 @@ private:
     std::array<bool, CELLS_W * CELLS_W> cellsToRender;
     const int centerCellId = (CELLS_W * CELLS_W) / 2;
 
+    void drawEntityCells(SDL_Renderer* renderer);
     std::vector<std::pair<float, Entity3D*>> drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId);
     void drawEntitiesToMap(SDL_Renderer* renderer);
     void drawMap(SDL_Renderer* renderer);

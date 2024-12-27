@@ -68,12 +68,7 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_SetRenderTarget(renderer, renderTarget);
         camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater);
         drawBackground(renderer);
-        for (int i = 0; i < cellsToRender.size(); i++)
-        {
-            /*if (i == 0 || i == CELLS_W - 1 || i == CELLS_W*CELLS_W - CELLS_W || i == CELLS_W*CELLS_W - 1)
-                continue;*/
-            drawEntitiesDepth(renderer, i);
-        }
+        drawEntityCells(renderer);
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderCopy(renderer, renderTarget, nullptr, nullptr);
     SDL_DestroyTexture(renderTarget);
@@ -99,9 +94,9 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
         {
             glm::vec2 dist = entity->position - worldCenter;
             if (dist.x > cellCenter.x) dist.x -= cellSize.x;
-            if (dist.x < -cellCenter.x) dist.x += cellSize.x;
+            else if (dist.x < -cellCenter.x) dist.x += cellSize.x;
             if (dist.y > cellCenter.y) dist.y -= cellSize.y;
-            if (dist.y < -cellCenter.y) dist.y += cellSize.y;
+            else if (dist.y < -cellCenter.y) dist.y += cellSize.y;
             // glm::vec2 shortestDist = {glm::min(dist.x, cellSize.x - dist.x), glm::min(dist.y, cellSize.y - dist.y)};
             float mapDistSq = dist.x * dist.x + dist.y * dist.y;
             if (mapDistSq < mapRenderRadiusSq)
@@ -130,7 +125,7 @@ std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* r
     glm::vec2 camPos = camera3D.position;
     glm::vec2 forward = {std::cos(camera3D.rotationZ), std::sin(camera3D.rotationZ)};
     glm::vec2 right = {-forward.y, forward.x};
-    glm::vec2 cellOffset = getCellPos(cellId);
+    glm::vec2 cellOffset = getCellPos(cellId) * cellSize;
 
     for (const auto& entity : world.children)
     {
@@ -139,14 +134,15 @@ std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* r
         if (entityPtr != currentPlayer.get())
         {
             glm::vec2 relativePos = (glm::vec2)entity->position - cellOffset - camPos;
-            float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
             float distForward = glm::dot((glm::vec2)relativePos, forward);
             float distRight = glm::dot((glm::vec2)relativePos, right);
             float screenX = (distRight / distForward);
 
-            if (screenX > -1  && screenX < 1 && distSq < farPlaneSquared)
+            if (screenX > -1 && screenX < 1)
             {
-                entityDistances.emplace_back(distSq, entityPtr);
+                float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
+                if (distSq < farPlaneSquared)
+                    entityDistances.emplace_back(distSq, entityPtr);
             }
         }
     }
@@ -210,6 +206,39 @@ void Game::wrapInsideWorld(glm::vec3& vec)
 
 glm::vec2 Game::getCellPos(int cellId)
 {
-    return glm::vec2{(cellId % CELLS_W) - CELLS_W / 2, (cellId / CELLS_W) - CELLS_W / 2} * cellSize;
+    return glm::vec2{(cellId % CELLS_W) - CELLS_W / 2, (cellId / CELLS_W) - CELLS_W / 2};
+}
+
+void Game::drawEntityCells(SDL_Renderer* renderer)
+{
+    glm::vec2 camPos = camera3D.position;
+    glm::vec2 forward = {std::cos(camera3D.rotationZ), std::sin(camera3D.rotationZ)};
+    glm::vec2 right = {-forward.y, forward.x};
+    std::vector<std::pair<float, int>> cellDistances;
+    cellDistances.reserve(world.getSize());
+    const glm::vec2 cellCenter = {cellSize.x / 2, cellSize.y / 2};
+
+    for (int id = 0; id < CELLS_W * CELLS_W; id++)
+    {
+        if (id == centerCellId) continue;
+        glm::vec2 relativePos = getCellPos(id) * cellSize + cellCenter - camPos;
+        /*float distForward = glm::dot((glm::vec2)relativePos, forward);
+        float distRight = glm::dot((glm::vec2)relativePos, right);
+        float screenX = (distRight / distForward);*/
+
+        float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
+        cellDistances.emplace_back(distSq, id);
+    }
+
+    std::sort(cellDistances.begin(), cellDistances.end(),
+              [](const auto& a, const auto& b) { return a.first > b.first; });
+
+    for (const auto& [_, id] : cellDistances)
+    {
+        drawEntitiesDepth(renderer, id);
+    }
+
+    // Draw center last
+    drawEntitiesDepth(renderer, centerCellId);
 }
 

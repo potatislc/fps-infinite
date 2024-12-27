@@ -44,7 +44,7 @@ private:
     const int centerCellId = (CELLS_W * CELLS_W) / 2;
 
     std::vector<std::pair<float, Entity3D*>> drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId);
-    void drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId);
+    void drawEntitiesToMap(SDL_Renderer* renderer);
     void drawMap(SDL_Renderer* renderer);
     void drawBackground(SDL_Renderer* renderer);
     void castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& floor, UniqueTexture& shadowTex, glm::vec2 castPos);

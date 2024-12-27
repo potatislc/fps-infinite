@@ -70,22 +70,23 @@ void Game::draw(SDL_Renderer *renderer)
         drawBackground(renderer);
         for (int i = 0; i < cellsToRender.size(); i++)
         {
+            /*if (i == 0 || i == CELLS_W - 1 || i == CELLS_W*CELLS_W - CELLS_W || i == CELLS_W*CELLS_W - 1)
+                continue;*/
             drawEntitiesDepth(renderer, i);
         }
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderCopy(renderer, renderTarget, nullptr, nullptr);
     SDL_DestroyTexture(renderTarget);
 
-    drawEntitiesToMap(renderer, centerCellId);
+    drawEntitiesToMap(renderer);
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
     MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, playerPosMsg.c_str(), (Utils::Vector2I){0, 32}, Utils::Colors::white);
     // camera3D.drawFovLines(renderer);
 }
 
-void Game::drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId)
+void Game::drawEntitiesToMap(SDL_Renderer* renderer)
 {
-    glm::vec2 cellOffset = getCellPos(cellId);
     SDL_Surface* mapSurface = SDL_CreateRGBSurface(0, mapRect.w, mapRect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
     SDL_LockSurface(mapSurface);
@@ -93,9 +94,15 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer, uint8_t cellId)
         auto* pixels = (uint32_t*)mapSurface->pixels;
         glm::vec3 worldCenter = currentPlayer->position;
         float worldRotationY = -currentPlayer->rotationZ;
+        const glm::vec2 cellCenter = {cellSize.x / 2, cellSize.y / 2};
         for (const auto& entity : world.children)
         {
             glm::vec2 dist = entity->position - worldCenter;
+            if (dist.x > cellCenter.x) dist.x -= cellSize.x;
+            if (dist.x < -cellCenter.x) dist.x += cellSize.x;
+            if (dist.y > cellCenter.y) dist.y -= cellSize.y;
+            if (dist.y < -cellCenter.y) dist.y += cellSize.y;
+            // glm::vec2 shortestDist = {glm::min(dist.x, cellSize.x - dist.x), glm::min(dist.y, cellSize.y - dist.y)};
             float mapDistSq = dist.x * dist.x + dist.y * dist.y;
             if (mapDistSq < mapRenderRadiusSq)
             {

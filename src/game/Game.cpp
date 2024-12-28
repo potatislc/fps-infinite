@@ -21,6 +21,8 @@ Game::Game()
     InputMap::addKeyBinding("Down", SDLK_s);
     InputMap::addKeyBinding("LookLeft", SDLK_LEFT);
     InputMap::addKeyBinding("LookRight", SDLK_RIGHT);
+    InputMap::addKeyBinding("FlyUp", SDLK_UP);
+    InputMap::addKeyBinding("FlyDown", SDLK_DOWN);
 }
 
 void Game::start()
@@ -134,8 +136,9 @@ std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* r
         if (entityPtr != currentPlayer.get())
         {
             glm::vec2 relativePos = (glm::vec2)entity->position - cellOffset - camPos;
-            float distForward = glm::dot((glm::vec2)relativePos, forward);
-            float distRight = glm::dot((glm::vec2)relativePos, right);
+            float distForward = glm::dot(relativePos, forward);
+            if (distForward >= 0) continue;
+            float distRight = glm::dot(relativePos, right);
             float screenX = (distRight / distForward);
 
             if (screenX > -1 && screenX < 1)
@@ -220,14 +223,27 @@ void Game::drawEntityCells(SDL_Renderer* renderer)
 
     for (int id = 0; id < CELLS_W * CELLS_W; id++)
     {
-        if (id == centerCellId) continue;
-        glm::vec2 relativePos = getCellPos(id) * cellSize + cellCenter - camPos;
-        /*float distForward = glm::dot((glm::vec2)relativePos, forward);
-        float distRight = glm::dot((glm::vec2)relativePos, right);
-        float screenX = (distRight / distForward);*/
+        if (id == centerCellId || id == 0 || id == CELLS_W-1 || id == (CELLS_W * CELLS_W) - CELLS_W || id == (CELLS_W * CELLS_W) - 1)
+            continue;
 
-        float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
-        cellDistances.emplace_back(distSq, id);
+        glm::vec2 relativePos = getCellPos(id) * cellSize;
+
+        for (int corner = 0; corner < 4; corner++)
+        {
+            glm::vec2 cellCorner = camPos - (glm::vec2){corner % 2, corner / 2} * cellSize;
+            float distForward = glm::dot(relativePos + cellCorner, forward);
+            if (distForward <= 0) continue;
+            float distRight = glm::dot(relativePos + cellCorner, right);
+            float screenX = (distRight / distForward);
+
+            if (screenX > -1 && screenX < 1)
+            {
+                relativePos += cellCenter;
+                float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
+                cellDistances.emplace_back(distSq, id);
+                break;
+            }
+        }
     }
 
     std::sort(cellDistances.begin(), cellDistances.end(),
@@ -240,5 +256,19 @@ void Game::drawEntityCells(SDL_Renderer* renderer)
 
     // Draw center last
     drawEntitiesDepth(renderer, centerCellId);
+
+    // Draw cell grid
+    for (int i = 0; i < CELLS_W * CELLS_W; i++)
+    {
+        SDL_Rect drawRect = {32 + (int)getCellPos(i).x * 16, 32 + (int)getCellPos(i).y * 16, 16, 16};
+
+        for (auto& cellDistance : cellDistances)
+        {
+            if (cellDistance.second == i)
+            {
+                SDL_RenderDrawRect(renderer, &drawRect);
+            }
+        }
+    }
 }
 

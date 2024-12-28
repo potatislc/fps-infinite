@@ -37,6 +37,9 @@ void Player::update()
     glm::vec2 rotatedMoveVel = Utils::vec2Rotate(moveVelocity, rotationZ);
     position += (glm::vec3){rotatedMoveVel.x, rotatedMoveVel.y, 0} * speed * App::deltaTime;
 
+    if (InputMap::isBoundKeyDown("FlyUp")) position.z += 10 * App::deltaTime;
+    if (InputMap::isBoundKeyDown("FlyDown")) position.z -= 10 * App::deltaTime;
+
     if (glm::length(moveVelocity) > 0 || headBobPhase > 0)
     {
         headBobPhase += headBobSpeed * App::deltaTime;

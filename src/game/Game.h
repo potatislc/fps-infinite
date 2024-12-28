@@ -39,8 +39,7 @@ private:
 
     SDL_Surface* projectedFloor = nullptr;
 
-#define CELLS_W 5
-    std::array<bool, CELLS_W * CELLS_W> cellsToRender;
+#define CELLS_W (5)
     const int centerCellId = (CELLS_W * CELLS_W) / 2;
 
     void drawEntityCells(SDL_Renderer* renderer);

@@ -19,7 +19,6 @@ private:
     const float speed = 18;
     const float accel = 4;
     float eyeHeight = 2;
-    float totalMoveDist = 0.f;
     float headBobPhase = 0.f;
     const float headBobSpeed = 10;
     const float headBobMag = .25f;

@@ -39,11 +39,13 @@ private:
 
     SDL_Surface* projectedFloor = nullptr;
 
-#define CELLS_W (5)
+#define CELLS_W (5) // Has to be odd number >= 3
     const int centerCellId = (CELLS_W * CELLS_W) / 2;
 
     void drawEntityCells(SDL_Renderer* renderer);
-    std::vector<std::pair<float, Entity3D*>> drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId);
+    void drawEntitiesDepth(SDL_Renderer* renderer, int cellId);
+    std::vector<Entity3D*> getEntitiesDepthOrder();
+    void drawEntities(SDL_Renderer* renderer, int cellId, const std::vector<Entity3D*>& entityDistances);
     void drawEntitiesToMap(SDL_Renderer* renderer);
     void drawMap(SDL_Renderer* renderer);
     void drawBackground(SDL_Renderer* renderer);

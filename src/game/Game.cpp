@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <numeric>
 #include "Game.h"
 #include "engine/InputMap.h"
 #include "game/characters/Player.h"
@@ -9,7 +10,7 @@
 glm::vec2 Game::cellSize = {96, 96};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
-Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 180);
+Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 170);
 Game::Settings Game::settings;
 
 Game::Game()
@@ -119,7 +120,7 @@ void Game::drawEntitiesToMap(SDL_Renderer* renderer)
     SDL_FreeSurface(mapSurface);
 }
 
-std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* renderer, uint8_t cellId)
+void Game::drawEntitiesDepth(SDL_Renderer* renderer, int cellId)
 {
     auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
     std::vector<std::pair<float, Entity3D*>> entityDistances;
@@ -159,8 +160,6 @@ std::vector<std::pair<float, Entity3D*>> Game::drawEntitiesDepth(SDL_Renderer* r
     {
         camera3D.drawTexture3D(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0), entity->rotationZ, viewport);
     }
-
-    return entityDistances;
 }
 
 void Game::drawBackground(SDL_Renderer* renderer)
@@ -223,8 +222,10 @@ void Game::drawEntityCells(SDL_Renderer* renderer)
 
     for (int id = 0; id < CELLS_W * CELLS_W; id++)
     {
+#if CELLS_W > 3
         if (id == centerCellId || id == 0 || id == CELLS_W-1 || id == (CELLS_W * CELLS_W) - CELLS_W || id == (CELLS_W * CELLS_W) - 1)
             continue;
+#endif
 
         glm::vec2 relativePos = getCellPos(id) * cellSize;
 
@@ -249,9 +250,15 @@ void Game::drawEntityCells(SDL_Renderer* renderer)
     std::sort(cellDistances.begin(), cellDistances.end(),
               [](const auto& a, const auto& b) { return a.first > b.first; });
 
+    // Calculate depth of all entities in cell in center of view
+    // Use the depth for every rendered cell in back row
+    // How is this slower?!?!?
+    // const std::vector<Entity3D*> cellEntityDists = getEntitiesDepthOrder();
+
     for (const auto& [_, id] : cellDistances)
     {
         drawEntitiesDepth(renderer, id);
+        // drawEntities(renderer, id, cellEntityDists);
     }
 
     // Draw center last
@@ -271,4 +278,66 @@ void Game::drawEntityCells(SDL_Renderer* renderer)
         }
     }
 }
+
+void Game::drawEntities(SDL_Renderer* renderer, int cellId,
+                        const std::vector<Entity3D*>& entityDistances)
+{
+    auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
+    glm::vec2 camPos = camera3D.position;
+    glm::vec2 cellOffset = getCellPos(cellId) * cellSize;
+    glm::vec2 forward = {std::cos(camera3D.rotationZ), std::sin(camera3D.rotationZ)};
+    glm::vec2 right = {-forward.y, forward.x};
+
+    UniqueTexture& testTex = ResourceLoader::loadedTextures.swarm;
+    SDL_Rect& viewport = App::renderer.viewport;
+    for (auto* entity : entityDistances)
+    {
+        glm::vec2 relativePos = (glm::vec2)entity->position - cellOffset - camPos;
+
+        float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
+        if (distSq < farPlaneSquared)
+            camera3D.drawTexture3D(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0), entity->rotationZ, viewport);
+    }
+}
+
+std::vector<Entity3D*> Game::getEntitiesDepthOrder()
+{
+    std::vector<float> entityDists;
+    std::vector<Entity3D*> entityOrder;
+    entityDists.reserve(world.getSize());
+    entityOrder.reserve(world.getSize());
+    glm::vec2 camPos = camera3D.position;
+    glm::vec2 forward = {std::cos(camera3D.rotationZ), std::sin(camera3D.rotationZ)};
+    glm::vec2 cellOffset = forward * cellSize;
+
+    for (const auto& entity : world.children)
+    {
+        auto* entityPtr = entity.get();
+        if (entityPtr != currentPlayer.get())
+        {
+            glm::vec2 relativePos = (glm::vec2)entity->position - cellOffset - camPos;
+            float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
+            entityDists.emplace_back(distSq);
+            entityOrder.emplace_back(entityPtr);
+        }
+    }
+
+    std::vector<size_t> indices(entityDists.size());
+    std::iota(indices.begin(), indices.end(), 0);
+
+    std::sort(indices.begin(), indices.end(),
+              [&entityDists](size_t i1, size_t i2) {
+                  return entityDists[i1] > entityDists[i2];
+              });
+
+    std::vector<Entity3D*> sortedEntityOrder;
+
+    for (size_t index : indices)
+    {
+        sortedEntityOrder.emplace_back(entityOrder[index]);
+    }
+
+    return sortedEntityOrder;
+}
+
 

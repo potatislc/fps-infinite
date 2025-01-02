@@ -36,13 +36,17 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
     glm::vec2 right = {-forward.y, forward.x};
 
     float distForward = glm::dot((glm::vec2)relativePos, forward);
+    // if (distForward <= 0) return;
+    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distForward) * 2);
+    // if (textureScale <= 1) return;
     float distRight = glm::dot((glm::vec2)relativePos, right);
     float distUp = relativePos.z;
 
-    float screenX = (distRight / distForward) * (viewport.w / 2.0f) + viewport.w / 2.0f;
+    float screenX = (distRight / distForward);
+    // if (screenX < -1 || screenX > 1) return;
+    screenX = screenX * (viewport.w / 2.0f) + viewport.w / 2.0f;
     float screenY = (distUp / distForward) * viewport.h + viewport.h / 2.0f;
 
-    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distForward) * 2);
 
     int rotFrame = 0;
     glm::vec2 targetForward = {std::cos(targetRotZ), std::sin(targetRotZ)};

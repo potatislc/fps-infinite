@@ -60,22 +60,44 @@ void Game::update()
     {
         child->update();
         wrapInsideWorld(child->position);
-        // castShadowToFloor(App::renderer.sdlRenderer, shadowCastFloor, ResourceLoader::loadedTextures.entityShadow, child->position);
     }
 }
 
 void Game::draw(SDL_Renderer *renderer)
 {
+    shadowMap.set(SDL_CreateTexture(
+            App::renderer.sdlRenderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET,
+            static_cast<int>(cellSize.x * floorPixelDensity),
+            static_cast<int>(cellSize.y * floorPixelDensity)));
+
+    SDL_SetTextureBlendMode(shadowMap.get(), SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(App::renderer.sdlRenderer, shadowMap.get());
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGBA: 0,0,0,0 for transparency
+    SDL_RenderClear(renderer);
+
+    for (const auto& child : world.children)
+    {
+        castShadow(renderer, ResourceLoader::loadedTextures.entityShadow, child->position);
+    }
+
+    SDL_SetRenderTarget(App::renderer.sdlRenderer, nullptr);
+
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
-    SDL_Texture *renderTarget = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
-    SDL_SetRenderTarget(renderer, renderTarget);
-        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater);
+
+    {
+        UniqueTexture renderTarget = UniqueTexture(
+                SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h));
+        SDL_SetRenderTarget(renderer, renderTarget.get());
+        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity);
         drawBackground(renderer);
         drawEntityCells(renderer);
-    SDL_SetRenderTarget(renderer, nullptr);
-    SDL_RenderCopy(renderer, renderTarget, nullptr, nullptr);
-    SDL_DestroyTexture(renderTarget);
+        SDL_SetRenderTarget(renderer, nullptr);
+        SDL_RenderCopy(renderer, renderTarget.get(), &rect, &rect);
+    }
 
+    SDL_RenderCopy(renderer, shadowMap.get(), shadowMap.getRect(), shadowMap.getRect());
     drawEntitiesToMap(renderer);
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
@@ -191,13 +213,13 @@ void Game::drawMap(SDL_Renderer* renderer)
     SDL_DestroyTexture(mapTexture);
 }
 
-void Game::castShadowToFloor(SDL_Renderer* renderer, UniqueTexture& floor, UniqueTexture& shadow, glm::vec2 castPos)
+void Game::castShadow(SDL_Renderer* renderer, UniqueTexture& shadowTexture, glm::vec2 castPos)
 {
-    SDL_Rect* src = shadow.getRect();
+    SDL_Rect* src = shadowTexture.getRect();
     SDL_Rect dst = *src;
-    dst.x = (int)castPos.x - dst.w / 2;
-    dst.y = (int)castPos.y - dst.h / 2;
-    SDL_RenderCopy(renderer, shadow.get(), src, &dst);
+    dst.x = (int)(castPos.x * floorPixelDensity) - dst.w / 2;
+    dst.y = (int)(castPos.y * floorPixelDensity) - dst.h / 2;
+    SDL_RenderCopy(renderer, shadowTexture.get(), src, &dst);
 }
 
 void Game::wrapInsideWorld(glm::vec3& vec)

@@ -38,8 +38,7 @@ void MessageTexture::renderMessage(SDL_Renderer* renderTarget, FontAtlasId fontA
                 fontAtlas->charSize
                 };
         SDL_Rect destRect = {position.x + (int)i * fontAtlas->charSize, position.y, fontAtlas->charSize, fontAtlas->charSize};
-        SDL_Point origin = {0, 0};
-        SDL_RenderCopyEx(renderTarget, fontAtlas->texture.get(), &charRect, &destRect, 0.0, &origin, SDL_FLIP_NONE);
+        SDL_RenderCopy(renderTarget, fontAtlas->texture.get(), &charRect, &destRect);
     }
 }
 
@@ -81,8 +80,7 @@ SDL_Texture* MessageTexture::messageToTexture(SDL_Renderer *renderTarget, FontAt
                         fontAtlas->charSize
                 };
         SDL_Rect destRect = {0 + (int)i * fontAtlas->charSize, 0, fontAtlas->charSize, fontAtlas->charSize};
-        SDL_Point origin = {0, 0};
-        SDL_RenderCopyEx(renderTarget, fontAtlas->texture.get(), &charRect, &destRect, 0.0, &origin, SDL_FLIP_NONE);
+        SDL_RenderCopy(renderTarget, fontAtlas->texture.get(), &charRect, &destRect);
     }
 
     SDL_SetRenderTarget(renderTarget, nullptr);

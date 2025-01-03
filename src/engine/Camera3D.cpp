@@ -104,7 +104,7 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
     SDL_RenderCopy(renderer, uniqueTexture.get(), &src, &dst);
 }
 
-void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture)
+void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture, float pixelDensity)
 {
     SDL_LockSurface(floorSurface);
     auto* pixels = (uint32_t*)floorSurface->pixels;
@@ -119,9 +119,9 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x};
     int floorWidth = floorTexture.getRect()->w;
     int floorHeight = floorTexture.getRect()->h;
-    float magnification = 16.f;
+    // float magnification = 16.f;
     int fogLine = surfRect.h / 5;
-    SDL_Point worldTexSize = {(int)(Game::cellSize.x * magnification / 2), (int)(Game::cellSize.y * magnification / 2)};
+    SDL_Point worldTexSize = {(int)(Game::cellSize.x * pixelDensity / 2), (int)(Game::cellSize.y * pixelDensity / 2)};
     double borderAnim = App::timeSinceInit * 8;
     auto waterAnim = (float)(App::timeSinceInit * 2);
 
@@ -160,8 +160,8 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
             floorPoint.y += glm::sin(temp1) * glm::cos(temp2) * .02f;
             floorPoint.x += glm::sin(temp2) * glm::cos(temp1) * .02f;*/
             uint32_t color;
-            int texX = static_cast<int>(floorPoint.x * magnification);
-            int texY = static_cast<int>(floorPoint.y * magnification);
+            int texX = static_cast<int>(floorPoint.x * pixelDensity);
+            int texY = static_cast<int>(floorPoint.y * pixelDensity);
             texX %= worldTexSize.x;
             texY %= worldTexSize.y;
             if (texX < 0) texX += worldTexSize.x;

@@ -84,5 +84,18 @@ add_executable(${PROJECT_NAME} src/main.cpp
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static glm)
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/") # Set the asset path macro to the absolute path on the dev machine
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PROFILE_DEBUG)
+else ()
+    target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCES_PATH="./res/")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PROFILE_RELEASE)
+
+    # Copy the res directory to the output directory
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/res
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/res
+    )
+endif ()
 #target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="relative-path-to-res-in-the-game-package") # Set the asset path macro in release mode

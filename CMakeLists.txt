@@ -44,42 +44,15 @@ FetchContent_MakeAvailable(glm)
 
 include_directories("${CMAKE_CURRENT_LIST_DIR}/src/")
 
-add_executable(${PROJECT_NAME} src/main.cpp
-        src/engine/App.cpp
-        src/engine/App.h
-        src/engine/Renderer.cpp
-        src/engine/Renderer.h
-        src/engine/Window.cpp
-        src/engine/Window.h
-        src/engine/InputMap.cpp
-        src/engine/InputMap.h
-        src/engine/ResourceLoader.h
-        src/engine/ResourceLoader.cpp
-        src/engine/MessageTexture.cpp
-        src/engine/MessageTexture.h
-        src/engine/AppDebug.cpp
-        src/engine/AppDebug.h
-        src/engine/Event.h
-        src/engine/utils/Utils.h
-        src/engine/utils/URand.cpp
-        src/engine/utils/UColors.cpp
-        src/engine/UniqueTexture.cpp
-        src/engine/UniqueTexture.h
-        src/engine/state_machine/StateMachine.h
-        src/engine/state_machine/StateMachine.cpp
-        src/engine/game_object/IGameObject.h
-        src/engine/game_object/AEntity.h
-        src/game/Game.cpp
-        src/game/Game.h
-        src/game/characters/Player.cpp
-        src/game/characters/Player.h
-        # src/engine/game_object/EntityScene.cpp
-        src/engine/game_object/EntityScene.h
-        src/engine/game_object/Entity3D.h
-        src/game/characters/ACharacter.h
-        src/engine/Camera3D.cpp
-        src/engine/Camera3D.h
-        src/engine/utils/UMath.cpp)
+# Add all .cpp and .h files in the src directory recursively
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
+
+# Add the executable with the collected source files
+if (WIN32)
+    add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES})
+else ()
+    add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+endif ()
 
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static glm)

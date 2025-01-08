@@ -34,6 +34,14 @@ void Game::start()
     world.addChild(currentPlayer);
     currentPlayer->position = (glm::vec3){cellSize.x / 2, cellSize.y / 2, 0};
 
+    shadowMap.set(SDL_CreateTexture(
+            App::renderer.sdlRenderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET,
+            static_cast<int>(cellSize.x * floorPixelDensity),
+            static_cast<int>(cellSize.y * floorPixelDensity)));
+    shadowPixels = new uint32_t[shadowMap.getRect()->w * shadowMap.getRect()->h];
+
     /*world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));*/
@@ -54,7 +62,10 @@ void Game::start()
 
 void Game::update()
 {
-    if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED) exit(0);
+    if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED)
+    {
+        App::quit = true;
+    }
 
     for (const auto& child : world.children)
     {
@@ -65,13 +76,6 @@ void Game::update()
 
 void Game::draw(SDL_Renderer *renderer)
 {
-    shadowMap.set(SDL_CreateTexture(
-            App::renderer.sdlRenderer,
-            SDL_PIXELFORMAT_RGBA8888,
-            SDL_TEXTUREACCESS_TARGET,
-            static_cast<int>(cellSize.x * floorPixelDensity),
-            static_cast<int>(cellSize.y * floorPixelDensity)));
-
     SDL_SetTextureBlendMode(shadowMap.get(), SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(App::renderer.sdlRenderer, shadowMap.get());
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGBA: 0,0,0,0 for transparency
@@ -82,6 +86,29 @@ void Game::draw(SDL_Renderer *renderer)
         castShadow(renderer, ResourceLoader::loadedTextures.entityShadow, child->position);
     }
 
+    // Daymm this is sloowww (but I can fix it :))
+    /*
+     * Optimization step 1.
+     * Change to SDL_PIXELFORMAT_RGB332
+     * Change shadowPixels to uint8_t
+     * First byte of shadowMap is the red channel
+     * RGB 332 splits the byte into 3b red, 3b green, 2b blue
+     * Take first three bits and convert to uint8_t then multiply by 8 (shadowR)
+     * rippleRGB - shadowR
+     */
+
+    /*
+     * Optimization step 2.
+     * Iterate through parts of the shadowMap frame by frame
+     * SDL_RenderReadPixels should only read a sub rect of shadowMap texture
+     * Then only update that area of the pixel array
+     */
+
+    if (SDL_RenderReadPixels(renderer, shadowMap.getRect(), SDL_PIXELFORMAT_RGBA8888, (void*)shadowPixels, (int)shadowMap.getRect()->w * sizeof(uint32_t)))
+    {
+        std::cerr << "SDL_RenderReadPixels failed: " << SDL_GetError() << std::endl;
+    }
+
     SDL_SetRenderTarget(App::renderer.sdlRenderer, nullptr);
 
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
@@ -90,14 +117,23 @@ void Game::draw(SDL_Renderer *renderer)
         UniqueTexture renderTarget = UniqueTexture(
                 SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h));
         SDL_SetRenderTarget(renderer, renderTarget.get());
-        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity);
+        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity, shadowPixels);
         drawBackground(renderer);
         drawEntityCells(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
         SDL_RenderCopy(renderer, renderTarget.get(), &rect, &rect);
     }
 
-    SDL_RenderCopy(renderer, shadowMap.get(), shadowMap.getRect(), shadowMap.getRect());
+    /*for (int i = 0; i < shadowMap.getRect()->w * shadowMap.getRect()->w / 4; i++)
+    {
+        uint8_t r = (shadowPixels[i] >> 16) & 0xFF;
+        uint8_t g = (shadowPixels[i] >> 8) & 0xFF;
+        uint8_t b = shadowPixels[i] & 0xFF;
+        SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+        SDL_RenderDrawPoint(renderer, i % shadowMap.getRect()->w, i / shadowMap.getRect()->w);
+    }*/
+
+    // SDL_RenderCopy(renderer, shadowMap.get(), shadowMap.getRect(), shadowMap.getRect());
     drawEntitiesToMap(renderer);
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);

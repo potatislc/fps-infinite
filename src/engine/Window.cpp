@@ -15,8 +15,8 @@ bool Window::init()
         return false;
     }
 
-    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
-    sdlWindow = SDL_CreateWindow("Dig Straight Down!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    // SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
+    sdlWindow = SDL_CreateWindow("Fps Infinite", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     if (sdlWindow == nullptr)
     {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());

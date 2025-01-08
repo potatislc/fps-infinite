@@ -38,8 +38,9 @@ private:
     const float mapRenderRadiusSq = mapRadiusSq;
 
     SDL_Surface* projectedFloor = nullptr;
-    const float floorPixelDensity = 16.f;
+    const float floorPixelDensity = 8.f;
     UniqueTexture shadowMap;
+    uint32_t* shadowPixels;
 
 #define CELLS_W (5) // Has to be odd number >= 3
     const int centerCellId = (CELLS_W * CELLS_W) / 2;

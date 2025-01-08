@@ -3,6 +3,7 @@
 #include "InputMap.h"
 #include "glm/glm.hpp"
 
+bool App::quit = false;
 Window App::window;
 Renderer App::renderer;
 AppDebug App::appDebug;

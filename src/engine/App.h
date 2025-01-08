@@ -18,7 +18,7 @@ public:
     static double timeScale;
     static float deltaTime; // Seconds
     static double timeSinceInit; // Seconds
-    bool quit = false;
+    static bool quit;
     SDL_Event event{};
 
     App() = default;

@@ -21,6 +21,12 @@ bool Renderer::init(SDL_Window* sdlWindow)
     SDL_RenderSetLogicalSize(sdlRenderer,
                              App::window.width * viewport.w / App::window.width,
                              App::window.height * viewport.h / App::window.height);
+
+    SDL_DisplayMode dm;
+    if (SDL_GetCurrentDisplayMode(0, &dm) == 0) {
+        printf("Display Mode: %dx%d @ %dHz\n", dm.w, dm.h, dm.refresh_rate);
+    }
+
     return true;
 }
 

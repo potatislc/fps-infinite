@@ -104,24 +104,29 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
     SDL_RenderCopy(renderer, uniqueTexture.get(), &src, &dst);
 }
 
-void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture, float pixelDensity)
+void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture,
+                         float pixelDensity, const uint32_t* shadowPixels)
 {
     SDL_LockSurface(floorSurface);
     auto* pixels = (uint32_t*)floorSurface->pixels;
+
     uint32_t* floorPixels;
     int floorPitch;
     SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
-    int floorPixelsWidth = floorPitch / (int)sizeof(uint32_t);
+    int floorTexWidth = floorTexture.getRect()->w;
+
+    /*uint32_t* shadowPixels;
+    int shadowPitch;
+    SDL_LockTexture(shadowMap.get(), nullptr, (void**)&shadowPixels, &shadowPitch);
+    int shadowTexWidth = shadowMap.getRect()->w;*/
+
     SDL_Rect surfRect = {0, 0, floorSurface->w, floorSurface->h};
     glm::vec2 cameraPos = position;
     cameraPos /= 2;
     glm::vec2 cameraDir = {std::cos(rotationZ), std::sin(rotationZ)};
     glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x};
-    int floorWidth = floorTexture.getRect()->w;
-    int floorHeight = floorTexture.getRect()->h;
-    // float magnification = 16.f;
     int fogLine = surfRect.h / 5;
-    SDL_Point worldTexSize = {(int)(Game::cellSize.x * pixelDensity / 2), (int)(Game::cellSize.y * pixelDensity / 2)};
+    SDL_Point worldTexSize = {(int)(Game::cellSize.x * pixelDensity), (int)(Game::cellSize.y * pixelDensity)};
     double borderAnim = App::timeSinceInit * 8;
     auto waterAnim = (float)(App::timeSinceInit * 2);
 
@@ -129,18 +134,18 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
 
     // Ripple mode
     float rippleMag = 2.f;
-    auto* ripplePixels = new uint32_t[floorPixelsWidth * floorPixelsWidth];
-    for (int y = 0; y < floorPixelsWidth; y++)
+    auto* ripplePixels = new uint32_t[floorTexWidth * floorTexWidth];
+    for (int y = 0; y < floorTexWidth; y++)
     {
         float tempY = (float)y / 4 + waterAnim;
-        for (int x = 0; x < floorPixelsWidth; x++)
+        for (int x = 0; x < floorTexWidth; x++)
         {
             float tempX = (float)x / 4 + waterAnim;
-            int rippleX = (int)(x + glm::sin(tempY) * glm::cos(tempX) * rippleMag) % floorPixelsWidth;
-            int rippleY = (int)(y + glm::sin(tempX) * glm::cos(tempY) * rippleMag) % floorPixelsWidth;
-            if (rippleX < 0) rippleX += floorPixelsWidth;
-            if (rippleY < 0) rippleY += floorPixelsWidth;
-            ripplePixels[x + y * floorPixelsWidth] = floorPixels[rippleX + rippleY * floorPixelsWidth];
+            int rippleX = (int)(x + glm::sin(tempY) * glm::cos(tempX) * rippleMag) % floorTexWidth;
+            int rippleY = (int)(y + glm::sin(tempX) * glm::cos(tempY) * rippleMag) % floorTexWidth;
+            if (rippleX < 0) rippleX += floorTexWidth;
+            if (rippleY < 0) rippleY += floorTexWidth;
+            ripplePixels[x + y * floorTexWidth] = floorPixels[rippleX + rippleY * floorTexWidth];
         }
     }
 
@@ -160,8 +165,9 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
             floorPoint.y += glm::sin(temp1) * glm::cos(temp2) * .02f;
             floorPoint.x += glm::sin(temp2) * glm::cos(temp1) * .02f;*/
             uint32_t color;
-            int texX = static_cast<int>(floorPoint.x * pixelDensity);
-            int texY = static_cast<int>(floorPoint.y * pixelDensity);
+            uint32_t shadowColor;
+            int texX = static_cast<int>(floorPoint.x * pixelDensity * 2);
+            int texY = static_cast<int>(floorPoint.y * pixelDensity * 2);
             texX %= worldTexSize.x;
             texY %= worldTexSize.y;
             if (texX < 0) texX += worldTexSize.x;
@@ -176,25 +182,27 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
             }
 #undef BORDER_WIDTH
 
-            texX %= floorWidth;
-            texY %= floorWidth;
-            color = ripplePixels[texY * floorPixelsWidth + texX];
+            color = ripplePixels[(texY % floorTexWidth) * floorTexWidth + (texX % floorTexWidth)];
+            shadowColor = shadowPixels[(texY % worldTexSize.x) * worldTexSize.x + (texX % worldTexSize.x)];
 
-            uint8_t r = (color >> 16) & 0xFF;
-            uint8_t g = (color >> 8) & 0xFF;
-            uint8_t b = color & 0xFF;
+            uint8_t rippleR = (color >> 16) & 0xFF;
+            uint8_t rippleG = (color >> 8) & 0xFF;
+            uint8_t rippleB = color & 0xFF;
 
-            if (y > fogLine)
-            {
-                pixels[y * surfRect.w + x] = (b << 16) | (g << 8) | r;
-                continue;
-            }
+            uint8_t shadowR = (shadowColor >> 16) & 0xFF;
 
-            r = static_cast<uint8_t>((float)r - fogStrength * (float)(r));
-            g = static_cast<uint8_t>((float)g - fogStrength * (float)(g));
-            b = static_cast<uint8_t>((float)b - fogStrength * (float)(b));
+            int finalR = rippleR - shadowR;
+            int finalG = rippleG - shadowR;
+            int finalB = rippleB - shadowR;
+            if (finalR < 0) finalR = 0;
+            if (finalG < 0) finalG = 0;
+            if (finalB < 0) finalB = 0;
 
-            pixels[y * surfRect.w + x] = (b << 16) | (g << 8) | r;
+            finalR = static_cast<uint8_t>((float)finalR - fogStrength * (float)(finalR));
+            finalG = static_cast<uint8_t>((float)finalG - fogStrength * (float)(finalG));
+            finalB = static_cast<uint8_t>((float)finalB - fogStrength * (float)(finalB));
+
+            pixels[y * surfRect.w + x] = (finalB << 16) | (finalG << 8) | finalR;
         }
     }
 

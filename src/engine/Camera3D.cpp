@@ -105,7 +105,7 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
 }
 
 void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture,
-                         float pixelDensity, const uint32_t* shadowPixels)
+                         float pixelDensity, float shadowPixelDensity, const uint32_t* shadowPixels)
 {
     SDL_LockSurface(floorSurface);
     auto* pixels = (uint32_t*)floorSurface->pixels;
@@ -115,11 +115,6 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
     int floorTexWidth = floorTexture.getRect()->w;
 
-    /*uint32_t* shadowPixels;
-    int shadowPitch;
-    SDL_LockTexture(shadowMap.get(), nullptr, (void**)&shadowPixels, &shadowPitch);
-    int shadowTexWidth = shadowMap.getRect()->w;*/
-
     SDL_Rect surfRect = {0, 0, floorSurface->w, floorSurface->h};
     glm::vec2 cameraPos = position;
     cameraPos /= 2;
@@ -127,6 +122,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     glm::vec2 cameraRight = {-cameraDir.y, cameraDir.x};
     int fogLine = surfRect.h / 5;
     SDL_Point worldTexSize = {(int)(Game::cellSize.x * pixelDensity), (int)(Game::cellSize.y * pixelDensity)};
+    SDL_Point shadowTexSize = {(int)(Game::cellSize.x * shadowPixelDensity), (int)(Game::cellSize.y * shadowPixelDensity)};
     double borderAnim = App::timeSinceInit * 8;
     auto waterAnim = (float)(App::timeSinceInit * 2);
 
@@ -183,7 +179,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
 #undef BORDER_WIDTH
 
             color = ripplePixels[(texY % floorTexWidth) * floorTexWidth + (texX % floorTexWidth)];
-            shadowColor = shadowPixels[(texY % worldTexSize.x) * worldTexSize.x + (texX % worldTexSize.x)];
+            shadowColor = shadowPixels[((texY / 2) % shadowTexSize.x) * shadowTexSize.x + ((texX / 2) % shadowTexSize.x)];
 
             uint8_t rippleR = (color >> 16) & 0xFF;
             uint8_t rippleG = (color >> 8) & 0xFF;

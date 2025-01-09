@@ -38,8 +38,8 @@ void Game::start()
             App::renderer.sdlRenderer,
             SDL_PIXELFORMAT_RGB888,
             SDL_TEXTUREACCESS_TARGET,
-            static_cast<int>(cellSize.x * floorPixelDensity),
-            static_cast<int>(cellSize.y * floorPixelDensity)));
+            static_cast<int>(cellSize.x * shadowPixelDensity),
+            static_cast<int>(cellSize.y * shadowPixelDensity)));
     shadowPixels = new uint32_t[shadowMap.getRect()->w * shadowMap.getRect()->h];
 
     world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
@@ -77,7 +77,7 @@ void Game::update()
 
 void Game::draw(SDL_Renderer *renderer)
 {
-    castEntityShadows(renderer, 4);
+    castEntityShadows(renderer, 1);
 
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
 
@@ -85,7 +85,7 @@ void Game::draw(SDL_Renderer *renderer)
         UniqueTexture renderTarget = UniqueTexture(
                 SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h));
         SDL_SetRenderTarget(renderer, renderTarget.get());
-        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity, shadowPixels);
+        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity, shadowPixelDensity, shadowPixels);
         drawBackground(renderer);
         drawEntityCells(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
@@ -221,8 +221,8 @@ void Game::castShadow(SDL_Renderer* renderer, UniqueTexture& shadowTexture, glm:
 {
     SDL_Rect* src = shadowTexture.getRect();
     SDL_Rect dst = *src;
-    dst.x = (int)(castPos.x * floorPixelDensity) - dst.w / 2;
-    dst.y = (int)(castPos.y * floorPixelDensity) - dst.h / 2;
+    dst.x = (int)(castPos.x * shadowPixelDensity) - dst.w / 2;
+    dst.y = (int)(castPos.y * shadowPixelDensity) - dst.h / 2;
     SDL_RenderCopy(renderer, shadowTexture.get(), src, &dst);
 }
 
@@ -388,6 +388,7 @@ void Game::castEntityShadows(SDL_Renderer* renderer, int subdivisions)
     shadowTile.x *= shadowTile.w;
     shadowTile.y *= shadowTile.h;
 
+    // Obvious bottleneck function
     if (SDL_RenderReadPixels(renderer, &shadowTile, SDL_PIXELFORMAT_RGB888, (void*)(shadowPixels + shadowTile.y * shadowMap.getRect()->w + shadowTile.x),
                              (int)shadowMap.getRect()->w * sizeof(uint32_t)))
     {

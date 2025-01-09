@@ -39,6 +39,7 @@ private:
 
     SDL_Surface* projectedFloor = nullptr;
     const float floorPixelDensity = 8.f;
+    const float shadowPixelDensity = 4.f;
     UniqueTexture shadowMap;
     uint32_t* shadowPixels = nullptr;
     int shadowTileIndex = 0;

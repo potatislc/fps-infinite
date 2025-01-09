@@ -40,7 +40,8 @@ private:
     SDL_Surface* projectedFloor = nullptr;
     const float floorPixelDensity = 8.f;
     UniqueTexture shadowMap;
-    uint32_t* shadowPixels;
+    uint32_t* shadowPixels = nullptr;
+    int shadowTileIndex = 0;
 
 #define CELLS_W (5) // Has to be odd number >= 3
     const int centerCellId = (CELLS_W * CELLS_W) / 2;
@@ -53,6 +54,7 @@ private:
     void drawMap(SDL_Renderer* renderer);
     void drawBackground(SDL_Renderer* renderer);
     void castShadow(SDL_Renderer* renderer, UniqueTexture& shadowTexture, glm::vec2 castPos);
+    void castEntityShadows(SDL_Renderer* renderer, int subdivisions);
     void wrapInsideWorld(glm::vec3& vec);
     glm::vec2 getCellPos(int cellId);
 };

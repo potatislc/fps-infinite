@@ -32,7 +32,6 @@ private:
     EntityScene<Entity3D> world;
     SDL_Texture* mapTexture = nullptr;
     SDL_Rect mapRect = {0, 0, 64, 64};
-    const float mapScale = 1.f;
     const SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};
     const float mapRadiusSq = (float)mapCenter.x * (float)mapCenter.y;
     const float mapRenderRadiusSq = mapRadiusSq;
@@ -40,9 +39,10 @@ private:
     SDL_Surface* projectedFloor = nullptr;
     const float floorPixelDensity = 8.f;
     const float shadowPixelDensity = 4.f;
-    UniqueTexture shadowMap;
-    uint32_t* shadowPixels = nullptr;
-    int shadowTileIndex = 0;
+
+#define SHADOW_PX_S (16)
+    uint8_t shadowTexPx[SHADOW_PX_S * SHADOW_PX_S] = {0};
+    uint8_t* shadowMapPx;
 
 #define CELLS_W (5) // Has to be odd number >= 3
     const int centerCellId = (CELLS_W * CELLS_W) / 2;
@@ -58,4 +58,7 @@ private:
     void castEntityShadows(SDL_Renderer* renderer, int subdivisions);
     void wrapInsideWorld(glm::vec3& vec);
     glm::vec2 getCellPos(int cellId);
+
+    void initShadowRaster();
+    void rasterizeShadowMap();
 };

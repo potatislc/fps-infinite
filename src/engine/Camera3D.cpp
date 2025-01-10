@@ -105,7 +105,7 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
 }
 
 void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture,
-                         float pixelDensity, float shadowPixelDensity, const uint32_t* shadowPixels)
+                         float pixelDensity, float shadowPixelDensity, const uint8_t* shadowPixels)
 {
     SDL_LockSurface(floorSurface);
     auto* pixels = (uint32_t*)floorSurface->pixels;
@@ -114,6 +114,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     int floorPitch;
     SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
     int floorTexWidth = floorTexture.getRect()->w;
+    float shadowScaleDiff = shadowPixelDensity / pixelDensity;
 
     SDL_Rect surfRect = {0, 0, floorSurface->w, floorSurface->h};
     glm::vec2 cameraPos = position;
@@ -161,7 +162,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
             floorPoint.y += glm::sin(temp1) * glm::cos(temp2) * .02f;
             floorPoint.x += glm::sin(temp2) * glm::cos(temp1) * .02f;*/
             uint32_t color;
-            uint32_t shadowColor;
+            uint8_t shadowColor;
             int texX = static_cast<int>(floorPoint.x * pixelDensity * 2);
             int texY = static_cast<int>(floorPoint.y * pixelDensity * 2);
             texX %= worldTexSize.x;
@@ -177,19 +178,17 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
                 continue;
             }
 #undef BORDER_WIDTH
-
             color = ripplePixels[(texY % floorTexWidth) * floorTexWidth + (texX % floorTexWidth)];
-            shadowColor = shadowPixels[((texY / 2) % shadowTexSize.x) * shadowTexSize.x + ((texX / 2) % shadowTexSize.x)];
+            shadowColor = shadowPixels[((int)((float)texY * shadowScaleDiff) % shadowTexSize.x) * shadowTexSize.x + ((int)((float)texX * shadowScaleDiff) % shadowTexSize.x)];
 
             uint8_t rippleR = (color >> 16) & 0xFF;
             uint8_t rippleG = (color >> 8) & 0xFF;
             uint8_t rippleB = color & 0xFF;
 
-            uint8_t shadowR = (shadowColor >> 16) & 0xFF;
 
-            int finalR = rippleR - shadowR;
-            int finalG = rippleG - shadowR;
-            int finalB = rippleB - shadowR;
+            int finalR = rippleR - shadowColor;
+            int finalG = rippleG - shadowColor;
+            int finalB = rippleB - shadowColor;
             if (finalR < 0) finalR = 0;
             if (finalG < 0) finalG = 0;
             if (finalB < 0) finalB = 0;

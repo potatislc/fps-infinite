@@ -34,13 +34,7 @@ void Game::start()
     world.addChild(currentPlayer);
     currentPlayer->position = (glm::vec3){cellSize.x / 2, cellSize.y / 2, 0};
 
-    shadowMap.set(SDL_CreateTexture(
-            App::renderer.sdlRenderer,
-            SDL_PIXELFORMAT_RGB888,
-            SDL_TEXTUREACCESS_TARGET,
-            static_cast<int>(cellSize.x * shadowPixelDensity),
-            static_cast<int>(cellSize.y * shadowPixelDensity)));
-    shadowPixels = new uint32_t[shadowMap.getRect()->w * shadowMap.getRect()->h];
+    initShadowRaster();
 
     world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
@@ -77,7 +71,8 @@ void Game::update()
 
 void Game::draw(SDL_Renderer *renderer)
 {
-    castEntityShadows(renderer, 1);
+    // castEntityShadows(renderer, 1);
+    rasterizeShadowMap();
 
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
 
@@ -85,7 +80,7 @@ void Game::draw(SDL_Renderer *renderer)
         UniqueTexture renderTarget = UniqueTexture(
                 SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h));
         SDL_SetRenderTarget(renderer, renderTarget.get());
-        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity, shadowPixelDensity, shadowPixels);
+        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity, shadowPixelDensity, shadowMapPx);
         drawBackground(renderer);
         drawEntityCells(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
@@ -94,10 +89,7 @@ void Game::draw(SDL_Renderer *renderer)
 
     /*for (int i = 0; i < shadowMap.getRect()->w * shadowMap.getRect()->h / 4; i++)
     {
-        uint8_t r = (shadowPixels[i] >> 16) & 0xFF;
-        uint8_t g = (shadowPixels[i] >> 8) & 0xFF;
-        uint8_t b = shadowPixels[i] & 0xFF;
-        SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+        SDL_SetRenderDrawColor(renderer, shadowMapPx[i], 0, 0, 255);
         SDL_RenderDrawPoint(renderer, i % shadowMap.getRect()->w, i / shadowMap.getRect()->h);
     }*/
 
@@ -366,36 +358,53 @@ std::vector<Entity3D*> Game::getEntitiesDepthOrder()
     return sortedEntityOrder;
 }
 
-void Game::castEntityShadows(SDL_Renderer* renderer, int subdivisions)
+void Game::initShadowRaster()
 {
-    SDL_SetTextureBlendMode(shadowMap.get(), SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(App::renderer.sdlRenderer, shadowMap.get());
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // RGBA: 0,0,0,0 for transparency
-    SDL_RenderClear(renderer);
+    UniqueTexture shadowSTex =
+            UniqueTexture(ResourceLoader::loadTextureStreaming(TEXTURES_PATH"/entities/entity-shadow-small-opaque.png"));
 
-    for (const auto& child : world.children)
+    auto* texPixels = new uint32_t[SHADOW_PX_S * SHADOW_PX_S];
+    int texPitch;
+
+    SDL_LockTexture(shadowSTex.get(), shadowSTex.getRect(), (void**)&texPixels, &texPitch);
+
+    for (int i = 0; i < SHADOW_PX_S * SHADOW_PX_S; i++)
     {
-        castShadow(renderer, ResourceLoader::loadedTextures.entityShadow, child->position);
+        uint8_t red = (texPixels[i] & 0x00FF0000) >> 16;
+        shadowTexPx[i] = red;
     }
 
-    shadowTileIndex++;
-    if (shadowTileIndex == subdivisions * subdivisions) shadowTileIndex = 0;
-    SDL_Rect shadowTile = {
-            shadowTileIndex % subdivisions,
-            shadowTileIndex / subdivisions,
-            shadowMap.getRect()->w / subdivisions,
-            shadowMap.getRect()->h / subdivisions};
-    shadowTile.x *= shadowTile.w;
-    shadowTile.y *= shadowTile.h;
+    SDL_UnlockTexture(shadowSTex.get());
 
-    // Obvious bottleneck function
-    if (SDL_RenderReadPixels(renderer, &shadowTile, SDL_PIXELFORMAT_RGB888, (void*)(shadowPixels + shadowTile.y * shadowMap.getRect()->w + shadowTile.x),
-                             (int)shadowMap.getRect()->w * sizeof(uint32_t)))
-    {
-        std::cerr << "SDL_RenderReadPixels failed: " << SDL_GetError() << std::endl;
-    }
-
-    SDL_SetRenderTarget(App::renderer.sdlRenderer, nullptr);
+    shadowMapPx = new uint8_t[(int)(cellSize.x * shadowPixelDensity * cellSize.y * shadowPixelDensity)];
 }
 
+void Game::rasterizeShadowMap()
+{
+    SDL_Point mapDims = {
+            static_cast<int>(cellSize.x * shadowPixelDensity),
+            static_cast<int>(cellSize.y * shadowPixelDensity)};
 
+    std::fill(shadowMapPx, shadowMapPx + mapDims.x * mapDims.y, 0); // Clear shadow map
+
+    int offset = SHADOW_PX_S / 2;
+
+    for (const auto& entity : world.children)
+    {
+        for (int i = 0; i < SHADOW_PX_S * SHADOW_PX_S; i++)
+        {
+            int shadowX = (i % SHADOW_PX_S) - offset;
+            int shadowY = (i / SHADOW_PX_S) - offset;
+
+            int rawX = static_cast<int>(entity->position.x * shadowPixelDensity) + shadowX;
+            int rawY = static_cast<int>(entity->position.y * shadowPixelDensity) + shadowY;
+
+            int wrappedX = ((rawX % mapDims.x) + mapDims.x) % mapDims.x;
+            int wrappedY = ((rawY % mapDims.y) + mapDims.y) % mapDims.y;
+
+            int mapIndex = wrappedY * mapDims.x + wrappedX;
+
+            shadowMapPx[mapIndex] += shadowTexPx[i];
+        }
+    }
+}

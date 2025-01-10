@@ -19,5 +19,5 @@ public:
     void drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTexture, const glm::vec3& targetPoint,
                        float targetRotZ, SDL_Rect& viewport);
     void drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture, float pixelDensity,
-                   float shadowPixelDensity, const uint32_t* shadowPixels);
+                   float shadowPixelDensity, const uint8_t* shadowPixels);
 };

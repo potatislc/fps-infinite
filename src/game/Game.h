@@ -6,6 +6,7 @@
 #include "engine/Camera3D.h"
 #include "engine/Renderer.h"
 #include "game/characters/Player.h"
+#include "engine/PixelArray.h"
 
 class Game : public IGameObject
 {
@@ -16,6 +17,7 @@ public:
         float mouseSens = .002f;
     };
 
+#define MAX_CELL_W (128)
     static glm::vec2 cellSize;
     static Renderer::ViewPortCamera mapCamera;
     static Camera3D camera3D;
@@ -39,6 +41,7 @@ private:
     SDL_Surface* projectedFloor = nullptr;
     const float floorPixelDensity = 8.f;
     const float shadowPixelDensity = 4.f;
+    PixelArray<uint32_t> waterRipples;
 
 #define SHADOW_PX_S (16)
     uint8_t shadowTexPx[SHADOW_PX_S * SHADOW_PX_S] = {0};

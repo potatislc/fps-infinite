@@ -7,7 +7,7 @@
 #include "engine/ResourceLoader.h"
 #include "engine/App.h"
 
-glm::vec2 Game::cellSize = {96, 96};
+glm::vec2 Game::cellSize = {MAX_CELL_W, MAX_CELL_W};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 170);
@@ -29,12 +29,18 @@ Game::Game()
 void Game::start()
 {
     ResourceLoader::loadedTextures.loadAll();
+    ResourceLoader::loadedPixelArrays.loadAll();
     Camera3D::initFloorProjectionSurface(projectedFloor, App::renderer.viewport.w, (int) App::renderer.viewportCenter.y);
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
     currentPlayer->position = (glm::vec3){cellSize.x / 2, cellSize.y / 2, 0};
 
     initShadowRaster();
+    waterRipples = PixelArray<uint32_t>(
+            new uint32_t[ResourceLoader::loadedPixelArrays.water.width
+            * ResourceLoader::loadedPixelArrays.water.height],
+            ResourceLoader::loadedPixelArrays.water.width,
+            ResourceLoader::loadedPixelArrays.water.height);
 
     world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
@@ -80,7 +86,8 @@ void Game::draw(SDL_Renderer *renderer)
         UniqueTexture renderTarget = UniqueTexture(
                 SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h));
         SDL_SetRenderTarget(renderer, renderTarget.get());
-        camera3D.drawFloor(renderer, projectedFloor, ResourceLoader::loadedTextures.quakeWater, floorPixelDensity, shadowPixelDensity, shadowMapPx);
+        PixelArray<uint32_t>::rippleize(ResourceLoader::loadedPixelArrays.water, waterRipples.pixels, (float)(App::timeSinceInit * 2), 2);
+        camera3D.drawFloor(renderer, projectedFloor, waterRipples, floorPixelDensity, shadowPixelDensity, shadowMapPx);
         drawBackground(renderer);
         drawEntityCells(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
@@ -385,6 +392,8 @@ void Game::rasterizeShadowMap()
             static_cast<int>(cellSize.x * shadowPixelDensity),
             static_cast<int>(cellSize.y * shadowPixelDensity)};
 
+    // delete[] shadowMapPx;
+    // shadowMapPx = new uint8_t[mapDims.x * mapDims.y];
     std::fill(shadowMapPx, shadowMapPx + mapDims.x * mapDims.y, 0); // Clear shadow map
 
     int offset = SHADOW_PX_S / 2;

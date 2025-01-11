@@ -1,6 +1,4 @@
 #include <cmath>
-#include <iostream>
-#include <cstring>
 #include "Camera3D.h"
 #include "App.h"
 #include "ResourceLoader.h"
@@ -104,16 +102,13 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
     SDL_RenderCopy(renderer, uniqueTexture.get(), &src, &dst);
 }
 
-void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, UniqueTexture& floorTexture,
+void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, const PixelArray<uint32_t>& floorPixels,
                          float pixelDensity, float shadowPixelDensity, const uint8_t* shadowPixels)
 {
     SDL_LockSurface(floorSurface);
     auto* pixels = (uint32_t*)floorSurface->pixels;
 
-    uint32_t* floorPixels;
-    int floorPitch;
-    SDL_LockTexture(floorTexture.get(), nullptr, (void**)&floorPixels, &floorPitch);
-    int floorTexWidth = floorTexture.getRect()->w;
+    int floorTexWidth = floorPixels.width;
     float shadowScaleDiff = shadowPixelDensity / pixelDensity;
 
     SDL_Rect surfRect = {0, 0, floorSurface->w, floorSurface->h};
@@ -125,26 +120,8 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
     SDL_Point worldTexSize = {(int)(Game::cellSize.x * pixelDensity), (int)(Game::cellSize.y * pixelDensity)};
     SDL_Point shadowTexSize = {(int)(Game::cellSize.x * shadowPixelDensity), (int)(Game::cellSize.y * shadowPixelDensity)};
     double borderAnim = App::timeSinceInit * 8;
-    auto waterAnim = (float)(App::timeSinceInit * 2);
 
     float cameraHeight = position.z * (float)surfRect.h;
-
-    // Ripple mode
-    float rippleMag = 2.f;
-    auto* ripplePixels = new uint32_t[floorTexWidth * floorTexWidth];
-    for (int y = 0; y < floorTexWidth; y++)
-    {
-        float tempY = (float)y / 4 + waterAnim;
-        for (int x = 0; x < floorTexWidth; x++)
-        {
-            float tempX = (float)x / 4 + waterAnim;
-            int rippleX = (int)(x + glm::sin(tempY) * glm::cos(tempX) * rippleMag) % floorTexWidth;
-            int rippleY = (int)(y + glm::sin(tempX) * glm::cos(tempY) * rippleMag) % floorTexWidth;
-            if (rippleX < 0) rippleX += floorTexWidth;
-            if (rippleY < 0) rippleY += floorTexWidth;
-            ripplePixels[x + y * floorTexWidth] = floorPixels[rippleX + rippleY * floorTexWidth];
-        }
-    }
 
     for (int y = 1; y < surfRect.h; y++)
     {
@@ -155,12 +132,12 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
 
         for (int x = 0; x < surfRect.w; x++)
         {
+            // Funni waves
+            /*float rowDistance = (cameraHeight + glm::sin(x / 10 + waterAnim) * glm::cos((y / 10 + waterAnim)) * (y / 10)) / -(float)y;
+            glm::vec2 floorRow = cameraPos + cameraDir * rowDistance;
+            glm::vec2 orthoRow = cameraRight * rowDistance;*/
             float screenX = ((float)x / (float)surfRect.w) * 2.0f - 1.0f;
             glm::vec2 floorPoint = floorRow + orthoRow * screenX;
-            /*float temp1 = (float)x / 4 + waterAnim;
-            float temp2 = (float)y / 4 + waterAnim;
-            floorPoint.y += glm::sin(temp1) * glm::cos(temp2) * .02f;
-            floorPoint.x += glm::sin(temp2) * glm::cos(temp1) * .02f;*/
             uint32_t color;
             uint8_t shadowColor;
             int texX = static_cast<int>(floorPoint.x * pixelDensity * 2);
@@ -178,7 +155,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
                 continue;
             }
 #undef BORDER_WIDTH
-            color = ripplePixels[(texY % floorTexWidth) * floorTexWidth + (texX % floorTexWidth)];
+            color = floorPixels.pixels[(texY % floorTexWidth) * floorTexWidth + (texX % floorTexWidth)];
             shadowColor = shadowPixels[((int)((float)texY * shadowScaleDiff) % shadowTexSize.x) * shadowTexSize.x + ((int)((float)texX * shadowScaleDiff) % shadowTexSize.x)];
 
             uint8_t rippleR = (color >> 16) & 0xFF;
@@ -201,7 +178,6 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, Uniq
         }
     }
 
-    SDL_UnlockTexture(floorTexture.get());
     SDL_UnlockSurface(floorSurface);
 
     SDL_Texture* finalFloorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);

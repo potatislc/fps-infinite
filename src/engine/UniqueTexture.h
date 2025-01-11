@@ -13,6 +13,7 @@ class UniqueTexture
 public:
     explicit UniqueTexture(SDL_Texture* texture = nullptr);
     void set(SDL_Texture* texture);
+
     SDL_Texture* get();
     SDL_Rect* getRect();
     ~UniqueTexture();

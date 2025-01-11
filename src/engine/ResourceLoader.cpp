@@ -1,10 +1,12 @@
 #include <SDL_image.h>
 #include <cstdio>
 #include <string>
+#include <cstring>
 #include "ResourceLoader.h"
 #include "App.h"
 
 ResourceLoader::LoadedTextures ResourceLoader::loadedTextures;
+ResourceLoader::LoadedPixelArrays ResourceLoader::loadedPixelArrays;
 
 SDL_Texture *ResourceLoader::loadTexture(const std::string& path)
 {
@@ -82,6 +84,45 @@ SDL_Texture* ResourceLoader::loadTextureStreaming(const std::string& path)
     return newTexture;
 }
 
+PixelArray<uint32_t> ResourceLoader::copyTextureToPixelArray(SDL_Texture* texture)
+{
+    if (!texture)
+    {
+        throw std::invalid_argument("Texture is null");
+    }
+
+    uint32_t format;
+    int width, height;
+    if (SDL_QueryTexture(texture, &format, nullptr, &width, &height) != 0)
+    {
+        throw std::runtime_error(std::string("SDL_QueryTexture failed: ") + SDL_GetError());
+    }
+
+    if (format != SDL_PIXELFORMAT_RGBA8888)
+    {
+        throw std::invalid_argument("Texture is not in RGBA8888 format");
+    }
+
+    uint32_t* pixels;
+    int pitch;
+    if (SDL_LockTexture(texture, nullptr, (void**)&pixels, &pitch) != 0) {
+        throw std::runtime_error(std::string("SDL_LockTexture failed: ") + SDL_GetError());
+    }
+
+    PixelArray<uint32_t> pixelArray = PixelArray<uint32_t>(new uint32_t[width * height], width, height);
+
+    for (int y = 0; y < height; ++y) {
+        std::memcpy(
+                &pixelArray.pixels[y * width],
+                reinterpret_cast<uint8_t*>(pixels) + y * pitch,
+                width * sizeof(uint32_t)
+        );
+    }
+
+    SDL_UnlockTexture(texture);
+
+    return pixelArray;
+}
 
 void ResourceLoader::LoadedTextures::loadAll()
 {
@@ -92,5 +133,11 @@ void ResourceLoader::LoadedTextures::loadAll()
     entityShadow.set(loadTexture(TEXTURES_PATH"/entities/entity-shadow-small.png"));
 
     testFloor.set(loadTextureStreaming(TEXTURES_PATH"/floors/test-floor.png"));
-    quakeWater.set(loadTextureStreaming(TEXTURES_PATH"/floors/quake-water.png"));
+}
+
+void ResourceLoader::LoadedPixelArrays::loadAll()
+{
+    UniqueTexture quakeWater = UniqueTexture(loadTextureStreaming(TEXTURES_PATH"/floors/quake-water.png"));
+
+    water = copyTextureToPixelArray(quakeWater.get());
 }

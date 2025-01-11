@@ -5,6 +5,7 @@
 #include <memory>
 #include "SDL_render.h"
 #include "UniqueTexture.h"
+#include "PixelArray.h"
 
 #define TEXTURES_PATH RESOURCES_PATH"textures"
 
@@ -14,17 +15,27 @@ public:
     class LoadedTextures
     {
     public:
+        // Textures
         UniqueTexture playerMapIcon;
         UniqueTexture testBg;
         UniqueTexture swarm;
         UniqueTexture testFloor;
-        UniqueTexture quakeWater;
         UniqueTexture entityShadow;
 
         void loadAll();
     };
 
+    class LoadedPixelArrays
+    {
+    public:
+        PixelArray<uint32_t> water;
+
+        void loadAll();
+    };
+
     static LoadedTextures loadedTextures;
+    static LoadedPixelArrays loadedPixelArrays;
     static SDL_Texture* loadTexture(const std::string& path);
     static SDL_Texture* loadTextureStreaming(const std::string& path);
+    static PixelArray<uint32_t> copyTextureToPixelArray(SDL_Texture* texture);
 };

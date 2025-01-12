@@ -83,23 +83,28 @@ void Game::draw(SDL_Renderer *renderer)
     SDL_Rect rect = {0, 0, App::renderer.viewport.w, App::renderer.viewport.h};
 
     {
+        // Double viewport height, reflections are stored at the bottom outside the screen
         UniqueTexture renderTarget = UniqueTexture(
-                SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h));
+                SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h * 2));
+        SDL_SetTextureBlendMode(renderTarget.get(), SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, renderTarget.get());
         PixelArray<uint32_t>::rippleize(ResourceLoader::loadedPixelArrays.water, waterRipples.pixels,
                                         (float)(App::timeSinceInit * 2), 2);
-        SDL_SetTextureBlendMode(renderTarget.get(), SDL_BLENDMODE_BLEND);
-        camera3D.drawFloor(renderer, projectedFloor, waterRipples, floorPixelDensity, shadowPixelDensity, shadowMapPx);
         drawBackground(renderer);
         auto reflectOrigin = SDL_Point(0, 0);
         auto reflectSrc = SDL_Rect(0, 0, rect.w, rect.h / 2);
-        auto reflectDst = SDL_Rect(0, rect.h / 2, rect.w, rect.h / 2);
-        SDL_SetTextureAlphaMod(renderTarget.get(), 20);
+        auto reflectDst = SDL_Rect(0, rect.h / 2 + rect.h, rect.w, rect.h / 2);
         SDL_RenderCopyEx(renderer, renderTarget.get(), &reflectSrc, &reflectDst, 0, &reflectOrigin, SDL_FLIP_VERTICAL);
-        SDL_SetTextureAlphaMod(renderTarget.get(), 254);
-        SDL_SetTextureBlendMode(renderTarget.get(), SDL_BLENDMODE_NONE);
         drawEntityCells(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
+
+        camera3D.drawFloor(renderer, projectedFloor, waterRipples, floorPixelDensity, shadowPixelDensity, shadowMapPx);
+        reflectSrc.h = rect.h / 2;
+        reflectSrc.y = rect.h + rect.h / 2;
+        reflectDst.y = rect.h / 2;
+        SDL_SetTextureAlphaMod(renderTarget.get(), 25);
+        SDL_RenderCopy(renderer, renderTarget.get(), &reflectSrc, &reflectDst);
+        SDL_SetTextureAlphaMod(renderTarget.get(), 255);
         SDL_RenderCopy(renderer, renderTarget.get(), &rect, &rect);
     }
 

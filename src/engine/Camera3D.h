@@ -17,8 +17,8 @@ public:
     Camera3D(glm::vec3 position, float rotationY, float fov, int farPlane);
     static void initFloorProjectionSurface(SDL_Surface*& surface, int w, int h);
     void drawFovLines(SDL_Renderer* renderer) const;
-    void drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTexture, const glm::vec3& targetPoint,
+    void drawTexture3D(SDL_Renderer* renderer, UniqueTexture& source, const glm::vec3& targetPoint,
                        float targetRotZ, SDL_Rect& viewport);
-    void drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, const PixelArray<uint32_t>& floorPixels, float pixelDensity,
-                   float shadowPixelDensity, const uint8_t* shadowPixels);
+    void drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, const PixelArray<uint32_t>& floorPixels,
+                   float pixelDensity, float shadowPixelDensity, const uint8_t* shadowPixels);
 };

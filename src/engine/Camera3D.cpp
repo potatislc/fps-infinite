@@ -24,8 +24,8 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
     // SDL_RenderDrawLine(renderer, center.x, center.y, center.x, 0);
 }
 
-void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTexture,
-                             const glm::vec3& targetPoint, float targetRotZ, SDL_Rect& viewport)
+void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& source, const glm::vec3& targetPoint,
+                             float targetRotZ, SDL_Rect& viewport)
 {
     if (targetPoint.z <= 0) return;
     glm::vec3 relativePos = position - targetPoint;
@@ -35,7 +35,7 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
 
     float distForward = glm::dot((glm::vec2)relativePos, forward);
     // if (distForward <= 0) return;
-    int textureScale = static_cast<int>((uniqueTexture.getRect()->w / distForward) * 2);
+    int textureScale = static_cast<int>((source.getRect()->w / distForward) * 2);
     // if (textureScale <= 1) return;
     float distRight = glm::dot((glm::vec2)relativePos, right);
     float distUp = relativePos.z;
@@ -88,7 +88,7 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
 
 #undef CIRCLE_SECTOR
 
-    SDL_Rect src = {rotFrame * uniqueTexture.getRect()->h, 0, uniqueTexture.getRect()->h, uniqueTexture.getRect()->h};
+    SDL_Rect src = {rotFrame * source.getRect()->h, 0, source.getRect()->h, source.getRect()->h};
     SDL_Rect dst = {
             static_cast<int>(screenX - textureScale / 2),
             static_cast<int>(screenY - textureScale / 2),
@@ -98,8 +98,15 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& uniqueTextur
 
     const int maxBright = 16;
     uint8_t brightness = (dst.w < maxBright) ? dst.w * (255/maxBright) : 255;
-    SDL_SetTextureColorMod(uniqueTexture.get(), brightness, brightness, brightness);
-    SDL_RenderCopy(renderer, uniqueTexture.get(), &src, &dst);
+    SDL_SetTextureColorMod(source.get(), brightness, brightness, brightness);
+    SDL_RenderCopy(renderer, source.get(), &src, &dst);
+
+    // Reflection
+    // Rendered outside the screen. Bottom part of viewport is for reflections.
+    screenY = ((position.z + targetPoint.z) / distForward) * viewport.h + viewport.h / 2.0f;
+    dst.y = static_cast<int>(screenY - textureScale / 2) + viewport.h;
+    auto reflectOrigin = SDL_Point(0, 0);
+    SDL_RenderCopyEx(renderer, source.get(), &src, &dst, 0, &reflectOrigin, SDL_FLIP_VERTICAL);
 }
 
 void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, const PixelArray<uint32_t>& floorPixels,

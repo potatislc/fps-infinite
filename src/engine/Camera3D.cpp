@@ -96,17 +96,29 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& source, cons
             textureScale
     };
 
+    if (dst.y + dst.h / 2 < viewport.h)
+    {
+        // Reflection
+        // Rendered outside the screen. Bottom part of viewport is for reflections.
+        screenY = ((position.z + targetPoint.z) / distForward) * viewport.h + viewport.h / 2.0f;
+        SDL_Rect reflectionDst = dst;
+        reflectionDst.y = static_cast<int>(screenY - textureScale / 2) + viewport.h;
+        auto reflectOrigin = SDL_Point(0, 0);
+        SDL_RenderCopyEx(renderer, source.get(), &src, &reflectionDst, 0, &reflectOrigin, SDL_FLIP_VERTICAL);
+    }
+    else
+    {
+        // Cut off texture so it doesn't bleed into reflection area
+        auto overflow = static_cast<float>((dst.y + dst.h) - viewport.h);
+        float scaleDiff = (float)src.h / (float)dst.h;
+        src.h = std::round((float)src.h - overflow * scaleDiff);
+        dst.h = std::round((float)dst.h - overflow);
+    }
+
     const int maxBright = 16;
     uint8_t brightness = (dst.w < maxBright) ? dst.w * (255/maxBright) : 255;
     SDL_SetTextureColorMod(source.get(), brightness, brightness, brightness);
     SDL_RenderCopy(renderer, source.get(), &src, &dst);
-
-    // Reflection
-    // Rendered outside the screen. Bottom part of viewport is for reflections.
-    screenY = ((position.z + targetPoint.z) / distForward) * viewport.h + viewport.h / 2.0f;
-    dst.y = static_cast<int>(screenY - textureScale / 2) + viewport.h;
-    auto reflectOrigin = SDL_Point(0, 0);
-    SDL_RenderCopyEx(renderer, source.get(), &src, &dst, 0, &reflectOrigin, SDL_FLIP_VERTICAL);
 }
 
 void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, const PixelArray<uint32_t>& floorPixels,

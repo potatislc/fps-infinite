@@ -102,7 +102,7 @@ void Game::draw(SDL_Renderer *renderer)
         reflectSrc.h = rect.h / 2;
         reflectSrc.y = rect.h + rect.h / 2;
         reflectDst.y = rect.h / 2;
-        SDL_SetTextureAlphaMod(renderTarget.get(), 25);
+        SDL_SetTextureAlphaMod(renderTarget.get(), 35);
         SDL_RenderCopy(renderer, renderTarget.get(), &reflectSrc, &reflectDst);
         SDL_SetTextureAlphaMod(renderTarget.get(), 255);
         SDL_RenderCopy(renderer, renderTarget.get(), &rect, &rect);

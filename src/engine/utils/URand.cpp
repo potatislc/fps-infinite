@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include "Utils.h"
+#include "glm/common.hpp"
 
 size_t Utils::uRand(size_t val)
 {

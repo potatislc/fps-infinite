@@ -16,10 +16,10 @@ void Eye::start()
 
 void Eye::update()
 {
-    glm::vec3 targetDir = glm::normalize(player->position - position);
-    targetDir.z = (glm::sin((float)App::timeSinceInit) + hoverHeight) * hoverMag - position.z;
+    glm::vec2 targetDirXY = glm::normalize(Utils::vec2DeltaWrapped(position, player->position, Game::cellSize));
+    float targetDirZ = glm::sin((float)App::timeSinceInit) * hoverMag + hoverHeight - position.z;
 
-    velocity += targetDir * accel * App::deltaTime;
+    velocity += glm::vec3(targetDirXY.x, targetDirXY.y, targetDirZ) * accel * App::deltaTime;
 
     if (glm::length(velocity) > maxSpeed)
     {

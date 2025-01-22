@@ -25,6 +25,7 @@ namespace Utils
     }
 
     glm::vec2 vec2Rotate(glm::vec2 vec, float angle);
+    glm::vec2 vec2DeltaWrapped(glm::vec2 a, glm::vec2 b, const glm::vec2& bounds);
 
     //
     // Vector

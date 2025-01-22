@@ -51,7 +51,9 @@ file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}
 if (WIN32)
     add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES})
 else ()
-    add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+    add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
+            src/game/AmbientParticles.h
+            src/game/characters/Eye.h)
 endif ()
 
 # Link SDL2 library

@@ -6,6 +6,8 @@
 #include "game/characters/Player.h"
 #include "engine/ResourceLoader.h"
 #include "engine/App.h"
+#include "AmbientParticles.h"
+#include "game/characters/Eye.h"
 
 glm::vec2 Game::cellSize = {MAX_CELL_W, MAX_CELL_W};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
@@ -42,10 +44,10 @@ void Game::start()
             ResourceLoader::loadedPixelArrays.water.width,
             ResourceLoader::loadedPixelArrays.water.height);
 
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
+    /*world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
     world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));
+    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));*/
 
 
     // Should print 0, 0 (It does!)
@@ -55,7 +57,12 @@ void Game::start()
     {
         for (int j = 0; j < 16; j++)
         {
-            world.addChild(std::make_shared<Entity3D>((glm::vec3){i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2}, 0));
+            std::shared_ptr<Eye> eye = std::make_shared<Eye>(
+                    (glm::vec3){i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},
+                    0,
+                    1,
+                    currentPlayer);
+            world.addChild(eye);
         }
     }
 }
@@ -115,6 +122,7 @@ void Game::draw(SDL_Renderer *renderer)
     }*/
 
     // SDL_RenderCopy(renderer, shadowMap.get(), shadowMap.getRect(), shadowMap.getRect());
+    // AmbientParticles::draw(renderer, App::renderer.viewport, camera3D, (float)App::timeSinceInit);
     drawEntitiesToMap(renderer);
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
@@ -197,7 +205,8 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer, int cellId)
     SDL_Rect& viewport = App::renderer.viewport;
     for (const auto& [_, entity] : entityDistances)
     {
-        camera3D.drawTexture3D(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0), entity->rotationZ, viewport);
+        camera3D.drawTexture3DEx(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0),
+                                 -entity->velocity, viewport);
     }
 }
 
@@ -335,7 +344,8 @@ void Game::drawEntities(SDL_Renderer* renderer, int cellId,
 
         float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
         if (distSq < farPlaneSquared)
-            camera3D.drawTexture3D(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0), entity->rotationZ, viewport);
+            camera3D.drawTexture3DEx(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0),
+                                     -entity->velocity, viewport);
     }
 }
 

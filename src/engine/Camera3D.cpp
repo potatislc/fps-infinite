@@ -24,8 +24,8 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
     // SDL_RenderDrawLine(renderer, center.x, center.y, center.x, 0);
 }
 
-void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& source, const glm::vec3& targetPoint,
-                             float targetRotZ, SDL_Rect& viewport)
+void Camera3D::drawTexture3DEx(SDL_Renderer* renderer, UniqueTexture& source, const glm::vec3& targetPoint,
+                               glm::vec2 targetForward, SDL_Rect& viewport)
 {
     if (targetPoint.z <= 0) return;
     glm::vec3 relativePos = position - targetPoint;
@@ -47,7 +47,7 @@ void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& source, cons
 
 
     int rotFrame = 0;
-    glm::vec2 targetForward = {std::cos(targetRotZ), std::sin(targetRotZ)};
+    // glm::vec2 targetForward = {std::cos(targetRotZ), std::sin(targetRotZ)};
     float forwardDot = glm::dot(forward, targetForward);
 
 #define CIRCLE_SECTOR .875f
@@ -215,4 +215,36 @@ void Camera3D::initFloorProjectionSurface(SDL_Surface*& surface, int w, int h)
 {
     SDL_Rect rect = {0, 0, w, h};
     surface = SDL_CreateRGBSurface(0, rect.w, rect.h, 32, 0, 0, 0, 0);
+}
+
+void Camera3D::drawTexture3D(SDL_Renderer* renderer, UniqueTexture& source, const glm::vec3& targetPoint,
+                             SDL_Rect& viewport)
+{
+    if (targetPoint.z <= 0) return;
+    glm::vec3 relativePos = position - targetPoint;
+
+    glm::vec2 forward = {std::cos(rotationZ), std::sin(rotationZ)};
+    glm::vec2 right = {-forward.y, forward.x};
+
+    float distForward = glm::dot((glm::vec2)relativePos, forward);
+    // if (distForward <= 0) return;
+    int textureScale = static_cast<int>((source.getRect()->w / distForward) * 2);
+    // if (textureScale <= 1) return;
+    float distRight = glm::dot((glm::vec2)relativePos, right);
+    float distUp = relativePos.z;
+
+    float screenX = (distRight / distForward);
+    // if (screenX < -1 || screenX > 1) return;
+    screenX = screenX * (viewport.w / 2.0f) + viewport.w / 2.0f;
+    float screenY = (distUp / distForward) * viewport.h + viewport.h / 2.0f;
+
+    SDL_Rect src = {0, 0, source.getRect()->w, source.getRect()->h};
+    SDL_Rect dst = {
+            static_cast<int>(screenX - textureScale / 2),
+            static_cast<int>(screenY - textureScale / 2),
+            textureScale,
+            textureScale
+    };
+
+    SDL_RenderCopy(renderer, source.get(), &src, &dst);
 }

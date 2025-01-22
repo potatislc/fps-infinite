@@ -26,11 +26,13 @@ void Eye::update()
         velocity = glm::normalize(velocity) * maxSpeed;
     }
 
+    glm::vec3 lastPos = position;
     position += velocity * App::deltaTime;
+    forward = glm::normalize(position - lastPos);
 }
 
 void Eye::draw(SDL_Renderer* renderer)
 {
-    Game::camera3D.drawTexture3DEx(renderer, ResourceLoader::loadedTextures.swarm, position, velocity,
+    Game::camera3D.drawTexture3DEx(renderer, ResourceLoader::loadedTextures.swarm, position, forward,
                                    App::renderer.viewport);
 }

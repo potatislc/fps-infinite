@@ -206,7 +206,8 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer, int cellId)
     for (const auto& [_, entity] : entityDistances)
     {
         camera3D.drawTexture3DEx(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0),
-                                 -entity->velocity, viewport);
+                                 -entity->forward, viewport);
+        // entity->draw(renderer);
     }
 }
 
@@ -344,8 +345,7 @@ void Game::drawEntities(SDL_Renderer* renderer, int cellId,
 
         float distSq = relativePos.x * relativePos.x + relativePos.y * relativePos.y;
         if (distSq < farPlaneSquared)
-            camera3D.drawTexture3DEx(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0),
-                                     -entity->velocity, viewport);
+            entity->draw(renderer);
     }
 }
 

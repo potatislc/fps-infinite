@@ -10,4 +10,5 @@ public:
         : Entity3D(position, rotationY), hp(hp) {};
 protected:
     int hp;
+    glm::vec3 velocity = glm::vec3(0, 0, 0);
 };

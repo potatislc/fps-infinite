@@ -8,7 +8,7 @@ class Entity3D : public AEntity
 public:
     float rotationZ;
     glm::vec3 position;
-    glm::vec3 velocity = glm::vec3(0, 0, 0);
+    glm::vec3 forward = glm::vec3(0, 0, 0);
     
     Entity3D(glm::vec3 position, float rotationY)
         : position(position), rotationZ(rotationY) {};

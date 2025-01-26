@@ -5,12 +5,6 @@
 #include "Collider.h"
 #include "game/characters/Player.h"
 
-namespace ColliderGroup
-{
-    std::vector<Collider<Player>*> players;
-    std::vector<Collider<Entity3D>*> enemies;
-}
-
 class CollisionManager
 {
     template <typename T>

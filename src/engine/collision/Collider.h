@@ -4,90 +4,95 @@
 #include "engine/Id.h"
 #include "engine/collision/CollisionShape.h"
 
-template<typename T>
 class Collider;
 
-template<typename T>
+template <typename Owner>
+class ColliderGroup
+{
+    std::vector<Collider*> colliders;
+};
+
 class Collider
 {
 public:
+
+    class ICollisionStrategy
+    {
+    public:
+        virtual Collider* collide(CollisionShape& myShape, Collider* other) = 0;
+    };
+
+    class TriggerCollision : public ICollisionStrategy
+    {
+    public:
+        Collider* collide(CollisionShape& myShape, Collider* other) override
+        {
+            return (myShape.collideWith(other->shape) != NO_COLLISION) ? other : nullptr;
+        };
+    };
+
+    class SolidCollision : public ICollisionStrategy
+    {
+    public:
+        Collider* collide(CollisionShape& myShape, Collider* other) override
+        {
+            return nullptr;
+        };
+    };
+
+    class SoftCollision : public ICollisionStrategy
+    {
+    public:
+        float push = 0;
+        float spring = 0;
+        Collider* collide(CollisionShape& myShape, Collider* other) override
+        {
+            return nullptr;
+        };
+    };
+
     id_t id = 0;
-    T* owner = nullptr;
-    glm::vec3* followPosition = nullptr;
+    void* owner = nullptr;
     CollisionShape& shape;
+    ICollisionStrategy& strategy;
 
-    Collider(T* owner, glm::vec3* followPosition, CollisionShape& shape) :
-            owner(owner), followPosition(followPosition), shape(shape) {};
+    Collider(void* owner, CollisionShape& shape, ICollisionStrategy& strategy, glm::vec3* followPosition) :
+            owner(owner), shape(shape), strategy(strategy)
+    {
+        shape.followPosition = followPosition;
+    };
 
-    template<typename U>
-    Collider<U>* collide(Collider<U>& other);
-    template<typename U>
-    Collider<U>* physCollide(Collider<U>& other);
-    template<typename U>
-    bool collideGroup(std::vector<Collider<U>*>& colliderGroup);
-    template<typename U>
-    bool physCollideGroup(std::vector<Collider<U>*>& colliderGroup);
+    template <typename T>
+    struct Hit
+    {
+        Collider* collider;
+        T* owner;
+        // glm::vec3 normal;
+
+        Hit(Collider* collider, T* owner) : collider(collider), owner(owner) {};
+    };
+
+    template <typename T>
+    Hit<T> collideGroup(ColliderGroup<T>& colliderGroup);
 };
-
-template<typename T>
-template<typename U>
-Collider<U>* Collider<T>::collide(Collider<U>& other)
-{
-    return nullptr;
-}
-
-template<typename T>
-template<typename U>
-Collider<U>* Collider<T>::physCollide(Collider<U>& other)
-{
-    return nullptr;
-}
-
-template<typename T>
-template<typename U>
-bool Collider<T>::collideGroup(std::vector<Collider<U>*>& colliderGroup)
-{
-    Collider<U>* lastCollision = nullptr;
-
-    for (auto& collider : colliderGroup)
-    {
-
-    }
-
-    return lastCollision;
-}
-
-template<typename T>
-template<typename U>
-bool Collider<T>::physCollideGroup(std::vector<Collider<U>*>& colliderGroup)
-{
-    Collider<U>* lastCollision = nullptr;
-
-    for (auto& collider : colliderGroup)
-    {
-
-    }
-
-    return lastCollision;
-}
 
 template <typename T>
-class SoftCollider : public Collider<T>
+Collider::Hit<T> Collider::collideGroup(ColliderGroup<T>& colliderGroup)
 {
-    float push = 0;
-    float spring = 1; // 1: constant push, >0: Push gets stronger as other collider approaches center
+    Collider* lastCollision = nullptr;
 
-    SoftCollider(T* owner, glm::vec3* followPosition, CollisionShape& shape, float push, float spring) :
-                Collider<T>(owner, followPosition, shape), push(push), spring(spring) {};
+    for (auto* other : colliderGroup.colliders)
+    {
+        Collider* collision = strategy.collide(other);
+        if (collision) lastCollision = collision;
+    }
 
-    // Special physics collide for soft collisions
-    template<typename U>
-    Collider<U>* physCollide(Collider<U>& other);
-};
-
-template<typename T>
-template<typename U>
-Collider<U>* SoftCollider<T>::physCollide(Collider<U>& other)
-{
-    return nullptr;
+    if (!lastCollision)
+    {
+        return Collider::Hit(nullptr, static_cast<T*>(nullptr));
+    }
+    else
+    {
+        return Collider::Hit(lastCollision, static_cast<T*>(lastCollision->owner));
+    }
 }

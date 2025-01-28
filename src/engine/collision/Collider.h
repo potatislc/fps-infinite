@@ -4,14 +4,13 @@
 #include "glm/vec3.hpp"
 #include "engine/Id.h"
 #include "engine/collision/CollisionShape.h"
+#include "game/characters/Player.h"
+#include "game/characters/Eye.h"
 
 class Collider;
 
-template <typename Owner>
-class ColliderGroup
-{
-    std::vector<Collider*> colliders;
-};
+template <typename OwnerType>
+class ColliderGroup;
 
 class Collider
 {
@@ -36,7 +35,11 @@ public:
     public:
         CollisionShape::Hit collide(CollisionShape& myShape, Collider& other) override
         {
+            auto hit = myShape.collideWith(*other.shape);
 
+            if (hit.isConfirmed()) return {};
+
+            *(myShape.followPosition) = *(other.shape->followPosition) - hit.normal * hit.distThreshold;
             return {};
         };
     };
@@ -58,8 +61,8 @@ public:
     CollisionShape* shape;
     ICollisionStrategy* strategy;
 
-    Collider(void* owner, CollisionShape* shape, ICollisionStrategy* strategy, glm::vec3* followPosition) :
-            owner(owner), shape(shape), strategy(strategy)
+    Collider(id_t id, void* owner, CollisionShape* shape, ICollisionStrategy* strategy, glm::vec3* followPosition) :
+            id(id), owner(owner), shape(shape), strategy(strategy)
     {
         shape->followPosition = followPosition;
     };
@@ -69,10 +72,10 @@ public:
     {
         Collider* collider;
         T* owner;
-        CollisionShape::HitData data;
+        CollisionShape::Hit data;
 
         Hit(Collider* collider = nullptr, T* owner = nullptr,
-            CollisionShape::HitData data = CollisionShape::HitData()) :
+            CollisionShape::Hit data = CollisionShape::Hit()) :
                 collider(collider), owner(owner), data(data) {};
 
         bool isConfirmed()
@@ -96,9 +99,9 @@ Collider::Hit<T> Collider::collideGroup(ColliderGroup<T>& colliderGroup)
     for (Collider* other : colliderGroup.colliders)
     {
         CollisionShape::Hit hit = strategy->collide(*shape, *other);
-        if (hit.confirmed)
+        if (hit.isConfirmed())
         {
-            lastHit = Collider::Hit<T>(other, static_cast<T*>(other->owner), hit.data);
+            lastHit = Collider::Hit<T>(other, static_cast<T*>(other->owner), hit);
         }
     }
 
@@ -109,4 +112,27 @@ template<typename T>
 Collider::Hit<T> Collider::collideGroupNaive(ColliderGroup<T>& colliderGroup)
 {
 
+}
+
+template <typename OwnerType>
+class ColliderGroup
+{
+    std::vector<Collider> colliders;
+
+    void add(void* owner, CollisionShape* shape, Collider::ICollisionStrategy* strategy, glm::vec3* followPosition);
+};
+
+template<typename OwnerType>
+void ColliderGroup<OwnerType>::add(void* owner, CollisionShape* shape, Collider::ICollisionStrategy* strategy,
+                                   glm::vec3* followPosition)
+{
+    id_t nextId = colliders.size();
+    colliders.emplace_back(nextId, owner, shape, strategy, followPosition);
+}
+
+// Temporary! Should be part of config instead
+namespace ColliderGroups
+{
+    static ColliderGroup<Player> players;
+    static ColliderGroup<Eye> eyes;
 }

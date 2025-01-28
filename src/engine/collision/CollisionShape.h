@@ -21,22 +21,20 @@ public:
     Type type;
     glm::vec3* followPosition = nullptr;
 
-
-    struct HitData
-    {
-        glm::vec3 normal;
-        float intersection;
-
-        HitData(float intersection = 0, glm::vec3 normal = glm::vec3(0, 0, 0)) :
-                intersection(intersection), normal(normal) {};
-    };
-
     struct Hit
     {
-        HitData data;
-        bool confirmed;
+        float distSq;
+        float distThreshold; // If distSq < distThreshold^2, then hit
+        glm::vec3 normal;
 
-        Hit(bool confirmed = false, HitData data = HitData()) : confirmed(confirmed), data(data) {};
+        Hit(float distSq = 0, float distThreshold = 0, glm::vec3 normal = glm::vec3(0, 0, 0)) :
+                distSq(distSq), distThreshold(distThreshold), normal(normal) {};
+
+        // Nodiscard means you can't ignore return value when calling function
+        [[nodiscard]] bool isConfirmed() const
+        {
+            return (distSq < distThreshold * distThreshold);
+        }
     };
 
     virtual Hit collideWith(CollisionShape& other) = 0;
@@ -63,7 +61,18 @@ public:
 
     Hit collideWithCircle(ShapeCircle& other) override
     {
+        glm::vec2 deltaXYSq = glm::vec2(other.followPosition->x - followPosition->x,
+                                        other.followPosition->y - followPosition->y);
+        deltaXYSq *= deltaXYSq;
+        float distSq = deltaXYSq.x + deltaXYSq.y;
+        float thresholdSq = radius * radius + other.radius * other.radius;
 
+        if (distSq < thresholdSq)
+        {
+            return {distSq, radius + other.radius, glm::normalize(glm::vec3(deltaXYSq.x, deltaXYSq.y, 0))};
+        }
+
+        return {};
     }
 };
 

@@ -44,16 +44,17 @@ void Game::start()
             ResourceLoader::loadedPixelArrays.water.width,
             ResourceLoader::loadedPixelArrays.water.height);
 
-    /*world.addChild(std::make_shared<Entity3D>((glm::vec3){5, 6, 1}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){-4, -12, 1}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){1, 27, 10}, 0));
-    world.addChild(std::make_shared<Entity3D>((glm::vec3){30, -36, 6}, 0));*/
-
+    std::shared_ptr<Eye> eye = std::make_shared<Eye>(
+            (glm::vec3){3, 22, 6},
+            0,
+            1,
+            currentPlayer);
+    world.addChild(eye);
 
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     std::cout << centerCellId << std::endl;
-    for (int i = 0; i < 16; i++)
+    /*for (int i = 0; i < 16; i++)
     {
         for (int j = 0; j < 16; j++)
         {
@@ -64,7 +65,7 @@ void Game::start()
                     currentPlayer);
             world.addChild(eye);
         }
-    }
+    }*/
 }
 
 void Game::update()

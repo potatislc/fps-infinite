@@ -22,4 +22,7 @@ private:
     float headBobPhase = 0.f;
     const float headBobSpeed = 10;
     const float headBobMag = .25f;
+    float gravity = 2;
+    float jumpForce = 1;
+    bool grounded = false;
 };

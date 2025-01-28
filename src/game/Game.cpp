@@ -26,6 +26,7 @@ Game::Game()
     InputMap::addKeyBinding("LookRight", SDLK_RIGHT);
     InputMap::addKeyBinding("FlyUp", SDLK_UP);
     InputMap::addKeyBinding("FlyDown", SDLK_DOWN);
+    // InputMap::addKeyBinding("Jump", SDLK_SPACE); Horrible idea!
 }
 
 void Game::start()

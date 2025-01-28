@@ -87,3 +87,7 @@ bool InputMap::isBoundKeyDown(const std::string& name)
 {
     return getBoundKeyInput(name) == S_DOWN;
 }
+
+bool InputMap::isBoundKeyPressed(const std::string& name) {
+    return false;
+}

@@ -35,11 +35,25 @@ void Player::update()
     }
 
     glm::vec2 rotatedMoveVel = Utils::vec2Rotate(moveVelocity, rotationZ);
-    velocity = (glm::vec3){rotatedMoveVel.x, rotatedMoveVel.y, 0};
+    velocity = (glm::vec3){rotatedMoveVel.x, rotatedMoveVel.y, velocity.z - gravity * App::deltaTime};
+
+    if (InputMap::isBoundKeyDown("Jump") && grounded)
+    {
+        velocity.z = jumpForce;
+        grounded = false;
+    }
+
     position += velocity * speed * App::deltaTime;
 
-    if (InputMap::isBoundKeyDown("FlyUp")) position.z += 10 * App::deltaTime;
-    if (InputMap::isBoundKeyDown("FlyDown")) position.z -= 10 * App::deltaTime;
+    if (position.z < 0)
+    {
+        grounded = true;
+        position.z = 0;
+        velocity.z = 0;
+    }
+
+    /*if (InputMap::isBoundKeyDown("FlyUp")) position.z += 10 * App::deltaTime;
+    if (InputMap::isBoundKeyDown("FlyDown")) position.z -= 10 * App::deltaTime;*/
 
     if (glm::length(moveVelocity) > 0 || headBobPhase > 0)
     {

@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 class CollisionShape;
-class ShapeCircle;
+class ShapeSphere;
 class ShapeCylinder;
 
 class CollisionShape
@@ -12,7 +12,6 @@ public:
     enum class Type
     {
         POINT,
-        CIRCLE,
         SPHERE,
         CYLINDER,
         SIZE
@@ -30,53 +29,52 @@ public:
         Hit(float distSq = 0, float distThreshold = 0, glm::vec3 normal = glm::vec3(0, 0, 0)) :
                 distSq(distSq), distThreshold(distThreshold), normal(normal) {};
 
-        // Nodiscard means you can't ignore return value when calling function
-        [[nodiscard]] bool isConfirmed() const
+        bool operator==(bool) const
         {
             return (distSq < distThreshold * distThreshold);
         }
     };
 
     virtual Hit collideWith(CollisionShape& other) = 0;
-    virtual Hit collideWithCircle(ShapeCircle& other) = 0;
-    virtual Hit collideWithCylinder(ShapeCylinder& other) = 0;
+    virtual Hit collideWithSphere(ShapeSphere& other) = 0;
+    // virtual Hit collideWithCylinder(ShapeCylinder& other) = 0;
 
 protected:
     explicit CollisionShape(Type shapeType) : type(shapeType) {}
 
 };
 
-class ShapeCircle : public CollisionShape
+class ShapeSphere : public CollisionShape
 {
 public:
     float radius;
 
-    ShapeCircle(float radius = 1.0f)
-            : CollisionShape(Type::CIRCLE), radius(radius) {};
+    ShapeSphere(float radius = 1.0f)
+            : CollisionShape(Type::SPHERE), radius(radius) {};
 
     Hit collideWith(CollisionShape& other) override
     {
-        return other.collideWithCircle(*this);
+        return other.collideWithSphere(*this);
     }
 
-    Hit collideWithCircle(ShapeCircle& other) override
+    Hit collideWithSphere(ShapeSphere& other) override
     {
-        glm::vec2 deltaXYSq = glm::vec2(other.followPosition->x - followPosition->x,
-                                        other.followPosition->y - followPosition->y);
-        deltaXYSq *= deltaXYSq;
-        float distSq = deltaXYSq.x + deltaXYSq.y;
-        float thresholdSq = radius * radius + other.radius * other.radius;
+        glm::vec3 delta = *other.followPosition - *followPosition;
+
+        float distSq = glm::dot(delta, delta);
+        float thresholdSq = (radius + other.radius) * (radius + other.radius);
 
         if (distSq < thresholdSq)
         {
-            return {distSq, radius + other.radius, glm::normalize(glm::vec3(deltaXYSq.x, deltaXYSq.y, 0))};
+            return {distSq, radius + other.radius, glm::normalize(delta)};
+            // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
         }
 
         return {};
     }
 };
 
-class ShapeCylinder : public CollisionShape
+/*class ShapeCylinder : public CollisionShape
 {
 public:
     float top;
@@ -90,4 +88,4 @@ public:
     {
         return other.collideWithCylinder(*this);
     }
-};
+};*/

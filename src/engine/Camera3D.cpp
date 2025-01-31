@@ -27,7 +27,7 @@ void Camera3D::drawFovLines(SDL_Renderer* renderer) const
 void Camera3D::drawTexture3DEx(SDL_Renderer* renderer, UniqueTexture& source, const glm::vec3& targetPoint,
                                glm::vec2 targetForward, SDL_Rect& viewport)
 {
-    if (targetPoint.z <= 0) return;
+    if (targetPoint.z < 0) return;
     glm::vec3 relativePos = position - targetPoint;
 
     glm::vec2 forward = {std::cos(rotationZ), std::sin(rotationZ)};

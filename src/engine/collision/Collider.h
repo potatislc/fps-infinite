@@ -37,9 +37,12 @@ public:
         {
             auto hit = myShape.collideWith(*other.shape);
 
-            if (hit.isConfirmed()) return {};
+            if (hit == true)
+            {
+                *(myShape.followPosition) = *(other.shape->followPosition) + hit.normal * hit.distThreshold;
+                return hit;
+            }
 
-            *(myShape.followPosition) = *(other.shape->followPosition) - hit.normal * hit.distThreshold;
             return {};
         };
     };
@@ -78,10 +81,10 @@ public:
             CollisionShape::Hit data = CollisionShape::Hit()) :
                 collider(collider), owner(owner), data(data) {};
 
-        bool isConfirmed()
+        bool operator==(bool)
         {
             return collider;
-        };
+        }
     };
 
     template <typename T>
@@ -96,12 +99,14 @@ Collider::Hit<T> Collider::collideGroup(ColliderGroup<T>& colliderGroup)
 {
     Collider::Hit<T> lastHit = Collider::Hit<T>();
 
-    for (Collider* other : colliderGroup.colliders)
+    for (auto& other : colliderGroup.colliders)
     {
-        CollisionShape::Hit hit = strategy->collide(*shape, *other);
-        if (hit.isConfirmed())
+        if ((Collider*)&other == this) continue;
+
+        CollisionShape::Hit hit = strategy->collide(*shape, other);
+        if (hit == true)
         {
-            lastHit = Collider::Hit<T>(other, static_cast<T*>(other->owner), hit);
+            lastHit = Collider::Hit<T>((Collider*)&other, static_cast<T*>(other.owner), hit);
         }
     }
 
@@ -111,15 +116,35 @@ Collider::Hit<T> Collider::collideGroup(ColliderGroup<T>& colliderGroup)
 template<typename T>
 Collider::Hit<T> Collider::collideGroupNaive(ColliderGroup<T>& colliderGroup)
 {
+    /*
+     * Optimization time!
+     * Temporary vector of colliders. Colliders that don't collide with anyone should be popped of the list.
+     * The collider you collide with should also be popped of the list.
+     * Reserve space for the temp-vector with the size of the original vector.
+     */
 
+    for (auto& other : colliderGroup.colliders)
+    {
+        if ((Collider*)&other == this) continue;
+
+        CollisionShape::Hit hit = strategy->collide(*shape, other);
+        if (hit == true)
+        {
+            return Collider::Hit<T>((Collider*)&other, static_cast<T*>(other.owner), hit);
+        }
+    }
+
+    return Collider::Hit<T>();
 }
 
 template <typename OwnerType>
 class ColliderGroup
 {
-    std::vector<Collider> colliders;
 
+public:
     void add(void* owner, CollisionShape* shape, Collider::ICollisionStrategy* strategy, glm::vec3* followPosition);
+
+    std::vector<Collider> colliders;
 };
 
 template<typename OwnerType>
@@ -128,11 +153,4 @@ void ColliderGroup<OwnerType>::add(void* owner, CollisionShape* shape, Collider:
 {
     id_t nextId = colliders.size();
     colliders.emplace_back(nextId, owner, shape, strategy, followPosition);
-}
-
-// Temporary! Should be part of config instead
-namespace ColliderGroups
-{
-    static ColliderGroup<Player> players;
-    static ColliderGroup<Eye> eyes;
 }

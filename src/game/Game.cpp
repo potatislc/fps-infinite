@@ -8,12 +8,14 @@
 #include "engine/App.h"
 #include "AmbientParticles.h"
 #include "game/characters/Eye.h"
+#include "engine/collision/Collider.h"
 
 glm::vec2 Game::cellSize = {MAX_CELL_W, MAX_CELL_W};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 170);
 Game::Settings Game::settings;
+ColliderGroup<Eye> groupEyes;
 
 Game::Game()
 {
@@ -45,19 +47,20 @@ void Game::start()
             ResourceLoader::loadedPixelArrays.water.width,
             ResourceLoader::loadedPixelArrays.water.height);
 
-    std::shared_ptr<Eye> eye = std::make_shared<Eye>(
+    std::shared_ptr<Eye> eye0 = std::make_shared<Eye>(
             (glm::vec3){3, 22, 6},
             0,
             1,
             currentPlayer);
-    world.addChild(eye);
+    world.addChild(eye0);
+    groupEyes.add(eye0.get(), new ShapeSphere(), new Collider::SolidCollision(), &eye0->position);
 
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     std::cout << centerCellId << std::endl;
-    /*for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 8; i++)
     {
-        for (int j = 0; j < 16; j++)
+        for (int j = 0; j < 8; j++)
         {
             std::shared_ptr<Eye> eye = std::make_shared<Eye>(
                     (glm::vec3){i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},
@@ -65,8 +68,9 @@ void Game::start()
                     1,
                     currentPlayer);
             world.addChild(eye);
+            groupEyes.add(eye.get(), new ShapeSphere(), new Collider::SolidCollision(), &eye->position);
         }
-    }*/
+    }
 }
 
 void Game::update()
@@ -79,6 +83,12 @@ void Game::update()
     for (const auto& child : world.children)
     {
         child->update();
+
+        for (auto& col : groupEyes.colliders)
+        {
+            col.collideGroupNaive<Eye>(groupEyes);
+        }
+
         wrapInsideWorld(child->position);
         // child->position += glm::vec3(0, 4 * App::deltaTime, 0); Test!
     }
@@ -255,6 +265,7 @@ void Game::wrapInsideWorld(glm::vec3& vec)
 {
     vec.x = Utils::fmod(vec.x, cellSize.x);
     vec.y = Utils::fmod(vec.y, cellSize.y);
+    if (vec.z < 0) vec.z = 0;
 }
 
 glm::vec2 Game::getCellPos(int cellId)

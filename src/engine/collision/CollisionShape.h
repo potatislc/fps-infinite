@@ -4,6 +4,7 @@
 
 class CollisionShape;
 class ShapeSphere;
+class ShapeCircle;
 class ShapeCylinder;
 
 class CollisionShape
@@ -13,6 +14,7 @@ public:
     {
         POINT,
         SPHERE,
+        CIRCLE,
         CYLINDER,
         SIZE
     };
@@ -37,6 +39,7 @@ public:
 
     virtual Hit collideWith(CollisionShape& other) = 0;
     virtual Hit collideWithSphere(ShapeSphere& other) = 0;
+    virtual Hit collideWithCircle(ShapeCircle& other) = 0;
     // virtual Hit collideWithCylinder(ShapeCylinder& other) = 0;
 
 protected:
@@ -67,6 +70,52 @@ public:
         if (distSq < thresholdSq)
         {
             return {distSq, radius + other.radius, glm::normalize(delta)};
+            // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
+        }
+
+        return {};
+    }
+};
+
+class ShapeCircle : public CollisionShape
+{
+public:
+    float radius;
+
+    ShapeCircle(float radius = 1.0f)
+            : CollisionShape(Type::CIRCLE), radius(radius) {};
+
+    Hit collideWith(CollisionShape& other) override
+    {
+        return other.collideWithCircle(*this);
+    }
+
+    Hit collideWithSphere(ShapeSphere& other) override
+    {
+        glm::vec2 delta = *other.followPosition - *followPosition;
+
+        float distSq = glm::dot(delta, delta);
+        float thresholdSq = (radius + other.radius) * (radius + other.radius);
+
+        if (distSq < thresholdSq)
+        {
+            return {distSq, radius + other.radius, glm::normalize(glm::vec3(delta.x, delta.y, 0))};
+            // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
+        }
+
+        return {};
+    }
+
+    Hit collideWithCircle(ShapeCircle& other) override
+    {
+        glm::vec2 delta = *other.followPosition - *followPosition;
+
+        float distSq = glm::dot(delta, delta);
+        float thresholdSq = (radius + other.radius) * (radius + other.radius);
+
+        if (distSq < thresholdSq)
+        {
+            return {distSq, radius + other.radius, glm::normalize(glm::vec3(delta.x, delta.y, 0))};
             // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
         }
 

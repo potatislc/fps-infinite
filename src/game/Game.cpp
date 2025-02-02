@@ -53,7 +53,7 @@ void Game::start()
             1,
             currentPlayer);
     world.addChild(eye0);
-    groupEyes.add(eye0.get(), new ShapeSphere(), new Collider::SolidCollision(), &eye0->position);
+    groupEyes.add(eye0.get(), new ShapeCircle(), new Collider::SolidCollision2D(), &eye0->position);
 
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
@@ -68,7 +68,7 @@ void Game::start()
                     1,
                     currentPlayer);
             world.addChild(eye);
-            groupEyes.add(eye.get(), new ShapeSphere(), new Collider::SolidCollision(), &eye->position);
+            groupEyes.add(eye.get(), new ShapeCircle(), new Collider::SolidCollision2D(), &eye->position);
         }
     }
 }
@@ -84,10 +84,16 @@ void Game::update()
     {
         child->update();
 
-        for (auto& col : groupEyes.colliders)
+        std::vector<id_t> relevantColliders;
+        relevantColliders.resize(groupEyes.colliders.size());
+        std::iota(relevantColliders.begin(), relevantColliders.end(), 0);
+
+        for (unsigned int colIdx : relevantColliders)
         {
-            col.collideGroupNaive<Eye>(groupEyes);
+            Collider::Hit<Eye> res = groupEyes.colliders[colIdx].collideGroupNaive<Eye>(groupEyes);
+            if (res == false) std::cout << "I MISS! ";
         }
+        std::cout << std::endl;
 
         wrapInsideWorld(child->position);
         // child->position += glm::vec3(0, 4 * App::deltaTime, 0); Test!

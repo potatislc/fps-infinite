@@ -12,6 +12,9 @@ public:
     const float maxSpeed = 10;
     const float hoverHeight = 2;
     const float hoverMag = 1;
+    static float globalHoverOffset;
+    float hoverOffset = 0;
+
     Eye(glm::vec3 position, float rotationY, int hp, std::shared_ptr<Player>& player);
     ~Eye() override = default;
     void start() override;

@@ -47,6 +47,23 @@ public:
         };
     };
 
+    class SolidCollision2D : public ICollisionStrategy
+    {
+    public:
+        CollisionShape::Hit collide(CollisionShape& myShape, Collider& other) override
+        {
+            auto hit = myShape.collideWith(*other.shape);
+
+            if (hit == true)
+            {
+                *(myShape.followPosition) = glm::vec3(other.shape->followPosition->x, other.shape->followPosition->y, myShape.followPosition->z) + hit.normal * hit.distThreshold;
+                return hit;
+            }
+
+            return {};
+        };
+    };
+
     class SoftCollision : public ICollisionStrategy
     {
     public:

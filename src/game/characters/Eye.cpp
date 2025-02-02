@@ -3,10 +3,13 @@
 #include "game/Game.h"
 #include "engine/ResourceLoader.h"
 
+float Eye::globalHoverOffset = 0;
+
 Eye::Eye(glm::vec3 position, float rotationY, int hp, std::shared_ptr<Player>& player)
     : ACharacter(position, rotationY, hp), player(player)
 {
-
+    globalHoverOffset += .1;
+    hoverOffset = globalHoverOffset;
 }
 
 void Eye::start()
@@ -17,7 +20,7 @@ void Eye::start()
 void Eye::update()
 {
     glm::vec2 targetDirXY = glm::normalize(Utils::vec2DeltaWrapped(position, player->position, Game::cellSize));
-    float targetDirZ = glm::sin((float)App::timeSinceInit) * hoverMag + hoverHeight - position.z;
+    float targetDirZ = glm::sin((float)App::timeSinceInit + hoverOffset) * hoverMag + hoverHeight - position.z;
 
     velocity += glm::vec3(targetDirXY.x, targetDirXY.y, targetDirZ) * accel * App::deltaTime;
 

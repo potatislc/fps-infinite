@@ -31,7 +31,7 @@ public:
         Hit(float distSq = 0, float distThreshold = 0, glm::vec3 normal = glm::vec3(0, 0, 0)) :
                 distSq(distSq), distThreshold(distThreshold), normal(normal) {};
 
-        bool operator==(bool) const
+        operator bool() const
         {
             return (distSq < distThreshold * distThreshold);
         }

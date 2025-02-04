@@ -37,11 +37,11 @@ void Player::update()
     glm::vec2 rotatedMoveVel = Utils::vec2Rotate(moveVelocity, rotationZ);
     velocity = (glm::vec3){rotatedMoveVel.x, rotatedMoveVel.y, velocity.z - gravity * App::deltaTime};
 
-    if (InputMap::isBoundKeyDown("Jump") && grounded)
+    /*if (InputMap::isBoundKeyDown("Jump") && grounded)
     {
         velocity.z = jumpForce;
         grounded = false;
-    }
+    }*/
 
     position += velocity * speed * App::deltaTime;
 

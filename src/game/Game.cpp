@@ -83,17 +83,18 @@ void Game::update()
     for (const auto& child : world.children)
     {
         child->update();
-
         std::vector<id_t> relevantColliders;
         relevantColliders.resize(groupEyes.colliders.size());
         std::iota(relevantColliders.begin(), relevantColliders.end(), 0);
 
-        for (unsigned int colIdx : relevantColliders)
+        for (int i = 0; i < relevantColliders.size(); i++)
         {
-            Collider::Hit<Eye> res = groupEyes.colliders[colIdx].collideGroupNaive<Eye>(groupEyes);
-            if (res == false) std::cout << "I MISS! ";
+            Collider::Hit<Eye> res = groupEyes.colliders[relevantColliders[i]].collideGroupNaive<Eye>(groupEyes);
+            if (!res)
+            {
+                relevantColliders.erase(relevantColliders.begin(), relevantColliders.begin()+i);
+            }
         }
-        std::cout << std::endl;
 
         wrapInsideWorld(child->position);
         // child->position += glm::vec3(0, 4 * App::deltaTime, 0); Test!
@@ -102,6 +103,7 @@ void Game::update()
 
 void Game::draw(SDL_Renderer *renderer)
 {
+    SDL_RenderClear(renderer);
     // castEntityShadows(renderer, 1);
     rasterizeShadowMap();
 

@@ -2,6 +2,7 @@
 #include "engine/App.h"
 #include "game/Game.h"
 #include "engine/ResourceLoader.h"
+#include "game_setup/ColliderGroups.h"
 
 float Eye::globalHoverOffset = 0;
 
@@ -32,6 +33,8 @@ void Eye::update()
     glm::vec3 lastPos = position;
     position += velocity * App::deltaTime;
     forward = glm::normalize(position - lastPos);
+
+    collider.collideGroupNaive(ColliderGroups::eyes);
 }
 
 void Eye::draw(SDL_Renderer* renderer)

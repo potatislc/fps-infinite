@@ -37,7 +37,7 @@ public:
         {
             auto hit = myShape.collideWith(*other.shape);
 
-            if (hit == true)
+            if (hit)
             {
                 *(myShape.followPosition) = *(other.shape->followPosition) + hit.normal * hit.distThreshold;
                 return hit;
@@ -54,7 +54,7 @@ public:
         {
             auto hit = myShape.collideWith(*other.shape);
 
-            if (hit == true)
+            if (hit)
             {
                 *(myShape.followPosition) = glm::vec3(other.shape->followPosition->x, other.shape->followPosition->y, myShape.followPosition->z) + hit.normal * hit.distThreshold;
                 return hit;
@@ -99,8 +99,8 @@ public:
     ICollisionStrategy* strategy;
     CollisionShape::Hit hitRes;
 
-    Collider(id_t id, void* owner, CollisionShape* shape, ICollisionStrategy* strategy, glm::vec3* followPosition) :
-            id(id), owner(owner), shape(shape), strategy(strategy)
+    Collider(void* owner, CollisionShape* shape, ICollisionStrategy* strategy, glm::vec3* followPosition) :
+            owner(owner), shape(shape), strategy(strategy)
     {
         shape->followPosition = followPosition;
     };
@@ -134,21 +134,14 @@ Collider::Hit<T> Collider::collideGroup(ColliderGroup<T>& colliderGroup)
 template<typename T>
 Collider::Hit<T> Collider::collideGroupNaive(ColliderGroup<T>& colliderGroup)
 {
-    /*
-     * Optimization time!
-     * Temporary vector of colliders. Colliders that don't collide with anyone should be popped of the list.
-     * The collider you collide with should also be popped of the list.
-     * Reserve space for the temp-vector with the size of the original vector.
-     */
-
-    for (auto& other : colliderGroup.colliders)
+    for (Collider* other : colliderGroup.colliders)
     {
-        if ((Collider*)&other == this) continue;
+        if (other == this) continue;
 
-        CollisionShape::Hit hit = strategy->collide(*shape, other);
-        if (hit == true)
+        CollisionShape::Hit hit = strategy->collide(*shape, *other);
+        if (hit)
         {
-            return Collider::Hit<T>((Collider*)&other, static_cast<T*>(other.owner), hit);
+            return Collider::Hit<T>(other, static_cast<T*>(other->owner), hit);
         }
     }
 
@@ -158,17 +151,36 @@ Collider::Hit<T> Collider::collideGroupNaive(ColliderGroup<T>& colliderGroup)
 template <typename OwnerType>
 class ColliderGroup
 {
-
 public:
-    void add(void* owner, CollisionShape* shape, Collider::ICollisionStrategy* strategy, glm::vec3* followPosition);
+    void add(Collider* collider);
+    void populateSpatialGrid();
+    void queueRemove(id_t colliderId); // Remove at id in the group
 
-    std::vector<Collider> colliders;
+    std::vector<Collider*> colliders;
+private:
+    static constexpr size_t gridWidth = 16;
+    /*const float cellWidth = (float)MAX_CELL_W / gridWidth;
+    std::array<std::array<id_t, 4>, gridWidth * gridWidth> spatialGrid;*/
 };
 
 template<typename OwnerType>
-void ColliderGroup<OwnerType>::add(void* owner, CollisionShape* shape, Collider::ICollisionStrategy* strategy,
-                                   glm::vec3* followPosition)
+void ColliderGroup<OwnerType>::queueRemove(id_t colliderId)
 {
-    id_t nextId = colliders.size();
-    colliders.emplace_back(nextId, owner, shape, strategy, followPosition);
+
+}
+
+template<typename OwnerType>
+void ColliderGroup<OwnerType>::populateSpatialGrid()
+{
+    for (auto& collider : colliders)
+    {
+        
+    }
+}
+
+template<typename OwnerType>
+void ColliderGroup<OwnerType>::add(Collider* collider)
+{
+    collider->id = colliders.size();
+    colliders.emplace_back(collider);
 }

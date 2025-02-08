@@ -7,6 +7,7 @@
 #include "engine/Renderer.h"
 #include "game/characters/Player.h"
 #include "engine/PixelArray.h"
+#include "game/characters/Eye.h"
 
 class Game : public IGameObject
 {
@@ -64,4 +65,5 @@ private:
 
     void initShadowRaster();
     void rasterizeShadowMap();
+
 };

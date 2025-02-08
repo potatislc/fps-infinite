@@ -54,7 +54,9 @@ if (WIN32)
 else ()
     add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
             src/game/AmbientParticles.h
-            src/game/characters/Eye.h)
+            src/game/characters/Eye.h
+            src/setup/ColliderGroups.h
+            src/setup/ColliderGroups.cpp)
 endif ()
 
 # Link SDL2 library

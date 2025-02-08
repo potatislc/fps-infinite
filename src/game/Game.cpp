@@ -8,14 +8,13 @@
 #include "engine/App.h"
 #include "AmbientParticles.h"
 #include "game/characters/Eye.h"
-#include "engine/collision/Collider.h"
+#include "game_setup/ColliderGroups.h"
 
 glm::vec2 Game::cellSize = {MAX_CELL_W, MAX_CELL_W};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 170);
 Game::Settings Game::settings;
-ColliderGroup<Eye> groupEyes;
 
 Game::Game()
 {
@@ -53,7 +52,7 @@ void Game::start()
             1,
             currentPlayer);
     world.addChild(eye0);
-    groupEyes.add(eye0.get(), new ShapeCircle(), new Collider::SolidCollision2D(), &eye0->position);
+    ColliderGroups::eyes.add(&eye0->collider);
 
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
@@ -68,7 +67,7 @@ void Game::start()
                     1,
                     currentPlayer);
             world.addChild(eye);
-            groupEyes.add(eye.get(), new ShapeCircle(), new Collider::SolidCollision2D(), &eye->position);
+            ColliderGroups::eyes.add(&eye->collider);
         }
     }
 }
@@ -83,18 +82,19 @@ void Game::update()
     for (const auto& child : world.children)
     {
         child->update();
-        std::vector<id_t> relevantColliders;
+        /*std::vector<id_t> relevantColliders;
         relevantColliders.resize(groupEyes.colliders.size());
         std::iota(relevantColliders.begin(), relevantColliders.end(), 0);
 
         for (int i = 0; i < relevantColliders.size(); i++)
         {
-            Collider::Hit<Eye> res = groupEyes.colliders[relevantColliders[i]].collideGroupNaive<Eye>(groupEyes);
-            if (!res)
+            Collider* current = groupEyes.colliders[relevantColliders[i]];
+            Collider::Hit<Eye> res = current->collideGroupNaive<Eye>(groupEyes);
+            *//*if (!res)
             {
                 relevantColliders.erase(relevantColliders.begin(), relevantColliders.begin()+i);
-            }
-        }
+            }*//*
+        }*/
 
         wrapInsideWorld(child->position);
         // child->position += glm::vec3(0, 4 * App::deltaTime, 0); Test!

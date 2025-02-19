@@ -8,9 +8,8 @@
 #include "engine/App.h"
 #include "AmbientParticles.h"
 #include "game/characters/Eye.h"
-#include "game_setup/ColliderGroups.h"
 
-glm::vec2 Game::cellSize = {MAX_CELL_W, MAX_CELL_W};
+glm::vec2 Game::cellSize = {maxCellSize.x, maxCellSize.y};
 std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 170);
@@ -52,7 +51,6 @@ void Game::start()
             1,
             currentPlayer);
     world.addChild(eye0);
-    ColliderGroups::eyes.add(&eye0->collider);
 
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
@@ -67,7 +65,6 @@ void Game::start()
                     1,
                     currentPlayer);
             world.addChild(eye);
-            ColliderGroups::eyes.add(&eye->collider);
         }
     }
 }

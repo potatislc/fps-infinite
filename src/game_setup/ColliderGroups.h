@@ -1,6 +1,7 @@
 #pragma once
 
-#include "game/characters/Eye.h"
+#include "engine/collision/Collider.h"
+class Eye;
 
 namespace ColliderGroups
 {

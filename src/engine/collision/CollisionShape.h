@@ -1,21 +1,20 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 
 class CollisionShape;
 class ShapeSphere;
 class ShapeCircle;
-class ShapeCylinder;
+class ShapeRect;
 
 class CollisionShape
 {
 public:
     enum class Type
     {
-        POINT,
         SPHERE,
         CIRCLE,
-        CYLINDER,
+        RECT,
         SIZE
     };
 
@@ -26,7 +25,7 @@ public:
     {
         float distSq;
         float distThreshold; // If distSq < distThreshold^2, then hit
-        glm::vec3 normal;
+        glm::vec3 normal = {0, 0, 0};
 
         Hit(float distSq = 0, float distThreshold = 0, glm::vec3 normal = glm::vec3(0, 0, 0)) :
                 distSq(distSq), distThreshold(distThreshold), normal(normal) {};
@@ -40,7 +39,7 @@ public:
     virtual Hit collideWith(CollisionShape& other) = 0;
     virtual Hit collideWithSphere(ShapeSphere& other) = 0;
     virtual Hit collideWithCircle(ShapeCircle& other) = 0;
-    // virtual Hit collideWithCylinder(ShapeCylinder& other) = 0;
+    virtual Hit collideWithRect(ShapeRect& other) = 0;
 
 protected:
     explicit CollisionShape(Type shapeType) : type(shapeType) {}
@@ -55,26 +54,8 @@ public:
     ShapeSphere(float radius = 1.0f)
             : CollisionShape(Type::SPHERE), radius(radius) {};
 
-    Hit collideWith(CollisionShape& other) override
-    {
-        return other.collideWithSphere(*this);
-    }
-
-    Hit collideWithSphere(ShapeSphere& other) override
-    {
-        glm::vec3 delta = *other.followPosition - *followPosition;
-
-        float distSq = glm::dot(delta, delta);
-        float thresholdSq = (radius + other.radius) * (radius + other.radius);
-
-        if (distSq < thresholdSq)
-        {
-            return {distSq, radius + other.radius, glm::normalize(delta)};
-            // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
-        }
-
-        return {};
-    }
+    Hit collideWith(CollisionShape& other) override;
+    Hit collideWithSphere(ShapeSphere& other) override;
 };
 
 class ShapeCircle : public CollisionShape
@@ -85,56 +66,22 @@ public:
     ShapeCircle(float radius = 1.0f)
             : CollisionShape(Type::CIRCLE), radius(radius) {};
 
-    Hit collideWith(CollisionShape& other) override
-    {
-        return other.collideWithCircle(*this);
-    }
-
-    Hit collideWithSphere(ShapeSphere& other) override
-    {
-        glm::vec2 delta = *other.followPosition - *followPosition;
-
-        float distSq = glm::dot(delta, delta);
-        float thresholdSq = (radius + other.radius) * (radius + other.radius);
-
-        if (distSq < thresholdSq)
-        {
-            return {distSq, radius + other.radius, glm::normalize(glm::vec3(delta.x, delta.y, 0))};
-            // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
-        }
-
-        return {};
-    }
-
-    Hit collideWithCircle(ShapeCircle& other) override
-    {
-        glm::vec2 delta = *other.followPosition - *followPosition;
-
-        float distSq = glm::dot(delta, delta);
-        float thresholdSq = (radius + other.radius) * (radius + other.radius);
-
-        if (distSq < thresholdSq)
-        {
-            return {distSq, radius + other.radius, glm::normalize(glm::vec3(delta.x, delta.y, 0))};
-            // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
-        }
-
-        return {};
-    }
+    Hit collideWith(CollisionShape& other) override;
+    Hit collideWithRect(ShapeRect& other) override;
+    Hit collideWithCircle(ShapeCircle& other) override;
+    Hit collideWithSphere(ShapeSphere& other) override;
 };
 
-/*class ShapeCylinder : public CollisionShape
+class ShapeRect : public CollisionShape
 {
 public:
-    float top;
-    float bottom;
-    float radius;
+    glm::vec2 halfSize; // Half extents of the rectangle
 
-    ShapeCylinder(float top = 1.0f, float bottom = -1.0f, float radius = 1.0f)
-            : CollisionShape(Type::CYLINDER), top(top), bottom(bottom), radius(radius) {};
+    ShapeRect(glm::vec2 size)
+            : CollisionShape(Type::RECT), halfSize(size * 0.5f) {}
 
-    Hit collideWith(CollisionShape& other) override
-    {
-        return other.collideWithCylinder(*this);
-    }
-};*/
+    Hit collideWith(CollisionShape& other) override;
+    Hit collideWithCircle(ShapeCircle& other) override;
+    Hit collideWithSphere(ShapeSphere& other) override;
+    Hit collideWithRect(ShapeRect& other) override;
+};

@@ -56,7 +56,8 @@ else ()
             src/game/AmbientParticles.h
             src/game/characters/Eye.h
             src/setup/ColliderGroups.h
-            src/setup/ColliderGroups.cpp)
+            src/setup/ColliderGroups.cpp
+            src/engine/collision/CollisionShape.cpp)
 endif ()
 
 # Link SDL2 library

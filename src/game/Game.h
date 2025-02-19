@@ -1,5 +1,7 @@
 #pragma once
 
+
+
 #include "SDL_render.h"
 #include "engine/game_object/IGameObject.h"
 #include "engine/game_object/EntityScene.h"
@@ -18,7 +20,7 @@ public:
         float mouseSens = .002f;
     };
 
-#define MAX_CELL_W (128)
+    static inline constexpr glm::vec2 maxCellSize = {128, 128};
     static glm::vec2 cellSize;
     static Renderer::ViewPortCamera mapCamera;
     static Camera3D camera3D;

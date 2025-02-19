@@ -1,11 +1,11 @@
 #pragma once
 
 #include <memory>
+#include <iostream>
+#include "game/Game.h"
 #include "glm/vec3.hpp"
 #include "engine/Id.h"
 #include "engine/collision/CollisionShape.h"
-#include "game/characters/Player.h"
-#include "game/characters/Eye.h"
 
 class Collider;
 
@@ -99,8 +99,8 @@ public:
     ICollisionStrategy* strategy;
     CollisionShape::Hit hitRes;
 
-    Collider(void* owner, CollisionShape* shape, ICollisionStrategy* strategy, glm::vec3* followPosition) :
-            owner(owner), shape(shape), strategy(strategy)
+    Collider(id_t id, void* owner, CollisionShape* shape, ICollisionStrategy* strategy, glm::vec3* followPosition) :
+            id(id), owner(owner), shape(shape), strategy(strategy)
     {
         shape->followPosition = followPosition;
     };
@@ -134,14 +134,15 @@ Collider::Hit<T> Collider::collideGroup(ColliderGroup<T>& colliderGroup)
 template<typename T>
 Collider::Hit<T> Collider::collideGroupNaive(ColliderGroup<T>& colliderGroup)
 {
-    for (Collider* other : colliderGroup.colliders)
+    for (auto& other : colliderGroup.colliders)
     {
-        if (other == this) continue;
-
-        CollisionShape::Hit hit = strategy->collide(*shape, *other);
+        if ((Collider*)&other == this) continue;
+        std::cout << shape->followPosition->x << std::endl;
+        std::cout << other.shape->followPosition->x << std::endl;
+        CollisionShape::Hit hit = strategy->collide(*shape, other);
         if (hit)
         {
-            return Collider::Hit<T>(other, static_cast<T*>(other->owner), hit);
+            return Collider::Hit<T>((Collider*)&other, static_cast<T*>(other.owner), hit);
         }
     }
 
@@ -152,16 +153,50 @@ template <typename OwnerType>
 class ColliderGroup
 {
 public:
-    void add(Collider* collider);
+    id_t add(void* owner, CollisionShape* shape, Collider::ICollisionStrategy* strategy, glm::vec3* followPosition);
     void populateSpatialGrid();
+    void collideAll();
     void queueRemove(id_t colliderId); // Remove at id in the group
 
-    std::vector<Collider*> colliders;
+    std::vector<Collider> colliders;
 private:
+    class spatialCell
+    {
+    public:
+        void addCollider(id_t colliderId)
+        {
+            if (colliderCount >= maxColliderCount) return;
+            collidersInside[colliderCount] = colliderId;
+            colliderCount++;
+        }
+
+        // We don't need to clear the array
+        void resetCount()
+        {
+            colliderCount = 0;
+        }
+    private:
+        typedef uint8_t count_t;
+        static constexpr count_t maxColliderCount = 8;
+        std::array<id_t, maxColliderCount> collidersInside;
+        count_t colliderCount = 0;
+    };
+
     static constexpr size_t gridWidth = 16;
-    /*const float cellWidth = (float)MAX_CELL_W / gridWidth;
-    std::array<std::array<id_t, 4>, gridWidth * gridWidth> spatialGrid;*/
+    // There is a difference between map cells and spatial grid cells sadly ;(. #badatnamingstuff
+    const float cellWidth = Game::maxCellSize.x / gridWidth;
+
+    std::array<spatialCell, gridWidth * gridWidth> spatialGrid;
 };
+
+template<typename OwnerType>
+void ColliderGroup<OwnerType>::collideAll()
+{
+    for (auto& cell : spatialGrid)
+    {
+        // Collision
+    }
+}
 
 template<typename OwnerType>
 void ColliderGroup<OwnerType>::queueRemove(id_t colliderId)
@@ -172,15 +207,26 @@ void ColliderGroup<OwnerType>::queueRemove(id_t colliderId)
 template<typename OwnerType>
 void ColliderGroup<OwnerType>::populateSpatialGrid()
 {
+    // Clear spatial grid
+    for (auto& cell : spatialGrid)
+    {
+        cell.resetCount();
+    }
+
     for (auto& collider : colliders)
     {
-        
+        // Add collider to touching cells
+        // We start by adding to one cell for simplicity
+        SDL_Point cell{static_cast<int>(collider.shape->followPosition->x / cellWidth),
+                       static_cast<int>(collider.shape->followPosition->y / cellWidth)};
+        spatialGrid[cell.y * gridWidth + cell.x].addCollider(collider.id);
     }
 }
 
 template<typename OwnerType>
-void ColliderGroup<OwnerType>::add(Collider* collider)
+id_t ColliderGroup<OwnerType>::add(void* owner, CollisionShape* shape, Collider::ICollisionStrategy* strategy, glm::vec3* followPosition)
 {
-    collider->id = colliders.size();
-    colliders.emplace_back(collider);
+    id_t nextId = colliders.size();
+    colliders.emplace_back(nextId, owner, shape, strategy, followPosition);
+    return nextId;
 }

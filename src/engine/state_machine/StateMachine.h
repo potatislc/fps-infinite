@@ -28,7 +28,7 @@ public:
     };
 
     StateMachine(T* owner, std::vector<std::shared_ptr<State>> states) : owner(owner), states(std::move(states)) {};
-    void nextState(uint nextStateId)
+    void nextState(uint_t nextStateId)
     {
         if (nextStateId >= states.size()) return;
         states[currentStateId]->exit();
@@ -51,6 +51,6 @@ public:
     }
 private:
     T* owner = nullptr;
-    uint currentStateId = 0;
+    uint_t currentStateId = 0;
     std::vector<std::shared_ptr<State>> states;
 };

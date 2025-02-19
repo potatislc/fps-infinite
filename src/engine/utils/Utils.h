@@ -7,7 +7,7 @@
 
 namespace Utils
 {
-    typedef unsigned int uint;
+    typedef unsigned int uint_t;
 
     //
     // Math
@@ -51,17 +51,17 @@ namespace Utils
     class Vector2UI
     {
     public:
-        uint x;
-        uint y;
+        uint_t x;
+        uint_t y;
 
-        Vector2UI(uint x, uint y) : x(x), y(y) {};
+        Vector2UI(uint_t x, uint_t y) : x(x), y(y) {};
     };
 
     //
     // Rand
     //
     size_t uRand(size_t val);
-    size_t uRandRange(uint min, uint max);
+    size_t uRandRange(uint_t min, uint_t max);
     int randRange(int min, int max);
 
     //
@@ -80,4 +80,4 @@ namespace Utils
     }
 }
 
-using Utils::uint;
+using Utils::uint_t;

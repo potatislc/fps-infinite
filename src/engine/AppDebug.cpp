@@ -11,9 +11,8 @@ void AppDebug::printFps(uint64_t frameCount)
     printf("FPS: %f\n", avgFPS);
 }
 
-void AppDebug::drawAvgFps(uint64_t frameCount)
+void AppDebug::drawAvgFps()
 {
-    static const float timeWindow = 2.0f; // 2-second window
     static float frameTimes[120]; // Buffer to hold frame times (assuming a max of 60 FPS for 2s)
     static int frameIndex = 0;
     static int numFrames = 0;
@@ -47,7 +46,7 @@ void AppDebug::drawAvgFps(uint64_t frameCount)
 
 void AppDebug::init()
 {
-    SDL_Color color = {0, 200, 0};
+    // SDL_Color color = {0, 200, 0, 255};
     // fpsText.setText(Application::renderer.sdlRenderer, FONTS_TTF_PATH"PixelifySans-Regular.ttf", "Test", color);
 }
 

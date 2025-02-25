@@ -8,11 +8,12 @@
 #include "engine/App.h"
 #include "AmbientParticles.h"
 #include "game/characters/Eye.h"
+#include "game_setup/ColliderGroups.h"
 
 glm::vec2 Game::cellSize = {maxCellSize.x, maxCellSize.y};
-std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>((glm::vec3){0, 0, 0}, 0, 1);
-Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera((SDL_Rect){0, 0, 426, 240});
-Camera3D Game::camera3D = Camera3D((glm::vec3){0, 0, 0}, 0, 90, 170);
+std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>(glm::vec3{0, 0, 0}, 0, 1);
+Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera(SDL_Rect{0, 0, 426, 240});
+Camera3D Game::camera3D = Camera3D(glm::vec3{0, 0, 0}, 0, 90, 170);
 Game::Settings Game::settings;
 
 Game::Game()
@@ -26,6 +27,7 @@ Game::Game()
     InputMap::addKeyBinding("LookRight", SDLK_RIGHT);
     InputMap::addKeyBinding("FlyUp", SDLK_UP);
     InputMap::addKeyBinding("FlyDown", SDLK_DOWN);
+    InputMap::addKeyBinding("PrintSpatialGrid", SDLK_g);
     // InputMap::addKeyBinding("Jump", SDLK_SPACE); Horrible idea!
 }
 
@@ -36,7 +38,7 @@ void Game::start()
     Camera3D::initFloorProjectionSurface(projectedFloor, App::renderer.viewport.w, (int) App::renderer.viewportCenter.y);
     mapCamera.setRenderTarget(App::renderer.sdlRenderer);
     world.addChild(currentPlayer);
-    currentPlayer->position = (glm::vec3){cellSize.x / 2, cellSize.y / 2, 0};
+    currentPlayer->position = glm::vec3{cellSize.x / 2, cellSize.y / 2, 0};
 
     initShadowRaster();
     waterRipples = PixelArray<uint32_t>(
@@ -46,7 +48,7 @@ void Game::start()
             ResourceLoader::loadedPixelArrays.water.height);
 
     std::shared_ptr<Eye> eye0 = std::make_shared<Eye>(
-            (glm::vec3){3, 22, 6},
+            glm::vec3{3, 22, 6},
             0,
             1,
             currentPlayer);
@@ -60,7 +62,7 @@ void Game::start()
         for (int j = 0; j < 8; j++)
         {
             std::shared_ptr<Eye> eye = std::make_shared<Eye>(
-                    (glm::vec3){i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},
+                    glm::vec3{i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},
                     0,
                     1,
                     currentPlayer);
@@ -79,6 +81,9 @@ void Game::update()
     for (const auto& child : world.children)
     {
         child->update();
+        ColliderGroups::eyes.populateSpatialGrid();
+        ColliderGroups::eyes.collideAllMembers();
+        if (InputMap::isBoundKeyPressed("PrintSpatialGrid")) ColliderGroups::eyes.printSpatialGrid();
         /*std::vector<id_t> relevantColliders;
         relevantColliders.resize(groupEyes.colliders.size());
         std::iota(relevantColliders.begin(), relevantColliders.end(), 0);
@@ -143,7 +148,7 @@ void Game::draw(SDL_Renderer *renderer)
     drawEntitiesToMap(renderer);
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
-    MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, playerPosMsg.c_str(), (Utils::Vector2I){0, 32}, Utils::Colors::white);
+    MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, playerPosMsg.c_str(), Utils::Vector2I{0, 32}, Utils::Colors::white);
     // camera3D.drawFovLines(renderer);
 }
 
@@ -298,7 +303,7 @@ void Game::drawEntityCells(SDL_Renderer* renderer)
 
         for (int corner = 0; corner < 4; corner++)
         {
-            glm::vec2 cellCorner = camPos - (glm::vec2){corner % 2, corner / 2} * cellSize;
+            glm::vec2 cellCorner = camPos - glm::vec2{corner % 2, corner / 2} * cellSize;
             float distForward = glm::dot(relativePos + cellCorner, forward);
             if (distForward <= 0) continue;
             float distRight = glm::dot(relativePos + cellCorner, right);
@@ -352,11 +357,7 @@ void Game::drawEntities(SDL_Renderer* renderer, int cellId,
     auto farPlaneSquared = static_cast<float>(camera3D.farPlane * camera3D.farPlane);
     glm::vec2 camPos = camera3D.position;
     glm::vec2 cellOffset = getCellPos(cellId) * cellSize;
-    glm::vec2 forward = {std::cos(camera3D.rotationZ), std::sin(camera3D.rotationZ)};
-    glm::vec2 right = {-forward.y, forward.x};
 
-    UniqueTexture& testTex = ResourceLoader::loadedTextures.swarm;
-    SDL_Rect& viewport = App::renderer.viewport;
     for (auto* entity : entityDistances)
     {
         glm::vec2 relativePos = (glm::vec2)entity->position - cellOffset - camPos;

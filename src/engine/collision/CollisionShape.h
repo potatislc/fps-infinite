@@ -70,6 +70,7 @@ public:
     Hit collideWithRect(ShapeRect& other) override;
     Hit collideWithCircle(ShapeCircle& other) override;
     Hit collideWithSphere(ShapeSphere& other) override;
+    std::vector<uint32_t> touchingCells(glm::vec2 gridDims, float cellWidth);
 };
 
 class ShapeRect : public CollisionShape

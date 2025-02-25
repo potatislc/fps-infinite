@@ -10,11 +10,11 @@ public:
     glm::vec3 position;
     glm::vec3 forward = glm::vec3(0, 0, 0);
     
-    Entity3D(glm::vec3 position, float rotationY)
-        : position(position), rotationZ(rotationY) {};
+    Entity3D(glm::vec3 position, float rotationZ)
+        : rotationZ(rotationZ), position(position) {};
     virtual ~Entity3D() = default;
     virtual void start() override {};
     virtual void update() override {};
-    virtual void draw(SDL_Renderer* renderer) override {};
-    virtual void draw3D(SDL_Renderer* renderer) {};
+    void draw(SDL_Renderer* renderer) override {};
+    // virtual void draw3D(SDL_Renderer* renderer) {};
 };

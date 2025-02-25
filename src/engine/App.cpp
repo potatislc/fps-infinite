@@ -29,7 +29,6 @@ void App::run(IGameObject& game)
     game.start();
 
     uint64_t lastTime = SDL_GetPerformanceCounter();
-    uint64_t currentTime;
     auto performanceFrequency = static_cast<double>(SDL_GetPerformanceFrequency());
     double frameDelay = 1000. / targetFps;
     uint64_t frameStart;
@@ -72,7 +71,7 @@ void App::run(IGameObject& game)
         game.update();
         game.draw(renderer.sdlRenderer);
         frameCount++;
-        appDebug.drawAvgFps(frameCount);
+        appDebug.drawAvgFps();
         renderer.render();
 
         frameTime = (double)(SDL_GetPerformanceCounter() - frameStart) * 1000 / (double)SDL_GetPerformanceFrequency();

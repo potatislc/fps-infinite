@@ -63,6 +63,17 @@ CollisionShape::Hit ShapeCircle::collideWithSphere(ShapeSphere& other)
     return {};
 }
 
+std::vector<uint32_t> ShapeCircle::touchingCells(const glm::vec2 gridDims, const float cellWidth) {
+    glm::vec2 pos = *followPosition;
+    glm::vec2 topLeft = pos - radius;
+    glm::vec2 bottomRight = pos + radius;
+
+    std::vector<uint32_t> touchingCells;
+    // touchingCells.reserve();
+
+    return touchingCells;
+}
+
 CollisionShape::Hit ShapeRect::collideWith(CollisionShape& other)
 {
     return other.collideWithRect(*this);

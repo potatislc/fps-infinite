@@ -4,6 +4,7 @@ project(fps_infinite C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall -Wextra -Werror -Wno-unused-parameter -Wno-error=unused-parameter -fsanitize=address,undefined -fno-omit-frame-pointer") #-Wpedantic
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
 # Adding SDL2
@@ -57,7 +58,8 @@ else ()
             src/game/characters/Eye.h
             src/setup/ColliderGroups.h
             src/setup/ColliderGroups.cpp
-            src/engine/collision/CollisionShape.cpp)
+            src/engine/collision/CollisionShape.cpp
+            src/engine/collision/Collider.cpp)
 endif ()
 
 # Link SDL2 library

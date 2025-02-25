@@ -184,7 +184,7 @@ private:
             return colliderCount;
         }
     private:
-        static constexpr uint8_t maxColliderCount = 16;
+        static constexpr uint8_t maxColliderCount = 127;
         uint8_t colliderCount = 0;
         std::array<id_t, maxColliderCount> collidersInside = {0};
     };
@@ -203,7 +203,7 @@ void ColliderGroup<OwnerType>::printSpatialGrid()
     for (int i = 0; i < spatialGrid.size(); i++)
     {
         std::cout << static_cast<int>(spatialGrid[i].getColliderCount()) << " ";
-        if (i % gridWidth == 0 && i != 0) std::cout << std::endl;
+        if ((i + 1) % gridWidth == 0) std::cout << std::endl;
     }
     std::cout << std::endl;
 }

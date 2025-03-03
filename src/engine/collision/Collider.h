@@ -7,6 +7,7 @@
 #include "glm/vec3.hpp"
 #include "engine/Id.h"
 #include "engine/collision/CollisionShape.h"
+#include "engine/App.h"
 
 class Collider;
 
@@ -189,7 +190,7 @@ private:
         std::array<id_t, maxColliderCount> collidersInside = {0};
     };
 
-    static constexpr int gridWidth = 16;
+    static constexpr int gridWidth = 32;
     // There is a difference between map cells and spatial grid cells sadly ;(. #badatnamingstuff
     const float cellWidth = Game::maxCellSize.x / gridWidth;
 
@@ -219,8 +220,15 @@ void ColliderGroup<OwnerType>::collideAllMembers()
 {
     for (auto& cell : spatialGrid)
     {
-        uint_t colliderCount = cell.getColliderCount();
-        for (int i = 0; i < colliderCount; ++i)
+        int colliderCount = cell.getColliderCount();
+        if (colliderCount < 2) continue;
+        // Alternate forwards and backwards through i
+        bool forward = (App::frameCount % 2 == 0);
+        int start = forward ? 0 : colliderCount - 1;
+        int end = forward ? colliderCount : -1;
+        int step = forward ? 1 : -1;
+
+        for (int i = start; i != end; i += step)
         {
             for (int j = 0; j < colliderCount; ++j)
             {
@@ -247,9 +255,11 @@ void ColliderGroup<OwnerType>::populateSpatialGrid()
 
     for (auto& collider : colliders)
     {
-        int cellX = std::clamp(static_cast<int>(collider.shape->followPosition->x / cellWidth), 0, gridWidth - 1);
-        int cellY = std::clamp(static_cast<int>(collider.shape->followPosition->y / cellWidth), 0, gridWidth - 1);
-        spatialGrid[cellY * gridWidth + cellX].addCollider(collider.id);
+        auto cellsIndices = collider.shape->touchingCells(gridWidth, cellWidth);
+        for (auto cellIdx : cellsIndices)
+        {
+            spatialGrid[cellIdx].addCollider(collider.id);
+        }
     }
 }
 

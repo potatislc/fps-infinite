@@ -63,13 +63,34 @@ CollisionShape::Hit ShapeCircle::collideWithSphere(ShapeSphere& other)
     return {};
 }
 
-std::vector<uint32_t> ShapeCircle::touchingCells(const glm::vec2 gridDims, const float cellWidth) {
+std::vector<uint32_t> ShapeCircle::touchingCells(const int gridWidth, const float cellWidth)
+{
     glm::vec2 pos = *followPosition;
-    glm::vec2 topLeft = pos - radius;
-    glm::vec2 bottomRight = pos + radius;
-
     std::vector<uint32_t> touchingCells;
-    // touchingCells.reserve();
+
+    int minX = static_cast<int>(std::floor((pos.x - radius) / cellWidth));
+    int maxX = static_cast<int>(std::floor((pos.x + radius) / cellWidth));
+    int minY = static_cast<int>(std::floor((pos.y - radius) / cellWidth));
+    int maxY = static_cast<int>(std::floor((pos.y + radius) / cellWidth));
+
+    for (int y = minY; y <= maxY; y++)
+    {
+        int wrappedY = ((y % gridWidth) + gridWidth) % gridWidth;
+        for (int x = minX; x <= maxX; x++)
+        {
+
+            glm::vec2 closest = {std::max(x * cellWidth, std::min(pos.x, (x + 1) * cellWidth)),
+                                 std::max(y * cellWidth, std::min(pos.y, (y + 1) * cellWidth))};
+            glm::vec2 dist = pos - closest;
+            float distSq = dist.x * dist.x + dist.y * dist.y;
+            if ((distSq) <= (radius * radius))
+            {
+                int wrappedX = ((x % gridWidth) + gridWidth) % gridWidth;
+                uint32_t wrappedIndex = wrappedY * gridWidth + wrappedX;
+                touchingCells.push_back(wrappedIndex);
+            }
+        }
+    }
 
     return touchingCells;
 }

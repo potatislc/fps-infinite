@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm/glm.hpp"
+#include "engine/utils/Utils.h"
 
 class CollisionShape;
 class ShapeSphere;
@@ -18,8 +19,12 @@ public:
         SIZE
     };
 
-    Type type;
-    glm::vec3* followPosition = nullptr;
+    struct TouchingCells
+    {
+        uint32_t* array = nullptr;
+        uint_t index = 0;
+        uint_t size = 0;
+    };
 
     struct Hit
     {
@@ -36,11 +41,15 @@ public:
         }
     };
 
+    Type type;
+    glm::vec3* followPosition = nullptr;
+    TouchingCells touchingCells;
+
     virtual Hit collideWith(CollisionShape& other) = 0;
     virtual Hit collideWithSphere(ShapeSphere& other) = 0;
     virtual Hit collideWithCircle(ShapeCircle& other) = 0;
     virtual Hit collideWithRect(ShapeRect& other) = 0;
-    virtual std::vector<uint32_t> touchingCells(int gridWidth /* Grid width (in cells)*/, float cellWidth) = 0;
+    virtual void computeTouchingCells(int gridWidth /* Grid width (in cells)*/, float cellWidth) = 0;
 
 protected:
     explicit CollisionShape(Type shapeType) : type(shapeType) {}
@@ -64,14 +73,13 @@ class ShapeCircle : public CollisionShape
 public:
     float radius;
 
-    ShapeCircle(float radius = 1.0f)
-            : CollisionShape(Type::CIRCLE), radius(radius) {};
+    ShapeCircle(float cellWidth, float radius = 1.0f);
 
     Hit collideWith(CollisionShape& other) override;
     Hit collideWithRect(ShapeRect& other) override;
     Hit collideWithCircle(ShapeCircle& other) override;
     Hit collideWithSphere(ShapeSphere& other) override;
-    std::vector<uint32_t> touchingCells(int gridWidth /* Grid width (in cells)*/, float cellWidth);
+    void computeTouchingCells(int gridWidth /* Grid width (in cells)*/, float cellWidth);
 };
 
 class ShapeRect : public CollisionShape

@@ -63,36 +63,20 @@ CollisionShape::Hit ShapeCircle::collideWithSphere(ShapeSphere& other)
     return {};
 }
 
-std::vector<uint32_t> ShapeCircle::touchingCells(const int gridWidth, const float cellWidth)
+void ShapeCircle::computeTouchingCells(const int gridWidth, const float cellWidth)
 {
+    touchingCells.index = 0;
     glm::vec2 pos = *followPosition;
-    std::vector<uint32_t> touchingCells;
+    glm::vec2 cellPos = (pos / cellWidth);
+    touchingCells.array[touchingCells.index] = std::clamp((int)cellPos.y * gridWidth + (int)cellPos.x, 0, gridWidth * gridWidth - 1);
+    touchingCells.index++;
+}
 
-    int minX = static_cast<int>(std::floor((pos.x - radius) / cellWidth));
-    int maxX = static_cast<int>(std::floor((pos.x + radius) / cellWidth));
-    int minY = static_cast<int>(std::floor((pos.y - radius) / cellWidth));
-    int maxY = static_cast<int>(std::floor((pos.y + radius) / cellWidth));
-
-    for (int y = minY; y <= maxY; y++)
-    {
-        int wrappedY = ((y % gridWidth) + gridWidth) % gridWidth;
-        for (int x = minX; x <= maxX; x++)
-        {
-
-            glm::vec2 closest = {std::max(x * cellWidth, std::min(pos.x, (x + 1) * cellWidth)),
-                                 std::max(y * cellWidth, std::min(pos.y, (y + 1) * cellWidth))};
-            glm::vec2 dist = pos - closest;
-            float distSq = dist.x * dist.x + dist.y * dist.y;
-            if ((distSq) <= (radius * radius))
-            {
-                int wrappedX = ((x % gridWidth) + gridWidth) % gridWidth;
-                uint32_t wrappedIndex = wrappedY * gridWidth + wrappedX;
-                touchingCells.push_back(wrappedIndex);
-            }
-        }
-    }
-
-    return touchingCells;
+ShapeCircle::ShapeCircle(const float cellWidth, float radius) : CollisionShape(Type::CIRCLE), radius(radius)
+{
+    int cellsInDiameter = static_cast<int>(2 * radius / cellWidth) + 2;
+    uint_t touchingCellsMaxSize = cellsInDiameter * cellsInDiameter;
+    touchingCells = {new uint32_t[touchingCellsMaxSize], 0, touchingCellsMaxSize};
 }
 
 CollisionShape::Hit ShapeRect::collideWith(CollisionShape& other)

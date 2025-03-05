@@ -57,9 +57,9 @@ void Game::start()
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     std::cout << centerCellId << std::endl;
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 8; j++)
+        for (int j = 0; j < 4; j++)
         {
             std::shared_ptr<Eye> eye = std::make_shared<Eye>(
                     glm::vec3{i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},
@@ -68,6 +68,11 @@ void Game::start()
                     currentPlayer);
             world.addChild(eye);
         }
+    }
+
+    for (const auto& child : world.children)
+    {
+        wrapInsideWorld(child->position);
     }
 }
 
@@ -84,22 +89,7 @@ void Game::update()
         ColliderGroups::eyes.populateSpatialGrid();
         ColliderGroups::eyes.collideAllMembers();
         if (InputMap::isBoundKeyPressed("PrintSpatialGrid")) ColliderGroups::eyes.printSpatialGrid();
-        /*std::vector<id_t> relevantColliders;
-        relevantColliders.resize(groupEyes.colliders.size());
-        std::iota(relevantColliders.begin(), relevantColliders.end(), 0);
-
-        for (int i = 0; i < relevantColliders.size(); i++)
-        {
-            Collider* current = groupEyes.colliders[relevantColliders[i]];
-            Collider::Hit<Eye> res = current->collideGroupNaive<Eye>(groupEyes);
-            *//*if (!res)
-            {
-                relevantColliders.erase(relevantColliders.begin(), relevantColliders.begin()+i);
-            }*//*
-        }*/
-
         wrapInsideWorld(child->position);
-        // child->position += glm::vec3(0, 4 * App::deltaTime, 0); Test!
     }
 }
 
@@ -149,7 +139,10 @@ void Game::draw(SDL_Renderer *renderer)
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
     MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, playerPosMsg.c_str(), Utils::Vector2I{0, 32}, Utils::Colors::white);
-    // camera3D.drawFovLines(renderer);
+    std::string entityCountMsg = "Entities: " + std::to_string(world.getSize());
+    MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, entityCountMsg.c_str(), Utils::Vector2I{0, 48}, Utils::Colors::white);
+    std::string colliderCountMsg = "Colliders: " + std::to_string(ColliderGroups::eyes.colliders.size());
+    MessageTexture::renderMessage(renderer, MessageTexture::FAI_DEFAULT, colliderCountMsg.c_str(), Utils::Vector2I{0, 64}, Utils::Colors::white);
 }
 
 void Game::drawEntitiesToMap(SDL_Renderer* renderer)

@@ -69,10 +69,18 @@ public:
     class SoftCollision : public ICollisionStrategy
     {
     public:
-        float push = 0;
-        float spring = 0;
+        float push;
+        float spring;
+        SoftCollision(float push = 1, float spring = 10) : push(push), spring(spring) {};
         CollisionShape::Hit collide(CollisionShape& myShape, Collider& other) override
         {
+            auto hit = myShape.collideWith(*other.shape);
+
+            if (hit)
+            {
+                *myShape.followPosition += hit.normal * push * App::deltaTime;
+                return hit;
+            }
 
             return {};
         };
@@ -111,7 +119,7 @@ public:
     // Checks until first collision
     template <typename T>
     Hit collideGroupNaive(ColliderGroup<T>& colliderGroup);
-    void collideWith(Collider& other);
+    bool collideWith(Collider& other);
 };
 
 template <typename T>
@@ -163,6 +171,7 @@ public:
     void printSpatialGrid();
 
     std::vector<Collider> colliders;
+    static constexpr int gridWidth = 64;
 private:
     class SpatialCell
     {
@@ -185,12 +194,11 @@ private:
             return colliderCount;
         }
     private:
-        static constexpr uint8_t maxColliderCount = 127;
+        static constexpr uint8_t maxColliderCount = UINT8_MAX;
         uint8_t colliderCount = 0;
         std::array<id_t, maxColliderCount> collidersInside = {0};
     };
 
-    static constexpr int gridWidth = 32;
     // There is a difference between map cells and spatial grid cells sadly ;(. #badatnamingstuff
     const float cellWidth = Game::maxCellSize.x / gridWidth;
 
@@ -222,18 +230,12 @@ void ColliderGroup<OwnerType>::collideAllMembers()
     {
         int colliderCount = cell.getColliderCount();
         if (colliderCount < 2) continue;
-        // Alternate forwards and backwards through i
-        bool forward = (App::frameCount % 2 == 0);
-        int start = forward ? 0 : colliderCount - 1;
-        int end = forward ? colliderCount : -1;
-        int step = forward ? 1 : -1;
 
-        for (int i = start; i != end; i += step)
+        for (int i = 0; i < colliderCount; ++i)
         {
-            for (int j = 0; j < colliderCount; ++j)
+            for (int j = i+1; j < colliderCount; ++j)
             {
-                if (i == j) continue;
-                colliders[i].collideWith(colliders[j]);
+                if (colliders[i].collideWith(colliders[j])) continue;
             }
         }
     }
@@ -253,12 +255,18 @@ void ColliderGroup<OwnerType>::populateSpatialGrid()
         cell.resetCount();
     }
 
-    for (auto& collider : colliders)
+    bool forward = (App::frameCount % 2 == 0);
+    int start = forward ? 0 : colliders.size() - 1;
+    int end = forward ? colliders.size() : -1;
+    int step = forward ? 1 : -1;
+
+    for (int i = start; i != end; i += step)
     {
-        auto cellsIndices = collider.shape->touchingCells(gridWidth, cellWidth);
-        for (auto cellIdx : cellsIndices)
+        auto& collider = colliders[i];
+        collider.shape->computeTouchingCells(gridWidth, cellWidth);
+        for (int j = 0; j < collider.shape->touchingCells.index; j++)
         {
-            spatialGrid[cellIdx].addCollider(collider.id);
+            spatialGrid[collider.shape->touchingCells.array[j]].addCollider(collider.id);
         }
     }
 }

@@ -28,6 +28,7 @@ Game::Game()
     InputMap::addKeyBinding("FlyUp", SDLK_UP);
     InputMap::addKeyBinding("FlyDown", SDLK_DOWN);
     InputMap::addKeyBinding("PrintSpatialGrid", SDLK_g);
+    InputMap::addKeyBinding("SpawnEye", SDLK_LCTRL);
     // InputMap::addKeyBinding("Jump", SDLK_SPACE); Horrible idea!
 }
 
@@ -57,7 +58,7 @@ void Game::start()
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     std::cout << centerCellId << std::endl;
-    for (int i = 0; i < 16; i++)
+    /*for (int i = 0; i < 16; i++)
     {
         for (int j = 0; j < 16; j++)
         {
@@ -68,7 +69,7 @@ void Game::start()
                     currentPlayer);
             world.addChild(eye);
         }
-    }
+    }*/
 
     for (const auto& child : world.children)
     {
@@ -81,6 +82,16 @@ void Game::update()
     if (InputMap::getBoundKeyInput("Quit") == InputMap::S_PRESSED)
     {
         App::quit = true;
+    }
+
+    if (InputMap::isBoundKeyPressed("SpawnEye"))
+    {
+        std::shared_ptr<Eye> eye0 = std::make_shared<Eye>(
+                glm::vec3{3, 22, 6},
+                0,
+                1,
+                currentPlayer);
+        world.addChild(eye0);
     }
 
     // currentPlayer->update();

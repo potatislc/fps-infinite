@@ -194,7 +194,7 @@ private:
             return colliderCount;
         }
 
-        static constexpr uint8_t maxColliderCount = 8;
+        static constexpr uint8_t maxColliderCount = 4;
         uint8_t colliderCount = 0;
         std::array<id_t, maxColliderCount> collidersInside = {0};
     };

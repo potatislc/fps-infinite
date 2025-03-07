@@ -15,7 +15,7 @@ Eye::Eye(glm::vec3 position, float rotationY, int hp, std::shared_ptr<Player>& p
 
 void Eye::start()
 {
-    colliderId = ColliderGroups::eyes.add(this, new ShapeCircle(ColliderGroup<Eye>::gridWidth, 1), new Collider::SoftCollision(.1f), &position);
+    colliderId = ColliderGroups::eyes.add(this, new ShapeCircle(ColliderGroup<Eye>::gridWidth, 1), new Collider::SoftCollision(.05f), &position);
 }
 
 void Eye::update()

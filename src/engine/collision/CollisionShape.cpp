@@ -35,7 +35,7 @@ CollisionShape::Hit ShapeCircle::collideWithCircle(ShapeCircle& other)
 {
     glm::vec2 delta = *other.followPosition - *followPosition;
 
-    float distSq = glm::dot(delta, delta);
+    float distSq = delta.x * delta.x + delta.y * delta.y; // glm::dot(delta, delta);
     float thresholdSq = (radius + other.radius) * (radius + other.radius);
 
     if (distSq < thresholdSq)

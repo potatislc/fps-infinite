@@ -171,7 +171,7 @@ public:
     void printSpatialGrid();
 
     std::vector<Collider> colliders;
-    static constexpr int gridWidth = 64;
+    static constexpr int gridWidth = 32;
 private:
     class SpatialCell
     {
@@ -193,7 +193,7 @@ private:
         {
             return colliderCount;
         }
-    private:
+
         static constexpr uint8_t maxColliderCount = UINT8_MAX;
         uint8_t colliderCount = 0;
         std::array<id_t, maxColliderCount> collidersInside = {0};
@@ -235,16 +235,13 @@ void ColliderGroup<OwnerType>::collideAllMembers()
         {
             for (int j = i+1; j < colliderCount; ++j)
             {
-                if (colliders[i].collideWith(colliders[j])) continue;
+                // if (i == j) continue;
+                uint_t thisId = cell.collidersInside[i];
+                uint_t otherId = cell.collidersInside[j];
+                if (colliders[thisId].collideWith(colliders[otherId])) continue;
             }
         }
     }
-}
-
-template<typename OwnerType>
-void ColliderGroup<OwnerType>::queueRemove(id_t colliderId)
-{
-
 }
 
 template<typename OwnerType>
@@ -269,6 +266,12 @@ void ColliderGroup<OwnerType>::populateSpatialGrid()
             spatialGrid[collider.shape->touchingCells.array[j]].addCollider(collider.id);
         }
     }
+}
+
+template<typename OwnerType>
+void ColliderGroup<OwnerType>::queueRemove(id_t colliderId)
+{
+
 }
 
 template<typename OwnerType>

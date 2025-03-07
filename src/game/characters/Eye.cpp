@@ -15,7 +15,7 @@ Eye::Eye(glm::vec3 position, float rotationY, int hp, std::shared_ptr<Player>& p
 
 void Eye::start()
 {
-    colliderId = ColliderGroups::eyes.add(this, new ShapeCircle(ColliderGroup<Eye>::gridWidth, 2), new Collider::SoftCollision(.1f), &position);
+    colliderId = ColliderGroups::eyes.add(this, new ShapeCircle(ColliderGroup<Eye>::gridWidth, 1), new Collider::SolidCollision2D(), &position);
 }
 
 void Eye::update()
@@ -33,9 +33,6 @@ void Eye::update()
     glm::vec3 lastPos = position;
     position += velocity * App::deltaTime;
     forward = glm::normalize(position - lastPos);
-
-    // Use ColliderGroup::collideAll() inside game loop instead.
-    // ColliderGroups::eyes.colliders[colliderId].collideGroupNaive(ColliderGroups::eyes);
 }
 
 void Eye::draw(SDL_Renderer* renderer)

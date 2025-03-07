@@ -83,6 +83,7 @@ void Game::update()
         App::quit = true;
     }
 
+    // currentPlayer->update();
     for (const auto& child : world.children)
     {
         child->update();

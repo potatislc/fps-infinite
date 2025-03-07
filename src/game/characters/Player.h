@@ -16,7 +16,7 @@ public:
 
 private:
     glm::vec2 moveVelocity = {0, 0};
-    const float speed = 18;
+    const float speed = 16;
     const float accel = 4;
     float eyeHeight = 2;
     float headBobPhase = 0.f;

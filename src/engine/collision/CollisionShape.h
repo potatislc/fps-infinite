@@ -22,8 +22,8 @@ public:
     struct TouchingCells
     {
         uint32_t* array = nullptr;
-        uint_t index = 0;
         uint_t size = 0;
+        uint_t width = 0;
     };
 
     struct Hit

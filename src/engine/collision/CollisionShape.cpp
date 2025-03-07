@@ -35,12 +35,13 @@ CollisionShape::Hit ShapeCircle::collideWithCircle(ShapeCircle& other)
 {
     glm::vec2 delta = *other.followPosition - *followPosition;
 
-    float distSq = delta.x * delta.x + delta.y * delta.y; // glm::dot(delta, delta);
+    float distSq = delta.x * delta.x + delta.y * delta.y; // glm::dot(delta, delta); It's the same
     float thresholdSq = (radius + other.radius) * (radius + other.radius);
 
     if (distSq < thresholdSq)
     {
-        return {distSq, radius + other.radius, glm::normalize(glm::vec3(delta.x, delta.y, 0))};
+        float invLen = glm::inversesqrt(distSq); // This was not me
+        return {distSq, radius + other.radius, glm::vec3(delta * invLen, 0)};
         // Returns a hit object with (distanceSquared, minimum distance for hit and the collision normal)
     }
 
@@ -65,18 +66,26 @@ CollisionShape::Hit ShapeCircle::collideWithSphere(ShapeSphere& other)
 
 void ShapeCircle::computeTouchingCells(const int gridWidth, const float cellWidth)
 {
-    touchingCells.index = 0;
     glm::vec2 pos = *followPosition;
-    glm::vec2 cellPos = (pos / cellWidth);
-    touchingCells.array[touchingCells.index] = std::clamp((int)cellPos.y * gridWidth + (int)cellPos.x, 0, gridWidth * gridWidth - 1);
-    touchingCells.index++;
+    glm::vec2 cellPos = ((pos - glm::vec2(radius, radius)) / cellWidth);
+    int baseX = static_cast<int>(cellPos.x);
+    int baseY = static_cast<int>(cellPos.y);
+
+    for (int i = 0; i < touchingCells.size; i++)
+    {
+        int offsetX = i % touchingCells.width;
+        int offsetY = i / touchingCells.width;
+        int cellId = ((baseY + offsetY + gridWidth) % gridWidth) * gridWidth
+                     + ((baseX + offsetX + gridWidth) % gridWidth);
+        touchingCells.array[i] = cellId;
+    }
 }
 
 ShapeCircle::ShapeCircle(const float cellWidth, float radius) : CollisionShape(Type::CIRCLE), radius(radius)
 {
     int cellsInDiameter = static_cast<int>(2 * radius / cellWidth) + 2;
     uint_t touchingCellsMaxSize = cellsInDiameter * cellsInDiameter;
-    touchingCells = {new uint32_t[touchingCellsMaxSize], 0, touchingCellsMaxSize};
+    touchingCells = {new uint32_t[touchingCellsMaxSize], touchingCellsMaxSize, static_cast<uint_t>(cellsInDiameter)};
 }
 
 CollisionShape::Hit ShapeRect::collideWith(CollisionShape& other)

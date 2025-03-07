@@ -9,8 +9,8 @@ class Eye : public ACharacter
 {
 public:
     std::shared_ptr<Player> player;
-    const float accel = 10;
-    const float maxSpeed = 10;
+    const float accel = 16;
+    const float maxSpeed = 16;
     const float hoverHeight = 2;
     const float hoverMag = 1;
     static float globalHoverOffset;

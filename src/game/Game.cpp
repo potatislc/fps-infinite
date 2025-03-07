@@ -57,9 +57,9 @@ void Game::start()
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     std::cout << centerCellId << std::endl;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 16; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 16; j++)
         {
             std::shared_ptr<Eye> eye = std::make_shared<Eye>(
                     glm::vec3{i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},

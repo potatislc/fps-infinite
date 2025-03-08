@@ -10,6 +10,6 @@ public:
     void update() override;
 
 private:
-    float speed = 20;
+    float speed = 60;
     glm::vec3 velocity;
 };

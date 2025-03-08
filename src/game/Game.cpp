@@ -98,11 +98,12 @@ void Game::update()
 
     ColliderGroups::eyes.populateSpatialGrid();
     ColliderGroups::eyes.collideAllMembers();
+    if (InputMap::isBoundKeyPressed("PrintSpatialGrid")) ColliderGroups::eyes.printSpatialGrid();
 
-    for (const auto& child : world.children)
+    for (int i = 0; i < world.getSize(); i++)
     {
+        auto& child = world.children[i];
         child->update();
-        if (InputMap::isBoundKeyPressed("PrintSpatialGrid")) ColliderGroups::eyes.printSpatialGrid();
         wrapInsideWorld(child->position);
     }
 }

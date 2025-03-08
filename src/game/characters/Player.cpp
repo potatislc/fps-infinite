@@ -25,8 +25,8 @@ void Player::update()
 
     if (InputMap::isBoundMouseButtonPressed("Shoot"))
     {
-        forward = glm::vec3{glm::cos(rotationZ-90), glm::sin(rotationZ-90), 0};
-        auto bulletInstance = std::make_shared<Bullet>(Bullet(position + glm::vec3(0, 0, 1), rotationZ, forward));
+        forward = glm::vec3{glm::cos(rotationZ - M_PI_2), glm::sin(rotationZ - M_PI_2), 0};
+        auto bulletInstance = std::make_shared<Bullet>(Bullet(position + glm::vec3(0, 0, 1.2f), rotationZ, forward));
         Game::world.addChild(bulletInstance);
     }
 

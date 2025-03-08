@@ -129,7 +129,7 @@ public:
     void printSpatialGrid();
 
     std::vector<Collider> colliders;
-    static constexpr int gridWidth = 80;
+    static constexpr int gridWidth = 96;
 private:
     class SpatialCell
     {
@@ -159,7 +159,6 @@ private:
 
     // There is a difference between map cells and spatial grid cells sadly ;(. #badatnamingstuff
     const float cellWidth = Game::maxCellSize.x / gridWidth;
-
     std::array<SpatialCell, gridWidth * gridWidth> spatialGrid;
 };
 

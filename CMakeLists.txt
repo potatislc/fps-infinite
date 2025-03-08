@@ -60,7 +60,8 @@ else ()
             src/setup/ColliderGroups.cpp
             src/engine/collision/CollisionShape.cpp
             src/engine/collision/Collider.cpp
-            src/game/characters/Bullet.h)
+            src/game/characters/Bullet.h
+            src/engine/Sprite.h)
 endif ()
 
 # Link SDL2 library

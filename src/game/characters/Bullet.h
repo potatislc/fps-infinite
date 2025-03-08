@@ -10,6 +10,7 @@ public:
     void update() override;
 
 private:
-    float speed = 60;
+    float speed = 80;
     glm::vec3 velocity;
+    float clippingY = 64;
 };

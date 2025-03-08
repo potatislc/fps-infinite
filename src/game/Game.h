@@ -17,7 +17,7 @@ public:
     class Settings
     {
     public:
-        float mouseSens = .002f;
+        glm::vec2 mouseSens = {.002f, .2f};
     };
 
     static inline constexpr glm::vec2 maxCellSize = {128, 128};

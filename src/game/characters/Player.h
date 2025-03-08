@@ -7,6 +7,7 @@ class Player : public ACharacter
 {
 public:
     float headBob = 0.f;
+    float aimY = 0.f;
 
     Player(glm::vec3 position, float rotationY, int hp);
     ~Player() override = default;

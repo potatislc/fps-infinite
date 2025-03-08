@@ -14,7 +14,7 @@ void Player::start()
 void Player::update()
 {
     // const float lookDir = (float)(InputMap::isBoundKeyDown("LookRight") - InputMap::isBoundKeyDown("LookLeft"));
-    rotationZ += InputMap::mouseMotion.x * Game::settings.mouseSens;
+    rotationZ += InputMap::mouseMotion.x * Game::settings.mouseSens.x;
     rotationZ = Utils::fmod(rotationZ, (float)M_PI * 2.f);
     glm::vec2 moveDir = {InputMap::isBoundKeyDown("Right") - InputMap::isBoundKeyDown("Left"),
                          InputMap::isBoundKeyDown("Down") - InputMap::isBoundKeyDown("Up")};
@@ -23,11 +23,16 @@ void Player::update()
             glm::vec2(-1, -1),
             glm::vec2(1, 1));
 
-    if (InputMap::isBoundMouseButtonPressed("Shoot"))
+    aimY = std::clamp(aimY + InputMap::mouseMotion.y * Game::settings.mouseSens.y, -64.f, 64.f);
+
+    if (InputMap::isBoundMouseButtonDown("Shoot"))
     {
-        forward = glm::vec3{glm::cos(rotationZ - M_PI_2), glm::sin(rotationZ - M_PI_2), 0};
+        float ndcY = 1.0f - (2.0f * (App::renderer.viewportCenter.y + aimY)) / App::renderer.viewport.h;
+
+        float fovTan = glm::tan(Game::camera3D.fov / 2.0f);
+        forward = glm::vec3{glm::cos(rotationZ - M_PI_2), glm::sin(rotationZ - M_PI_2), ndcY * fovTan};
         auto bulletInstance = std::make_shared<Bullet>(Bullet(position + glm::vec3(0, 0, 1.2f), rotationZ, forward));
-        Game::world.addChild(bulletInstance);
+        Game::world.queueAddChild(bulletInstance);
     }
 
     if (moveDir.x == 0)

@@ -114,50 +114,8 @@ public:
         shape->followPosition = followPosition;
     };
 
-    template <typename T>
-    Hit collideGroup(ColliderGroup<T>& colliderGroup);
-    // Checks until first collision
-    template <typename T>
-    Hit collideGroupNaive(ColliderGroup<T>& colliderGroup);
     bool collideWith(Collider& other);
 };
-
-template <typename T>
-Collider::Hit Collider::collideGroup(ColliderGroup<T>& colliderGroup)
-{
-    Collider::Hit lastHit = Collider::Hit();
-
-    for (auto& other : colliderGroup.colliders)
-    {
-        if ((Collider*)&other == this) continue;
-
-        CollisionShape::Hit hit = strategy->collide(*shape, other);
-        if (hit)
-        {
-            lastHit = Collider::Hit((Collider*)&other, other.owner, hit);
-        }
-    }
-
-    return lastHit;
-}
-
-template<typename T>
-Collider::Hit Collider::collideGroupNaive(ColliderGroup<T>& colliderGroup)
-{
-    for (auto& other : colliderGroup.colliders)
-    {
-        if ((Collider*)&other == this) continue;
-        std::cout << shape->followPosition->x << std::endl;
-        std::cout << other.shape->followPosition->x << std::endl;
-        CollisionShape::Hit hit = strategy->collide(*shape, other);
-        if (hit)
-        {
-            return Collider::Hit((Collider*)&other, other.owner, hit);
-        }
-    }
-
-    return Collider::Hit();
-}
 
 template <typename OwnerType>
 class ColliderGroup
@@ -194,7 +152,7 @@ private:
             return colliderCount;
         }
 
-        static constexpr uint8_t maxColliderCount = 4;
+        static inline constexpr uint8_t maxColliderCount = 8;
         uint8_t colliderCount = 0;
         std::array<id_t, maxColliderCount> collidersInside = {0};
     };
@@ -211,7 +169,7 @@ void ColliderGroup<OwnerType>::printSpatialGrid()
     std::cout << "Spatial Grid" << std::endl;
     for (int i = 0; i < spatialGrid.size(); i++)
     {
-        std::cout << static_cast<int>(spatialGrid[i].getColliderCount()) << " ";
+        std::cout << static_cast<int>(spatialGrid[i].getColliderCount());
         if ((i + 1) % gridWidth == 0) std::cout << std::endl;
     }
     std::cout << std::endl;
@@ -231,14 +189,13 @@ void ColliderGroup<OwnerType>::collideAllMembers()
         int colliderCount = cell.getColliderCount();
         if (colliderCount < 2) continue;
 
-        for (int i = 0; i < colliderCount; ++i)
+        for (int i = 0; i < colliderCount - 1; ++i)
         {
-            uint_t thisId = cell.collidersInside[i];
-            for (int j = 0; j < colliderCount; ++j)
+            Collider& current = colliders[cell.collidersInside[i]];
+            for (int j = i+1; j < colliderCount; ++j)
             {
-                if (i == j) continue;
-                uint_t otherId = cell.collidersInside[j];
-                if (colliders[thisId].collideWith(colliders[otherId])) continue;
+                Collider& other = colliders[cell.collidersInside[j]];
+                if (current.collideWith(other)) continue;
             }
         }
     }
@@ -252,18 +209,13 @@ void ColliderGroup<OwnerType>::populateSpatialGrid()
         cell.resetCount();
     }
 
-    bool forward = (App::frameCount % 2 == 0);
-    int start = forward ? 0 : colliders.size() - 1;
-    int end = forward ? colliders.size() : -1;
-    int step = forward ? 1 : -1;
-
-    for (int i = start; i != end; i += step)
+    for (auto& collider: colliders)
     {
-        auto& collider = colliders[i];
-        collider.shape->computeTouchingCells(gridWidth, cellWidth);
-        for (int j = 0; j < collider.shape->touchingCells.size; j++)
+        auto& shape = collider.shape;
+        shape->computeTouchingCells(gridWidth, cellWidth);
+        for (int j = 0; j < shape->touchingCells.size; j++)
         {
-            spatialGrid[collider.shape->touchingCells.array[j]].addCollider(collider.id);
+            spatialGrid[shape->touchingCells.array[j]].addCollider(collider.id);
         }
     }
 }

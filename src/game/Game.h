@@ -25,6 +25,8 @@ public:
     static Renderer::ViewPortCamera mapCamera;
     static Camera3D camera3D;
     static Settings settings;
+    static std::shared_ptr<Player> currentPlayer;
+    static EntityScene<Entity3D> world;
 
     Game();
     ~Game() override = default;
@@ -32,9 +34,7 @@ public:
     void update() override;
     void draw(SDL_Renderer* renderer) override;
 
-    static std::shared_ptr<Player> currentPlayer;
 private:
-    EntityScene<Entity3D> world;
     SDL_Texture* mapTexture = nullptr;
     SDL_Rect mapRect = {0, 0, 64, 64};
     const SDL_Point mapCenter = {mapRect.w / 2, mapRect.h / 2};

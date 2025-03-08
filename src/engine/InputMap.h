@@ -36,12 +36,19 @@ public:
     static glm::vec2 mouseMotion;
 
     static void addKeyBinding(const std::string& name, SDL_Keycode code);
+    static void addMouseBinding(const std::string& name, uint8_t code);
     static Status getBoundKeyInput(const std::string& name);
     static Status getBoundMouseInput(const std::string& name);
 
     static bool isBoundKeyPressed(const std::string& name);
     static bool isBoundKeyDown(const std::string& name);
     static bool isBoundKeyReleased(const std::string& name);
+
+    static bool isBoundMouseButtonPressed(const std::string& name);
+    static bool isBoundMouseButtonDown(const std::string& name);
+    static bool isBoundMouseButtonReleased(const std::string& name);
+
 private:
     static void addKeyCode(SDL_Keycode code);
+    static void addMouseCode(uint8_t code);
 };

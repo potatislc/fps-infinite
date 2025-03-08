@@ -21,6 +21,7 @@ public:
         UniqueTexture swarm;
         UniqueTexture testFloor;
         UniqueTexture entityShadow;
+        UniqueTexture bullet;
 
         void loadAll();
     };

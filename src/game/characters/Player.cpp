@@ -3,6 +3,7 @@
 #include "engine/InputMap.h"
 #include "engine/App.h"
 #include "game/Game.h"
+#include "Bullet.h"
 
 void Player::start()
 {
@@ -21,6 +22,13 @@ void Player::update()
             moveVelocity + moveDir * accel * App::deltaTime,
             glm::vec2(-1, -1),
             glm::vec2(1, 1));
+
+    if (InputMap::isBoundMouseButtonPressed("Shoot"))
+    {
+        forward = glm::vec3{glm::cos(rotationZ-90), glm::sin(rotationZ-90), 0};
+        auto bulletInstance = std::make_shared<Bullet>(Bullet(position + glm::vec3(0, 0, 1), rotationZ, forward));
+        Game::world.addChild(bulletInstance);
+    }
 
     if (moveDir.x == 0)
     {

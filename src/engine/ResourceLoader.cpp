@@ -131,6 +131,7 @@ void ResourceLoader::LoadedTextures::loadAll()
     testBg.set(loadTexture(TEXTURES_PATH"/backgrounds/flat-lite.png"));
     swarm.set(loadTexture(TEXTURES_PATH"/entities/swarm.png"));
     entityShadow.set(loadTexture(TEXTURES_PATH"/entities/entity-shadow-small.png"));
+    bullet.set(loadTexture(TEXTURES_PATH"/entities/bullet.png"));
 
     testFloor.set(loadTextureStreaming(TEXTURES_PATH"/floors/test-floor.png"));
 }

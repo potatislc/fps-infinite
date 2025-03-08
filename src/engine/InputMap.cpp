@@ -97,3 +97,29 @@ bool InputMap::isBoundKeyReleased(const std::string& name)
 {
     return getBoundKeyInput(name) == S_RELEASED;
 }
+
+void InputMap::addMouseBinding(const std::string& name, uint8_t code)
+{
+    if (!mouseMap.contains(code)) addMouseCode(code);
+    boundMouseButtons[name] = {code, S_UP};
+}
+
+void InputMap::addMouseCode(uint8_t code)
+{
+    InputMap::mouseMap[code] = false;
+}
+
+bool InputMap::isBoundMouseButtonPressed(const std::string& name)
+{
+    return getBoundMouseInput(name) == S_PRESSED;
+}
+
+bool InputMap::isBoundMouseButtonDown(const std::string& name)
+{
+    return getBoundMouseInput(name) == S_DOWN;
+}
+
+bool InputMap::isBoundMouseButtonReleased(const std::string& name)
+{
+    return getBoundMouseInput(name) == S_UP;
+}

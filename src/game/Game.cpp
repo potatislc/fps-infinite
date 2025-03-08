@@ -15,6 +15,7 @@ std::shared_ptr<Player> Game::currentPlayer = std::make_shared<Player>(glm::vec3
 Renderer::ViewPortCamera Game::mapCamera = Renderer::ViewPortCamera(SDL_Rect{0, 0, 426, 240});
 Camera3D Game::camera3D = Camera3D(glm::vec3{0, 0, 0}, 0, 90, 170);
 Game::Settings Game::settings;
+EntityScene<Entity3D> Game::world;
 
 Game::Game()
 {
@@ -29,6 +30,7 @@ Game::Game()
     InputMap::addKeyBinding("FlyDown", SDLK_DOWN);
     InputMap::addKeyBinding("PrintSpatialGrid", SDLK_g);
     InputMap::addKeyBinding("SpawnEye", SDLK_LCTRL);
+    InputMap::addMouseBinding("Shoot", SDL_BUTTON_LEFT);
     // InputMap::addKeyBinding("Jump", SDLK_SPACE); Horrible idea!
 }
 
@@ -58,9 +60,9 @@ void Game::start()
     // Should print 0, 0 (It does!)
     std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
     std::cout << centerCellId << std::endl;
-    /*for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 16; j++)
+        for (int j = 0; j < 4; j++)
         {
             std::shared_ptr<Eye> eye = std::make_shared<Eye>(
                     glm::vec3{i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},
@@ -69,7 +71,7 @@ void Game::start()
                     currentPlayer);
             world.addChild(eye);
         }
-    }*/
+    }
 
     for (const auto& child : world.children)
     {
@@ -84,7 +86,7 @@ void Game::update()
         App::quit = true;
     }
 
-    if (InputMap::isBoundKeyPressed("SpawnEye"))
+    if (InputMap::isBoundKeyDown("SpawnEye"))
     {
         std::shared_ptr<Eye> eye0 = std::make_shared<Eye>(
                 glm::vec3{3, 22, 6},
@@ -94,12 +96,12 @@ void Game::update()
         world.addChild(eye0);
     }
 
-    // currentPlayer->update();
+    ColliderGroups::eyes.populateSpatialGrid();
+    ColliderGroups::eyes.collideAllMembers();
+
     for (const auto& child : world.children)
     {
         child->update();
-        ColliderGroups::eyes.populateSpatialGrid();
-        ColliderGroups::eyes.collideAllMembers();
         if (InputMap::isBoundKeyPressed("PrintSpatialGrid")) ColliderGroups::eyes.printSpatialGrid();
         wrapInsideWorld(child->position);
     }
@@ -139,14 +141,6 @@ void Game::draw(SDL_Renderer *renderer)
         SDL_RenderCopy(renderer, renderTarget.get(), &rect, &rect);
     }
 
-    /*for (int i = 0; i < shadowMap.getRect()->w * shadowMap.getRect()->h / 4; i++)
-    {
-        SDL_SetRenderDrawColor(renderer, shadowMapPx[i], 0, 0, 255);
-        SDL_RenderDrawPoint(renderer, i % shadowMap.getRect()->w, i / shadowMap.getRect()->h);
-    }*/
-
-    // SDL_RenderCopy(renderer, shadowMap.get(), shadowMap.getRect(), shadowMap.getRect());
-    // AmbientParticles::draw(renderer, App::renderer.viewport, camera3D, (float)App::timeSinceInit);
     drawEntitiesToMap(renderer);
     drawMap(renderer);
     std::string playerPosMsg = "x: " + std::to_string(currentPlayer->position.x) + ", y: " + std::to_string(currentPlayer->position.y);
@@ -234,7 +228,6 @@ void Game::drawEntitiesDepth(SDL_Renderer* renderer, int cellId)
     {
         camera3D.drawTexture3DEx(renderer, testTex, entity->position - glm::vec3(cellOffset.x, cellOffset.y, 0),
                                  -entity->forward, viewport);
-        // entity->draw(renderer);
     }
 }
 

@@ -98,6 +98,7 @@ void Game::update()
                 currentPlayer);
         world.queueAddChild(eye0);
     }
+
     ColliderGroups::eyes.populateSpatialGrid();
     ColliderGroups::eyes.collideAllMembers();
     if (InputMap::isBoundKeyPressed("PrintSpatialGrid")) ColliderGroups::eyes.printSpatialGrid();
@@ -142,9 +143,12 @@ void Game::draw(SDL_Renderer *renderer)
         SDL_RenderCopy(renderer, renderTarget.get(), &reflectSrc, &reflectDst);
         SDL_SetTextureAlphaMod(renderTarget.get(), 255);
         SDL_RenderCopy(renderer, renderTarget.get(), &rect, &rect);
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderDrawPoint(renderer, App::renderer.viewportCenter.x, App::renderer.viewportCenter.y + currentPlayer->aimY);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+        auto dst = *ResourceLoader::loadedTextures.uiCrosshair.getRect();
+        dst.x = App::renderer.viewportCenter.x - dst.w / 2;
+        dst.y = App::renderer.viewportCenter.y + currentPlayer->aimY - dst.h / 2;
+        SDL_RenderCopy(renderer, ResourceLoader::loadedTextures.uiCrosshair.get(),
+                       ResourceLoader::loadedTextures.uiCrosshair.getRect(), &dst);
     }
 
     drawEntitiesToMap(renderer);

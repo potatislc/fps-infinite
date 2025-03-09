@@ -16,12 +16,13 @@ public:
     {
     public:
         // Textures
-        UniqueTexture playerMapIcon;
         UniqueTexture testBg;
         UniqueTexture swarm;
         UniqueTexture testFloor;
         UniqueTexture entityShadow;
         UniqueTexture bullet;
+
+        UniqueTexture uiCrosshair;
 
         void loadAll();
     };

@@ -127,13 +127,14 @@ PixelArray<uint32_t> ResourceLoader::copyTextureToPixelArray(SDL_Texture* textur
 void ResourceLoader::LoadedTextures::loadAll()
 {
     // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
-    playerMapIcon.set(loadTexture(TEXTURES_PATH"/map_icons/player.png"));
     testBg.set(loadTexture(TEXTURES_PATH"/backgrounds/flat-lite.png"));
     swarm.set(loadTexture(TEXTURES_PATH"/entities/swarm.png"));
     entityShadow.set(loadTexture(TEXTURES_PATH"/entities/entity-shadow-small.png"));
     bullet.set(loadTexture(TEXTURES_PATH"/entities/bullet.png"));
+    uiCrosshair.set(loadTexture(TEXTURES_PATH"/ui/crosshair.png"));
 
     testFloor.set(loadTextureStreaming(TEXTURES_PATH"/floors/test-floor.png"));
+
 }
 
 void ResourceLoader::LoadedPixelArrays::loadAll()

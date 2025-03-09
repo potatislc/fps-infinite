@@ -39,7 +39,7 @@ void AmbientParticles::draw(SDL_Renderer* renderer, SDL_Rect& viewport, Camera3D
         }
 
         // Draw the particle
-        camera.drawTexture3D(renderer, ResourceLoader::loadedTextures.playerMapIcon, particlePos, viewport);
+        camera.drawTexture3D(renderer, ResourceLoader::loadedTextures.entityShadow, particlePos, viewport);
     }
 }
 

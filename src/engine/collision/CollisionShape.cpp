@@ -70,6 +70,8 @@ void ShapeCircle::computeTouchingCells(const int gridWidth, const float cellWidt
     glm::vec2 cellPos = ((pos - glm::vec2(radius, radius)) / cellWidth);
     int baseX = static_cast<int>(cellPos.x);
     int baseY = static_cast<int>(cellPos.y);
+    if (baseX < 0) baseX += gridWidth;
+    if (baseY < 0) baseY += gridWidth;
 
     for (int i = 0; i < touchingCells.size; i++)
     {

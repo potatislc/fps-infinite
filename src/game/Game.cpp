@@ -31,7 +31,7 @@ Game::Game()
     InputMap::addKeyBinding("PrintSpatialGrid", SDLK_g);
     InputMap::addKeyBinding("SpawnEye", SDLK_LCTRL);
     InputMap::addMouseBinding("Shoot", SDL_BUTTON_LEFT);
-    // InputMap::addKeyBinding("Jump", SDLK_SPACE); Horrible idea!
+    InputMap::addKeyBinding("Jump", SDLK_SPACE); // Horrible idea!
 }
 
 void Game::start()
@@ -50,19 +50,10 @@ void Game::start()
             ResourceLoader::loadedPixelArrays.water.width,
             ResourceLoader::loadedPixelArrays.water.height);
 
-    std::shared_ptr<Eye> eye0 = std::make_shared<Eye>(
-            glm::vec3{3, 22, 6},
-            0,
-            1,
-            currentPlayer);
-    world.queueAddChild(eye0);
-
-    // Should print 0, 0 (It does!)
-    std::cout << getCellPos(centerCellId).x << ", " << getCellPos(centerCellId).y << std::endl;
-    std::cout << centerCellId << std::endl;
-    for (int i = 0; i < 4; i++)
+    const int enemyStartingCount = 16;
+    for (int i = 0; i < std::sqrt(enemyStartingCount); i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < std::sqrt(enemyStartingCount); j++)
         {
             std::shared_ptr<Eye> eye = std::make_shared<Eye>(
                     glm::vec3{i * 7 - 1 * 63, j * 7 - 1 * 63, glm::sin(j) * 2 + 2},
@@ -464,7 +455,7 @@ void Game::rasterizeShadowMap()
 
             int mapIndex = wrappedY * mapDims.x + wrappedX;
 
-            shadowMapPx[mapIndex] += shadowTexPx[i];
+            shadowMapPx[mapIndex] = std::min(shadowMapPx[mapIndex] + shadowTexPx[i], 255);
         }
     }
 }

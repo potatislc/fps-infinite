@@ -152,7 +152,7 @@ private:
             return colliderCount;
         }
 
-        static inline constexpr uint8_t maxColliderCount = 8;
+        static inline constexpr uint8_t maxColliderCount = 16;
         uint8_t colliderCount = 0;
         std::array<id_t, maxColliderCount> collidersInside = {0};
     };
@@ -214,7 +214,8 @@ void ColliderGroup<OwnerType>::populateSpatialGrid()
         shape->computeTouchingCells(gridWidth, cellWidth);
         for (int j = 0; j < shape->touchingCells.size; j++)
         {
-            spatialGrid[shape->touchingCells.array[j]].addCollider(collider.id);
+            auto gridId = shape->touchingCells.array[j];
+            spatialGrid[gridId].addCollider(collider.id);
         }
     }
 }

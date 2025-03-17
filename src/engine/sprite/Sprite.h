@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/utils/Utils.h"
-#include "UniqueTexture.h"
+#include "engine/UniqueTexture.h"
 
 class Sprite
 {
@@ -15,4 +15,5 @@ public:
 
     Sprite(UniqueTexture& texture, int frameCount, float animSpeed, int startingFrame);
     void animate(float delta);
+    void draw(SDL_Renderer* renderer, const SDL_Rect& dst);
 };

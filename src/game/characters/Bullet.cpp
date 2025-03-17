@@ -12,5 +12,5 @@ void Bullet::update()
 {
     position += velocity * App::deltaTime;
 
-    if (position.z <= 0 || position.z >= clippingY) Game::world.queueRemoveChild(this);
+    // if (position.z <= 0 || position.z >= clippingY) Game::world.queueRemoveChild(this);
 }

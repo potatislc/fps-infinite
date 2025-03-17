@@ -16,14 +16,14 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
 private:
-    glm::vec2 moveVelocity = {0, 0};
-    const float speed = 16;
-    const float accel = 4;
+    glm::vec2 moveVel = {0, 0};
+    const float moveSpeed = 16;
+    const float accelSpeed = 4;
     float eyeHeight = 2;
     float headBobPhase = 0.f;
     const float headBobSpeed = 10;
     const float headBobMag = .25f;
-    float gravity = 2;
-    float jumpForce = 1;
+    float gravity = 10;
+    float jumpForce = 8;
     bool grounded = false;
 };

@@ -17,4 +17,9 @@ void Sprite::animate(float delta)
     frame = static_cast<int>(animProgress * static_cast<float>(frameCount));
 }
 
+void Sprite::draw(SDL_Renderer* renderer, const SDL_Rect& dst)
+{
+    SDL_RenderCopy(renderer, texture.get(), &subRect, &dst);
+}
+
 

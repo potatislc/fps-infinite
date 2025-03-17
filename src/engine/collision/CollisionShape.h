@@ -79,7 +79,7 @@ public:
     Hit collideWithRect(ShapeRect& other) override;
     Hit collideWithCircle(ShapeCircle& other) override;
     Hit collideWithSphere(ShapeSphere& other) override;
-    void computeTouchingCells(int gridWidth /* Grid width (in cells)*/, float cellWidth);
+    void computeTouchingCells(int gridWidth /* Grid width (in cells)*/, float cellWidth) override;
 };
 
 class ShapeRect : public CollisionShape

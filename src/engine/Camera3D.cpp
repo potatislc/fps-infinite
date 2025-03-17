@@ -45,7 +45,6 @@ void Camera3D::drawTexture3DEx(SDL_Renderer* renderer, UniqueTexture& source, co
     screenX = screenX * (viewport.w / 2.0f) + viewport.w / 2.0f;
     float screenY = (distUp / distForward) * viewport.h + viewport.h / 2.0f;
 
-
     int rotFrame = 0;
     // glm::vec2 targetForward = {std::cos(targetRotZ), std::sin(targetRotZ)};
     float forwardDot = glm::dot(forward, targetForward);
@@ -170,7 +169,7 @@ void Camera3D::drawFloor(SDL_Renderer* renderer, SDL_Surface* floorSurface, cons
             if ((texX <= BORDER_WIDTH || texY <= BORDER_WIDTH) && y >= fogLine / 4)
             {
                 uint8_t worldBorderBrightness = 0x7F + (int)(std::abs(glm::sin(borderAnim + (double)x / 16)) * 0x7f);
-                pixels[y * surfRect.w + x] = (worldBorderBrightness << 16) | (worldBorderBrightness << 8) | worldBorderBrightness;
+                pixels[y * surfRect.w + x] = (worldBorderBrightness << 16) | (59 << 8) | 68;
                 continue;
             }
 #undef BORDER_WIDTH
